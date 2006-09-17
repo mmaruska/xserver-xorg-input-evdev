@@ -1,3 +1,11 @@
+xserver-xorg-input-evdev (1:1.1.2-2) UNRELEASED; urgency=low
+
+  * Upstream patch 1-add-inotify-architectures.patch enables building
+    for hppa and mips.
+  * Install upstream ChangeLog. Closes: #370300.
+
+ -- Drew Parsons <dparsons@debian.org>  Mon, 18 Sep 2006 00:54:45 +1000
+
 xserver-xorg-input-evdev (1:1.1.2-1) unstable; urgency=low
 
   * New upstream release
