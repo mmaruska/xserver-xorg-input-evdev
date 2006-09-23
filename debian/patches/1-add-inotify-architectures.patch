@@ -1,8 +1,8 @@
 Index: xserver-xorg-input-evdev/src/inotify-syscalls.h
 ===================================================================
---- xserver-xorg-input-evdev.orig/src/inotify-syscalls.h	2006-09-18 00:44:07.000000000 +1000
-+++ xserver-xorg-input-evdev/src/inotify-syscalls.h	2006-09-18 00:47:29.000000000 +1000
-@@ -39,6 +39,24 @@
+--- xserver-xorg-input-evdev.orig/src/inotify-syscalls.h	2006-09-18 00:20:43.000000000 +1000
++++ xserver-xorg-input-evdev/src/inotify-syscalls.h	2006-09-24 01:33:12.000000000 +1000
+@@ -39,6 +39,28 @@
  # define __NR_inotify_init	290
  # define __NR_inotify_add_watch	291
  # define __NR_inotify_rm_watch	292
@@ -24,6 +24,10 @@ Index: xserver-xorg-input-evdev/src/inotify-syscalls.h
 +#  define __NR_inotify_add_watch	5244
 +#  define __NR_inotify_rm_watch		5245
 +# endif
++#elif defined (__mc68000__)
++# define __NR_inotify_init	284
++# define __NR_inotify_add_watch	285
++# define __NR_inotify_rm_watch	286
  #else
  # error "Unsupported architecture!"
  #endif

@@ -1,15 +1,17 @@
-xserver-xorg-input-evdev (1:1.1.2-2) UNRELEASED; urgency=low
-
-  [ Drew Parsons ]
-  * Upstream patch 1-add-inotify-architectures.patch enables building
-    for hppa and mips.
-  * Install upstream ChangeLog. Closes: #370300.
+xserver-xorg-input-evdev (1:1.1.2-2) unstable; urgency=low
 
   [ Andres Salomon ]
   * Test for obj-$(DEB_BUILD_GNU_TYPE) before creating it during build;
-    idempotency fix. 
+    idempotency fix.
 
- -- Drew Parsons <dparsons@debian.org>  Mon, 18 Sep 2006 00:54:45 +1000
+  [ Drew Parsons ]
+  * Upstream patch 1-add-inotify-architectures.patch enables building
+    for hppa, mips (from git upstream) and m68k (thanks Geert Uytterhoeven). 
+    Closes: #387922, #388639.
+  * Install upstream ChangeLog. Closes: #370300.
+  * Exclude evdev_drv.la from dh_install.
+
+ -- Drew Parsons <dparsons@debian.org>  Sun, 24 Sep 2006 01:51:55 +1000
 
 xserver-xorg-input-evdev (1:1.1.2-1) unstable; urgency=low
 
