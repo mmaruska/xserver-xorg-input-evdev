@@ -1,3 +1,11 @@
+xserver-xorg-input-evdev (1:1.1.2-3) unstable; urgency=low
+
+  * Add patch rule to build rule to debian/rules to get
+    1-add-inotify-architectures.patch applied. Run autoreconf and
+    update config.{guess,sub} for good measure.
+
+ -- Drew Parsons <dparsons@debian.org>  Sun, 24 Sep 2006 10:02:45 +1000
+
 xserver-xorg-input-evdev (1:1.1.2-2) unstable; urgency=low
 
   [ Andres Salomon ]
