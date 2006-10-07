@@ -1,3 +1,13 @@
+xserver-xorg-input-evdev (1:1.1.2-4) UNRELEASED; urgency=low
+
+  * Fix versioned depends:  xserver-xorg-core (>= 2:1.1.1-1) (see
+    #391508) since it is built against xserver-xorg-dev (>= 2:1.1.1-1).
+    However the specific versioned build-depends is not needed since
+    it is not required in configure.ac (the driver could be built
+    against older xserver versions).
+
+ -- Drew Parsons <dparsons@debian.org>  Sun,  8 Oct 2006 00:50:04 +1000
+
 xserver-xorg-input-evdev (1:1.1.2-3) unstable; urgency=low
 
   * Add patch rule to build rule to debian/rules to get
