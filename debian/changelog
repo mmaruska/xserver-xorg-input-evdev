@@ -1,3 +1,15 @@
+xserver-xorg-input-evdev (1:1.1.2-5) unstable; urgency=low
+
+  * Applied upstream patches 10-bitfield-fixes.patch and
+    11-bitops-fixes.patch to define bit operations. Closes: #395510.
+    The former contains the hppa inotify patch, so rework
+    1-add-inotify-architectures.patch into
+    20-add-inotify-architectures.patch to accommodate. Also, deleted
+    the trivial man patch from 10-bitfield-fixes.patch, it was not
+    applying neatly.
+
+ -- Drew Parsons <dparsons@debian.org>  Wed,  1 Nov 2006 20:05:50 +1100
+
 xserver-xorg-input-evdev (1:1.1.2-4) unstable; urgency=low
 
   * Fix versioned depends: xserver-xorg-core (>= 2:1.1.1-1) (see

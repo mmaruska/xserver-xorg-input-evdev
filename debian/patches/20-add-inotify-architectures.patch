@@ -1,15 +1,11 @@
 Index: xserver-xorg-input-evdev/src/inotify-syscalls.h
 ===================================================================
---- xserver-xorg-input-evdev.orig/src/inotify-syscalls.h	2006-09-18 00:20:43.000000000 +1000
-+++ xserver-xorg-input-evdev/src/inotify-syscalls.h	2006-09-24 01:33:12.000000000 +1000
-@@ -39,6 +39,28 @@
- # define __NR_inotify_init	290
- # define __NR_inotify_add_watch	291
- # define __NR_inotify_rm_watch	292
-+#elif defined (__hppa__) || defined (__hppa64__)
-+# define __NR_inotify_init	269
-+# define __NR_inotify_add_watch	270
-+# define __NR_inotify_rm_watch	271
+--- xserver-xorg-input-evdev.orig/src/inotify-syscalls.h	2006-11-01 19:37:12.000000000 +1100
++++ xserver-xorg-input-evdev/src/inotify-syscalls.h	2006-11-01 19:59:51.000000000 +1100
+@@ -43,6 +43,24 @@
+ # define __NR_inotify_init	269
+ # define __NR_inotify_add_watch	270
+ # define __NR_inotify_rm_watch	271
 +#elif defined (__mips__)
 +# if _MIPS_SIM == _MIPS_SIM_ABI32
 +#  define __NR_inotify_init		4284
