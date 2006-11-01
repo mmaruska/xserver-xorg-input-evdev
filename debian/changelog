@@ -1,3 +1,10 @@
+xserver-xorg-input-evdev (1:1.1.2-6) UNRELEASED; urgency=low
+
+  * Apply upstream patch 30-absolute-axis.patch to avert potential
+    crashes in the absolute axis setup.
+
+ -- Drew Parsons <dparsons@debian.org>  Wed,  1 Nov 2006 21:59:06 +1100
+
 xserver-xorg-input-evdev (1:1.1.2-5) unstable; urgency=low
 
   * Applied upstream patches 10-bitfield-fixes.patch and
