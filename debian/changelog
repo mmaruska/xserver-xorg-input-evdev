@@ -4,8 +4,9 @@ xserver-xorg-input-evdev (1:1.1.2-6) unstable; urgency=low
     crashes in the absolute axis setup.
   * Also apply 40-close-fd.patch, as the last "trivial" patch from
     upstream before the major changes of 1.1.3.
+  * Use dh_installman to install man pages.
 
- -- Drew Parsons <dparsons@debian.org>  Sun,  5 Nov 2006 21:26:57 +1100
+ -- Drew Parsons <dparsons@debian.org>  Sun,  5 Nov 2006 21:37:25 +1100
 
 xserver-xorg-input-evdev (1:1.1.2-5) unstable; urgency=low
 
