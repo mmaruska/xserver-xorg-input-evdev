@@ -1,0 +1,12 @@
+Index: xserver-xorg-input-evdev/man/evdev.man
+===================================================================
+--- xserver-xorg-input-evdev.orig/man/evdev.man	2007-02-01 01:39:12.000000000 +0100
++++ xserver-xorg-input-evdev/man/evdev.man	2007-02-01 01:39:23.000000000 +0100
+@@ -317,6 +317,6 @@
+ .SH AUTHORS
+ Zephaniah E. Hull.
+ .fi
+-Kristian Høgsberg.
++Kristian H\(/ogsberg.
+ .SH "SEE ALSO"
+ __xservername__(__appmansuffix__), __xconfigfile__(__filemansuffix__), xorgconfig(__appmansuffix__), Xserver(__appmansuffix__), X(__miscmansuffix__).
