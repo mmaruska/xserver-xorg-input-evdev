@@ -61,8 +61,6 @@
 #include <X11/XF86keysym.h>
 #include <X11/extensions/XIproto.h>
 
-#include <string.h>
-
 #include "evdev.h"
 
 #include <xf86.h>
@@ -119,9 +117,13 @@ EvdevReadInput(InputInfoPtr pInfo)
 
         case EV_SYN:
 	    if (ev.code == SYN_REPORT) {
-		EvdevAxesSyn (pInfo);
-		/* EvdevBtnSyn (pInfo); */
-		/* EvdevKeySyn (pInfo); */
+		EvdevAxesSynRep (pInfo);
+		/* EvdevBtnSynRep (pInfo); */
+		/* EvdevKeySynRep (pInfo); */
+	    } else if (ev.code == SYN_CONFIG) {
+		EvdevAxesSynCfg (pInfo);
+		/* EvdevBtnSynCfg (pInfo); */
+		/* EvdevKeySynCfg (pInfo); */
 	    }
             break;
         }
@@ -202,6 +204,7 @@ EvdevProc(DeviceIntPtr device, int what)
 	    RemoveEnabledDevice (pInfo->fd);
 	    xf86RemoveSIGIOHandler (pInfo->fd);
 	    close (pInfo->fd);
+	    pInfo->fd = -1;
 
 	    if (pEvdev->state.axes)
 		EvdevAxesOff (device);
@@ -210,6 +213,9 @@ EvdevProc(DeviceIntPtr device, int what)
 	    if (pEvdev->state.key)
 		EvdevKeyOff (device);
 	}
+
+        if (what == DEVICE_CLOSE)
+            evdevRemoveDevice(pEvdev);
 
 	device->public.on = FALSE;
 	break;
@@ -229,15 +235,18 @@ EvdevSwitchMode (ClientPtr client, DeviceIntPtr device, int mode)
     {
 	case Absolute:
 	case Relative:
+	    xf86Msg(X_INFO, "%s: Switching mode to %d.\n", pInfo->name, mode);
 	    if (state->abs)
 		state->mode = mode;
 	    else
 		return !Success;
 	    break;
+#if 0
 	case SendCoreEvents:
 	case DontSendCoreEvents:
 	    xf86XInputSetSendCoreEvents (pInfo, (mode == SendCoreEvents));
 	    break;
+#endif
 	default:
 	    return !Success;
     }
@@ -264,7 +273,9 @@ EvdevNew(evdevDriverPtr driver, evdevDevicePtr device)
     pInfo->device_control = EvdevProc;
     pInfo->read_input = EvdevReadInput;
     pInfo->switch_mode = EvdevSwitchMode;
+#if GET_ABI_MAJOR(ABI_XINPUT_VERSION) == 0
     pInfo->motion_history_proc = xf86GetMotionEvents;
+#endif
     pInfo->conf_idev = driver->dev;
 
     pInfo->private = device;
@@ -299,9 +310,13 @@ EvdevNew(evdevDriverPtr driver, evdevDevicePtr device)
     }
 
 
-    /* XXX: Note, the order of these is important. */
-    EvdevAxesNew (pInfo);
-    EvdevBtnNew (pInfo);
+    /* XXX: Note, the order of these is (maybe) still important. */
+    EvdevAxesNew0 (pInfo);
+    EvdevBtnNew0 (pInfo);
+
+    EvdevAxesNew1 (pInfo);
+    EvdevBtnNew1 (pInfo);
+
     if (device->state.can_grab)
 	EvdevKeyNew (pInfo);
 
@@ -328,7 +343,7 @@ EvdevNew(evdevDriverPtr driver, evdevDevicePtr device)
 }
 
 static void
-EvdevParseBits (char *in, long *out, int len)
+EvdevParseBits (char *in, unsigned long *out, int len)
 {
     unsigned long v[2];
     int n, i, max_bits = len * BITS_PER_LONG;
@@ -351,7 +366,7 @@ EvdevParseBits (char *in, long *out, int len)
 }
 
 static void
-EvdevParseBitOption (char *opt, long *all, long *not, long *any, int len)
+EvdevParseBitOption (char *opt, unsigned long *all, unsigned long *not, unsigned long *any, int len)
 {
     char *cur, *next;
 
@@ -395,7 +410,7 @@ EvdevCorePreInit(InputDriverPtr drv, IDevPtr dev, int flags)
 	EvdevParseBitOption (tmp, pEvdev->all_bits.field,			\
 		pEvdev->not_bits.field,					\
 		pEvdev->any_bits.field,					\
-		sizeof(pEvdev->not_bits.field) / sizeof (long));		\
+		sizeof(pEvdev->not_bits.field) / sizeof (unsigned long));	\
 	free (tmp);								\
     }
     bitoption(ev);
@@ -451,8 +466,6 @@ _X_EXPORT InputDriverRec EVDEV = {
     0
 };
 
-#ifdef XFree86LOADER
-
 static void
 EvdevUnplug(pointer	p)
 {
@@ -474,7 +487,7 @@ static XF86ModuleVersionInfo EvdevVersionRec =
     MODULEVENDORSTRING,
     MODINFOSTRING1,
     MODINFOSTRING2,
-    0, /* Missing from SDK: XORG_VERSION_CURRENT, */
+    XORG_VERSION_CURRENT,
     1, 1, 0,
     ABI_CLASS_XINPUT,
     ABI_XINPUT_VERSION,
@@ -488,4 +501,3 @@ _X_EXPORT XF86ModuleData evdevModuleData =
     EvdevPlug,
     EvdevUnplug
 };
-#endif /* XFree86LOADER */

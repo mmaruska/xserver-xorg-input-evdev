@@ -86,7 +86,7 @@ typedef struct {
 } evdevDevInfoRec, *evdevDevInfoPtr;
 
 static Bool
-MatchAll (long *dev, long *match, int len)
+MatchAll (unsigned long *dev, unsigned long *match, int len)
 {
     int i;
 
@@ -98,7 +98,7 @@ MatchAll (long *dev, long *match, int len)
 }
 
 static Bool
-MatchNot (long *dev, long *match, int len)
+MatchNot (unsigned long *dev, unsigned long *match, int len)
 {
     int i;
 
@@ -110,7 +110,7 @@ MatchNot (long *dev, long *match, int len)
 }
 
 static Bool
-MatchAny (long *dev, long *match, int len)
+MatchAny (unsigned long *dev, unsigned long *match, int len)
 {
     int i, found = 0;
 
@@ -460,6 +460,24 @@ evdevNewDriver (evdevDriverPtr driver)
     evdevRescanDevices (evdev_pInfo);
     driver->configured = TRUE;
     return TRUE;
+}
+
+void
+evdevRemoveDevice (evdevDevicePtr pEvdev)
+{
+    evdevDriverPtr driver;
+    evdevDevicePtr *device;
+
+    for (driver = evdev_drivers; driver; driver = driver->next) {
+        for (device = &driver->devices; *device; device = &(*device)->next) {
+            if (*device == pEvdev) {
+                *device = pEvdev->next;
+                xf86DeleteInput(pEvdev->pInfo, 0);
+                pEvdev->next = NULL;
+                return;
+            }
+        }
+    }
 }
 
 Bool

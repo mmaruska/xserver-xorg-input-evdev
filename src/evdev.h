@@ -72,20 +72,29 @@
 #include <stdarg.h>
 #include <xf86Xinput.h>
 
-#define BITS_PER_LONG		(sizeof(long) * 8)
+#ifndef BITS_PER_LONG
+#define BITS_PER_LONG		(sizeof(unsigned long) * 8)
+#endif
+
 #define NBITS(x)		((((x)-1)/BITS_PER_LONG)+1)
-#define OFF(x) 			((x)%BITS_PER_LONG)
 #define LONG(x)			((x)/BITS_PER_LONG)
-#define BIT(x)			(1UL<<((x)%BITS_PER_LONG))
-#define test_bit(bit, array)    ((array[LONG(bit)] >> OFF(bit)) & 1)
+#define MASK(x)			(1UL << ((x) & (BITS_PER_LONG - 1)))
+
+#ifndef test_bit
+#define test_bit(bit, array)	(!!(array[LONG(bit)] & MASK(bit)))
+#endif
+#ifndef set_bit
+#define set_bit(bit, array)	(array[LONG(bit)] |= MASK(bit))
+#endif
+#ifndef clear_bit
+#define clear_bit(bit, array)	(array[LONG(bit)] &= ~MASK(bit))
+#endif
 
 /* 2.4 compatibility */
 #ifndef EVIOCGSW
 
 #include <sys/time.h>
 #include <sys/ioctl.h>
-#include <asm/types.h>
-#include <asm/bitops.h>
 
 #define EVIOCGSW(len)		_IOC(_IOC_READ, 'E', 0x1b, len)		/* get all switch states */
 
@@ -108,6 +117,12 @@
 #include <X11/extensions/XKB.h>
 #include <X11/extensions/XKBstr.h>
 
+/* XInput 1.4+ compatability. */
+#ifndef SendCoreEvents
+#define SendCoreEvents		59
+#define DontSendCoreEvents	60
+#endif
+
 
 /*
  * Switch events
@@ -128,33 +143,36 @@
 #define EVDEV_MAXBUTTONS	96
 
 typedef struct {
-    long	ev[NBITS(EV_MAX)];
-    long	key[NBITS(KEY_MAX)];
-    long	rel[NBITS(REL_MAX)];
-    long	abs[NBITS(ABS_MAX)];
-    long	msc[NBITS(MSC_MAX)];
-    long	led[NBITS(LED_MAX)];
-    long	snd[NBITS(SND_MAX)];
-    long	ff[NBITS(FF_MAX)];
+    unsigned long	ev[NBITS(EV_MAX)];
+    unsigned long	key[NBITS(KEY_MAX)];
+    unsigned long	rel[NBITS(REL_MAX)];
+    unsigned long	abs[NBITS(ABS_MAX)];
+    unsigned long	msc[NBITS(MSC_MAX)];
+    unsigned long	led[NBITS(LED_MAX)];
+    unsigned long	snd[NBITS(SND_MAX)];
+    unsigned long	ff[NBITS(FF_MAX)];
 } evdevBitsRec, *evdevBitsPtr;
 
 typedef struct {
     int		real_buttons;
     int		buttons;
     CARD8	map[EVDEV_MAXBUTTONS];
-    int		*state[EVDEV_MAXBUTTONS];
+    void	(*callback[EVDEV_MAXBUTTONS])(InputInfoPtr pInfo, int button, int value);
 } evdevBtnRec, *evdevBtnPtr;
 
 typedef struct {
     int		axes;
-    int		n; /* Which abs_v is current, and which is previous. */
-    int		v[2][ABS_MAX];
+    int		v[ABS_MAX];
+    int		old_x, old_y;
     int		count;
     int		min[ABS_MAX];
     int		max[ABS_MAX];
     int		map[ABS_MAX];
     int		scale[2];
     int		screen; /* Screen number for this device. */
+    Bool	use_touch;
+    Bool	touch;
+    Bool	reset_x, reset_y;
 } evdevAbsRec, *evdevAbsPtr;
 
 typedef struct {
@@ -162,12 +180,12 @@ typedef struct {
     int		v[REL_MAX];
     int		count;
     int		map[REL_MAX];
+    int		btnMap[REL_MAX][2];
 } evdevRelRec, *evdevRelPtr;
 
 typedef struct {
     int		axes;
     int		v[ABS_MAX];
-    int		btnMap[ABS_MAX][2];
 } evdevAxesRec, *evdevAxesPtr;
 
 typedef struct {
@@ -234,21 +252,27 @@ int evdevGetFDForDevice (evdevDevicePtr driver);
 Bool evdevStart (InputDriverPtr drv);
 Bool evdevNewDriver (evdevDriverPtr driver);
 Bool evdevGetBits (int fd, evdevBitsPtr bits);
+void evdevRemoveDevice (evdevDevicePtr device);
 
 int EvdevBtnInit (DeviceIntPtr device);
 int EvdevBtnOn (DeviceIntPtr device);
 int EvdevBtnOff (DeviceIntPtr device);
-int EvdevBtnNew(InputInfoPtr pInfo);
+int EvdevBtnNew0(InputInfoPtr pInfo);
+int EvdevBtnNew1(InputInfoPtr pInfo);
 void EvdevBtnProcess (InputInfoPtr pInfo, struct input_event *ev);
 void EvdevBtnPostFakeClicks(InputInfoPtr pInfo, int button, int count);
+int EvdevBtnFind (InputInfoPtr pInfo, const char *button);
+int EvdevBtnExists (InputInfoPtr pInfo, int button);
 
 int EvdevAxesInit (DeviceIntPtr device);
 int EvdevAxesOn (DeviceIntPtr device);
 int EvdevAxesOff (DeviceIntPtr device);
-int EvdevAxesNew(InputInfoPtr pInfo);
+int EvdevAxesNew0(InputInfoPtr pInfo);
+int EvdevAxesNew1(InputInfoPtr pInfo);
 void EvdevAxesAbsProcess (InputInfoPtr pInfo, struct input_event *ev);
 void EvdevAxesRelProcess (InputInfoPtr pInfo, struct input_event *ev);
-void EvdevAxesSyn (InputInfoPtr pInfo);
+void EvdevAxesSynRep (InputInfoPtr pInfo);
+void EvdevAxesSynCfg (InputInfoPtr pInfo);
 
 int EvdevKeyInit (DeviceIntPtr device);
 int EvdevKeyNew (InputInfoPtr pInfo);

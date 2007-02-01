@@ -81,11 +81,6 @@
 
 
 #define ArrayLength(a) (sizeof(a) / (sizeof((a)[0])))
-#define BITS_PER_LONG (sizeof(long) * 8)
-#define NBITS(x) ((((x)-1)/BITS_PER_LONG)+1)
-#define OFF(x)  ((x)%BITS_PER_LONG)
-#define LONG(x) ((x)/BITS_PER_LONG)
-#define TestBit(bit, array)    ((array[LONG(bit)] >> OFF(bit)) & 1)
 
 #define MIN_KEYCODE 8
 #define GLYPHS_PER_KEY 2
@@ -243,10 +238,11 @@ static KeySym map[] = {
  * So use the system bell for now.
  */
 static void
-EvdevKbdBell (int percent, DeviceIntPtr device, pointer ctrl, int unused)
+EvdevKbdBell (int percent, DeviceIntPtr device, pointer arg, int unused)
 {
-    xf86SoundKbdBell(percent, ((KeybdCtrl*) ctrl)->bell_pitch,
-	    ((KeybdCtrl*) ctrl)->bell_duration);
+    KeybdCtrl *ctrl = arg;
+
+    xf86OSRingBell(percent, ctrl->bell_pitch, ctrl->bell_duration);
 }
 
 static void
@@ -356,13 +352,13 @@ EvdevKeyNew (InputInfoPtr pInfo)
     int i, keys = 0;
 
     for (i = 0; i <= KEY_UNKNOWN; i++)
-	if (TestBit (i, pEvdev->bits.key)) {
+	if (test_bit (i, pEvdev->bits.key)) {
 	    keys = 1;
 	    break;
 	}
     if (!keys)
 	for (i = KEY_OK; i <= KEY_MAX; i++)
-	    if (TestBit (i, pEvdev->bits.key)) {
+	    if (test_bit (i, pEvdev->bits.key)) {
 		keys = 1;
 		break;
 	    }
