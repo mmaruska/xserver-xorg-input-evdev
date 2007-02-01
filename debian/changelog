@@ -5,8 +5,9 @@ xserver-xorg-input-evdev (1:1.1.5-1) UNRELEASED; urgency=low
   * Bump dependency on xserver-xorg-core to >= 2:1.1.1-11, as previous
     versions don't have the bug script.
   * New upstream release.
+    + Drop all patches, applied upstream.
 
- -- Julien Cristau <julien.cristau@ens-lyon.org>  Thu,  1 Feb 2007 01:08:02 +0100
+ -- Julien Cristau <julien.cristau@ens-lyon.org>  Thu,  1 Feb 2007 01:31:41 +0100
 
 xserver-xorg-input-evdev (1:1.1.2-6) unstable; urgency=low
 
