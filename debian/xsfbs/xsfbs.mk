@@ -1,5 +1,5 @@
 #!/usr/bin/make -f
-# $Id: xsfbs.mk 2284 2006-06-06 18:02:50Z branden $
+# $Id$
 
 # Debian rules file for xorg-x11 source package
 
