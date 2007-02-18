@@ -1,3 +1,9 @@
+xserver-xorg-input-evdev (1:1.1.5-2) UNRELEASED; urgency=low
+
+  * Generate the dependency on xserver-xorg-core automatically.
+
+ -- Julien Cristau <jcristau@debian.org>  Mon, 19 Mar 2007 19:20:04 +0100
+
 xserver-xorg-input-evdev (1:1.1.5-1) experimental; urgency=low
 
   [ Julien Cristau ]
