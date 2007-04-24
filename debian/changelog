@@ -1,8 +1,17 @@
 xserver-xorg-input-evdev (1:1.1.5-2) UNRELEASED; urgency=low
 
+  [ Julien Cristau ]
   * Generate the dependency on xserver-xorg-core automatically.
 
- -- Julien Cristau <jcristau@debian.org>  Mon, 19 Mar 2007 19:20:04 +0100
+  [ Brice Goglin ]
+  * Bump Build-Depends: xserver-xorg-dev to >= 2:1.2.99.902
+    (needed to let xsfbs get access to serverminver).
+  * Add XS-Vcs-*.
+  * Add a link to www.X.org and a reference to the xf86-input-evdev
+    module in the long description.
+  * Remove Fabio from uploaders with his permission. He's always welcome back.
+
+ -- Brice Goglin <Brice.Goglin@ens-lyon.org>  Tue, 24 Apr 2007 23:37:48 +0200
 
 xserver-xorg-input-evdev (1:1.1.5-1) experimental; urgency=low
 
