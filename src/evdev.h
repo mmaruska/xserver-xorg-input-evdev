@@ -1,5 +1,6 @@
 /*
- * Copyright © 2006 Zephaniah E. Hull
+ * Copyright © 2006-2007 Zephaniah E. Hull
+ * Copyright © 2004 Red Hat, Inc.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
  * copy of this software and associated documentation files (the "Soft-
@@ -26,35 +27,13 @@
  * other dealings in this Software without prior written authorization of
  * the copyright holder.
  *
- * Author:  Zephaniah E. Hull (warp@aehallh.com)
- */
-/*
- * Copyright © 2004 Red Hat, Inc.
- *
- * Permission to use, copy, modify, distribute, and sell this software
- * and its documentation for any purpose is hereby granted without
- * fee, provided that the above copyright notice appear in all copies
- * and that both that copyright notice and this permission notice
- * appear in supporting documentation, and that the name of Red Hat
- * not be used in advertising or publicity pertaining to distribution
- * of the software without specific, written prior permission.  Red
- * Hat makes no representations about the suitability of this software
- * for any purpose.  It is provided "as is" without express or implied
- * warranty.
- *
- * RED HAT DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS SOFTWARE,
- * INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS, IN
- * NO EVENT SHALL RED HAT BE LIABLE FOR ANY SPECIAL, INDIRECT OR
- * CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS
- * OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
- * NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN
- * CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
- *
- * Author:  Kristian Høgsberg (krh@redhat.com)
+ * Authors:
+ *   Zephaniah E. Hull (warp@aehallh.com)
+ *   Kristian Høgsberg (krh@redhat.com)
  */
 
-#ifndef EVDEV_BRAIN_H_
-#define EVDEV_BRAIN_H_
+#ifndef __EVDEV_H
+#define __EVDEV_H
 
 #define _XF86_ANSIC_H
 #define XF86_LIBC_H
@@ -90,57 +69,29 @@
 #define clear_bit(bit, array)	(array[LONG(bit)] &= ~MASK(bit))
 #endif
 
-/* 2.4 compatibility */
-#ifndef EVIOCGSW
-
-#include <sys/time.h>
-#include <sys/ioctl.h>
-
-#define EVIOCGSW(len)		_IOC(_IOC_READ, 'E', 0x1b, len)		/* get all switch states */
-
-#define EV_SW			0x05
-#endif
-
-#ifndef EVIOCGRAB
-#define EVIOCGRAB _IOW('E', 0x90, int)
-#endif
-
-#ifndef BTN_TASK
-#define BTN_TASK 0x117
-#endif
-
-#ifndef EV_SYN
-#define EV_SYN EV_RST
-#endif
-/* end compat */
 
 #include <X11/extensions/XKB.h>
 #include <X11/extensions/XKBstr.h>
 
-/* XInput 1.4+ compatability. */
-#ifndef SendCoreEvents
-#define SendCoreEvents		59
-#define DontSendCoreEvents	60
-#endif
+/*
+ * At the moment, ABS_MAX is larger then REL_MAX.
+ * As they are the only two providors of axes, ABS_MAX is it.
+ */
+#define AXES_MAX	ABS_MAX
 
+
+#define BTN_MAX	96
+
+struct _evdevDevice;
 
 /*
- * Switch events
+ * FIXME: The mode option here is a kludge.
+ * It can be 0 (rel mode), 1 (abs mode), or -1 (input side has no clue).
+ *
+ * Worse, it arguably shouldn't even be the sender that decides here.
+ * And only the Axes targets and sources care at all right now.
  */
-
-#define EV_SW_0		0x00
-#define EV_SW_1		0x01
-#define EV_SW_2		0x02
-#define EV_SW_3		0x03
-#define EV_SW_4		0x04
-#define EV_SW_5		0x05
-#define EV_SW_6		0x06
-#define EV_SW_7		0x07
-#define EV_SW_MAX	0x0f
-
-#define EV_BUS_GSC		0x1A
-
-#define EVDEV_MAXBUTTONS	96
+typedef void (*evdev_map_func_f)(InputInfoPtr pInfo, int value, int mode, void *map_data);
 
 typedef struct {
     unsigned long	ev[NBITS(EV_MAX)];
@@ -153,39 +104,69 @@ typedef struct {
     unsigned long	ff[NBITS(FF_MAX)];
 } evdevBitsRec, *evdevBitsPtr;
 
+#define EV_BTN_B_PRESENT   	(1<<0)
+
 typedef struct {
     int		real_buttons;
     int		buttons;
-    CARD8	map[EVDEV_MAXBUTTONS];
-    void	(*callback[EVDEV_MAXBUTTONS])(InputInfoPtr pInfo, int button, int value);
+    int		b_flags[BTN_MAX];
+    void	*b_map_data[ABS_MAX];
+    evdev_map_func_f b_map[BTN_MAX];
+    void	(*callback[BTN_MAX])(InputInfoPtr pInfo, int button, int value);
 } evdevBtnRec, *evdevBtnPtr;
 
+#define EV_ABS_V_PRESENT	(1<<0)
+#define EV_ABS_V_M_AUTO		(1<<1)
+#define EV_ABS_V_M_REL		(1<<2)
+#define EV_ABS_V_INVERT		(1<<3)
+#define EV_ABS_V_RESET		(1<<4)
+#define EV_ABS_V_USE_TOUCH	(1<<5)
+
+#define EV_ABS_USE_TOUCH	(1<<0)
+#define EV_ABS_TOUCH		(1<<1)
+#define EV_ABS_UPDATED		(1<<2)
+
 typedef struct {
+    int		flags;
     int		axes;
     int		v[ABS_MAX];
-    int		old_x, old_y;
-    int		count;
-    int		min[ABS_MAX];
-    int		max[ABS_MAX];
-    int		map[ABS_MAX];
-    int		scale[2];
-    int		screen; /* Screen number for this device. */
-    Bool	use_touch;
-    Bool	touch;
-    Bool	reset_x, reset_y;
+    int		v_flags[ABS_MAX];
+    void	*v_map_data[ABS_MAX];
+    evdev_map_func_f v_map[ABS_MAX];
 } evdevAbsRec, *evdevAbsPtr;
 
+#define EV_REL_V_PRESENT	(1<<0)
+#define EV_REL_V_INVERT		(1<<1)
+#define EV_REL_UPDATED		(1<<0)
+
 typedef struct {
-    int		axes;
+    int		flags;
+    int		v_flags[REL_MAX];
     int		v[REL_MAX];
-    int		count;
-    int		map[REL_MAX];
-    int		btnMap[REL_MAX][2];
+    int		axes;
+    void 	*v_map_data[REL_MAX];
+    evdev_map_func_f v_map[REL_MAX];
 } evdevRelRec, *evdevRelPtr;
+
+#define EV_AXES_V_M_ABS		(1<<0)
+#define EV_AXES_V_M_REL		(1<<1)
+#define EV_AXES_V_PRESENT	(1<<2)
+#define EV_AXES_V_UPDATED	(1<<3)
+
+#define EV_AXES_V_M_MASK	(EV_AXES_V_M_ABS | EV_AXES_V_M_REL)
+
+#define EV_AXES_UPDATED		(1<<0)
 
 typedef struct {
     int		axes;
-    int		v[ABS_MAX];
+    int		flags;
+    int		v_flags[AXES_MAX];
+    int		v_min[AXES_MAX];
+    int		v_max[AXES_MAX];
+    int		v[AXES_MAX];
+    int		rotation;
+    float	rot_sin, rot_cos;
+    int		x, y;
 } evdevAxesRec, *evdevAxesPtr;
 
 typedef struct {
@@ -200,7 +181,6 @@ typedef struct {
 typedef struct _evdevState {
     Bool	can_grab;
     Bool	sync;
-    int		mode;	/* Either Absolute or Relative. */
 
     evdevBtnPtr	btn;
     evdevAbsPtr	abs;
@@ -210,49 +190,12 @@ typedef struct _evdevState {
 } evdevStateRec, *evdevStatePtr;
 
 typedef struct _evdevDevice {
-    const char		*name;
-    const char		*phys;
     const char		*device;
-    int			seen;
-
-    InputInfoPtr	pInfo;
-    int			(*callback)(DeviceIntPtr cb_data, int what);
 
     evdevBitsRec	bits;
-    struct input_id	id;
 
     evdevStateRec	state;
-
-    struct _evdevDevice *next;
 } evdevDeviceRec, *evdevDevicePtr;
-
-typedef struct _evdevDriver {
-    const char		*name;
-    const char		*phys;
-    const char		*device;
-
-    evdevBitsRec	all_bits;
-    evdevBitsRec	not_bits;
-    evdevBitsRec	any_bits;
-
-    struct input_id	id;
-
-    int			pass;
-
-    InputDriverPtr	drv;
-    IDevPtr		dev;
-    Bool		(*callback)(struct _evdevDriver *driver, evdevDevicePtr device);
-    evdevDevicePtr	devices;
-    Bool		configured;
-
-    struct _evdevDriver	*next;
-} evdevDriverRec, *evdevDriverPtr;
-
-int evdevGetFDForDevice (evdevDevicePtr driver);
-Bool evdevStart (InputDriverPtr drv);
-Bool evdevNewDriver (evdevDriverPtr driver);
-Bool evdevGetBits (int fd, evdevBitsPtr bits);
-void evdevRemoveDevice (evdevDevicePtr device);
 
 int EvdevBtnInit (DeviceIntPtr device);
 int EvdevBtnOn (DeviceIntPtr device);
@@ -280,4 +223,50 @@ int EvdevKeyOn (DeviceIntPtr device);
 int EvdevKeyOff (DeviceIntPtr device);
 void EvdevKeyProcess (InputInfoPtr pInfo, struct input_event *ev);
 
-#endif	/* LNX_EVDEV_H_ */
+
+/*
+ * Option handling stuff.
+ */
+
+typedef struct evdev_option_token_s {
+    const char *str;
+    struct evdev_option_token_s *chain;
+    struct evdev_option_token_s *next;
+} evdev_option_token_t;
+
+typedef Bool (*evdev_parse_opt_func_f)(InputInfoPtr pInfo, const char *name, evdev_option_token_t *token, int *flags);
+typedef Bool (*evdev_parse_map_func_f)(InputInfoPtr pInfo,
+	const char *name,
+	evdev_option_token_t *option,
+	void **map_data, evdev_map_func_f *map_func);
+
+evdev_option_token_t *EvdevTokenize (const char *option, const char *tokens);
+void EvdevFreeTokens (evdev_option_token_t *token);
+Bool EvdevParseMapToRelAxis (InputInfoPtr pInfo,
+	const char *name,
+	evdev_option_token_t *option,
+	void **map_data, evdev_map_func_f *map_func);
+Bool EvdevParseMapToAbsAxis (InputInfoPtr pInfo,
+	const char *name,
+	evdev_option_token_t *option,
+	void **map_data, evdev_map_func_f *map_func);
+Bool
+EvdevParseMapToButton (InputInfoRec *pInfo,
+	const char *name,
+	evdev_option_token_t *option,
+	void **map_data, evdev_map_func_f *map_func);
+Bool
+EvdevParseMapToButtons (InputInfoRec *pInfo,
+	const char *name,
+	evdev_option_token_t *option,
+	void **map_data, evdev_map_func_f *map_func);
+
+typedef struct {
+    char *name;
+    evdev_parse_map_func_f func;
+} evdev_map_parsers_t;
+
+extern evdev_map_parsers_t evdev_map_parsers[];
+Bool EvdevParseMapOption (InputInfoRec *pInfo, char *option, char *def, void **map_data, evdev_map_func_f *map_func);
+
+#endif	/* __EVDEV_H */

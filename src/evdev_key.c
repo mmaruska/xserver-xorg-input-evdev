@@ -1,5 +1,6 @@
 /*
- * Copyright © 2006 Zephaniah E. Hull
+ * Copyright © 2006-2007 Zephaniah E. Hull
+ * Copyright © 2004 Red Hat, Inc.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
  * copy of this software and associated documentation files (the "Soft-
@@ -26,31 +27,9 @@
  * other dealings in this Software without prior written authorization of
  * the copyright holder.
  *
- * Author:  Zephaniah E. Hull (warp@aehallh.com)
- */
-/*
- * Copyright © 2004 Red Hat, Inc.
- *
- * Permission to use, copy, modify, distribute, and sell this software
- * and its documentation for any purpose is hereby granted without
- * fee, provided that the above copyright notice appear in all copies
- * and that both that copyright notice and this permission notice
- * appear in supporting documentation, and that the name of Red Hat
- * not be used in advertising or publicity pertaining to distribution
- * of the software without specific, written prior permission.  Red
- * Hat makes no representations about the suitability of this software
- * for any purpose.  It is provided "as is" without express or implied
- * warranty.
- *
- * RED HAT DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS SOFTWARE,
- * INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS, IN
- * NO EVENT SHALL RED HAT BE LIABLE FOR ANY SPECIAL, INDIRECT OR
- * CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS
- * OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
- * NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN
- * CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
- *
- * Author:  Kristian Høgsberg (krh@redhat.com)
+ * Authors:
+ *   Zephaniah E. Hull (warp@aehallh.com),
+ *   Kristian Høgsberg (krh@redhat.com)
  */
 
 #ifdef HAVE_CONFIG_H
@@ -214,8 +193,7 @@ static KeySym map[] = {
     /* 0x6d */  XK_Next,	NoSymbol,
     /* 0x6e */  XK_Insert,	NoSymbol,
     /* 0x6f */  XK_Delete,	NoSymbol,
-    /* 0x6f */  NoSymbol,	NoSymbol, /* KEY_MACRO */
-    /* 0x70 */  NoSymbol,	NoSymbol,
+    /* 0x70 */  NoSymbol,	NoSymbol, /* KEY_MACRO */
     /* 0x71 */  NoSymbol,	NoSymbol,
     /* 0x72 */  NoSymbol,	NoSymbol,
     /* 0x73 */  NoSymbol,	NoSymbol,
@@ -231,23 +209,127 @@ static KeySym map[] = {
     /* 0x7d */  XK_Meta_L,	NoSymbol,
     /* 0x7e */  XK_Meta_R,	NoSymbol,
     /* 0x7f */  XK_Multi_key,	NoSymbol,
+    /* 0x80 */  NoSymbol,	NoSymbol,
+    /* 0x81 */  NoSymbol,	NoSymbol,
+    /* 0x82 */  NoSymbol,	NoSymbol,
+    /* 0x83 */  NoSymbol,	NoSymbol,
+    /* 0x84 */  NoSymbol,	NoSymbol,
+    /* 0x85 */  NoSymbol,	NoSymbol,
+    /* 0x86 */  NoSymbol,	NoSymbol,
+    /* 0x87 */  NoSymbol,	NoSymbol,
+    /* 0x88 */  NoSymbol,	NoSymbol,
+    /* 0x89 */  NoSymbol,	NoSymbol,
+    /* 0x8a */  NoSymbol,	NoSymbol,
+    /* 0x8b */  NoSymbol,	NoSymbol,
+    /* 0x8c */  NoSymbol,	NoSymbol,
+    /* 0x8d */  NoSymbol,	NoSymbol,
+    /* 0x8e */  NoSymbol,	NoSymbol,
+    /* 0x8f */  NoSymbol,	NoSymbol,
+    /* 0x90 */  NoSymbol,	NoSymbol,
+    /* 0x91 */  NoSymbol,	NoSymbol,
+    /* 0x92 */  NoSymbol,	NoSymbol,
+    /* 0x93 */  NoSymbol,	NoSymbol,
+    /* 0x94 */  NoSymbol,	NoSymbol,
+    /* 0x95 */  NoSymbol,	NoSymbol,
+    /* 0x96 */  NoSymbol,	NoSymbol,
+    /* 0x97 */  NoSymbol,	NoSymbol,
+    /* 0x98 */  NoSymbol,	NoSymbol,
+    /* 0x99 */  NoSymbol,	NoSymbol,
+    /* 0x9a */  NoSymbol,	NoSymbol,
+    /* 0x9b */  NoSymbol,	NoSymbol,
+    /* 0x9c */  NoSymbol,	NoSymbol,
+    /* 0x9d */  NoSymbol,	NoSymbol,
+    /* 0x9e */  NoSymbol,	NoSymbol,
+    /* 0x9f */  NoSymbol,	NoSymbol,
+    /* 0xa0 */  NoSymbol,	NoSymbol,
+    /* 0xa1 */  NoSymbol,	NoSymbol,
+    /* 0xa2 */  NoSymbol,	NoSymbol,
+    /* 0xa3 */  NoSymbol,	NoSymbol,
+    /* 0xa4 */  NoSymbol,	NoSymbol,
+    /* 0xa5 */  NoSymbol,	NoSymbol,
+    /* 0xa6 */  NoSymbol,	NoSymbol,
+    /* 0xa7 */  NoSymbol,	NoSymbol,
+    /* 0xa8 */  NoSymbol,	NoSymbol,
+    /* 0xa9 */  NoSymbol,	NoSymbol,
+    /* 0xaa */  NoSymbol,	NoSymbol,
+    /* 0xab */  NoSymbol,	NoSymbol,
+    /* 0xac */  NoSymbol,	NoSymbol,
+    /* 0xad */  NoSymbol,	NoSymbol,
+    /* 0xae */  NoSymbol,	NoSymbol,
+    /* 0xaf */  NoSymbol,	NoSymbol,
+    /* 0xb0 */  NoSymbol,	NoSymbol,
+    /* 0xb1 */  NoSymbol,	NoSymbol,
+    /* 0xb2 */  NoSymbol,	NoSymbol,
+    /* 0xb3 */  NoSymbol,	NoSymbol,
+    /* 0xb4 */  NoSymbol,	NoSymbol,
+    /* 0xb5 */  NoSymbol,	NoSymbol,
+    /* 0xb6 */  NoSymbol,	NoSymbol,
+    /* 0xb7 */  NoSymbol,	NoSymbol,
+    /* 0xb8 */  NoSymbol,	NoSymbol,
+    /* 0xb9 */  NoSymbol,	NoSymbol,
+    /* 0xba */  NoSymbol,	NoSymbol,
+    /* 0xbb */  NoSymbol,	NoSymbol,
+    /* 0xbc */  NoSymbol,	NoSymbol,
+    /* 0xbd */  NoSymbol,	NoSymbol,
+    /* 0xbe */  NoSymbol,	NoSymbol,
+    /* 0xbf */  NoSymbol,	NoSymbol,
+    /* 0xc0 */  NoSymbol,	NoSymbol,
+    /* 0xc1 */  NoSymbol,	NoSymbol,
+    /* 0xc2 */  NoSymbol,	NoSymbol,
+    /* 0xc3 */  NoSymbol,	NoSymbol,
+    /* 0xc4 */  NoSymbol,	NoSymbol,
+    /* 0xc5 */  NoSymbol,	NoSymbol,
+    /* 0xc6 */  NoSymbol,	NoSymbol,
+    /* 0xc7 */  NoSymbol,	NoSymbol,
+    /* 0xc8 */  NoSymbol,	NoSymbol,
+    /* 0xc9 */  NoSymbol,	NoSymbol,
+    /* 0xca */  NoSymbol,	NoSymbol,
+    /* 0xcb */  NoSymbol,	NoSymbol,
+    /* 0xcc */  NoSymbol,	NoSymbol,
+    /* 0xcd */  NoSymbol,	NoSymbol,
+    /* 0xce */  NoSymbol,	NoSymbol,
+    /* 0xcf */  NoSymbol,	NoSymbol,
+    /* 0xd0 */  NoSymbol,	NoSymbol,
+    /* 0xd1 */  NoSymbol,	NoSymbol,
+    /* 0xd2 */  NoSymbol,	NoSymbol,
+    /* 0xd3 */  NoSymbol,	NoSymbol,
+    /* 0xd4 */  NoSymbol,	NoSymbol,
+    /* 0xd5 */  NoSymbol,	NoSymbol,
+    /* 0xd6 */  NoSymbol,	NoSymbol,
+    /* 0xd7 */  NoSymbol,	NoSymbol,
+    /* 0xd8 */  NoSymbol,	NoSymbol,
+    /* 0xd9 */  NoSymbol,	NoSymbol,
+    /* 0xda */  NoSymbol,	NoSymbol,
+    /* 0xdb */  NoSymbol,	NoSymbol,
+    /* 0xdc */  NoSymbol,	NoSymbol,
+    /* 0xdd */  NoSymbol,	NoSymbol,
+    /* 0xde */  NoSymbol,	NoSymbol,
+    /* 0xdf */  NoSymbol,	NoSymbol,
+    /* 0xe0 */  NoSymbol,	NoSymbol,
+    /* 0xe1 */  NoSymbol,	NoSymbol,
+    /* 0xe2 */  NoSymbol,	NoSymbol,
+    /* 0xe3 */  NoSymbol,	NoSymbol,
+    /* 0xe4 */  NoSymbol,	NoSymbol,
+    /* 0xe5 */  NoSymbol,	NoSymbol,
+    /* 0xe6 */  NoSymbol,	NoSymbol,
+    /* 0xe7 */  NoSymbol,	NoSymbol,
+    /* 0xe8 */  NoSymbol,	NoSymbol,
+    /* 0xe9 */  NoSymbol,	NoSymbol,
+    /* 0xea */  NoSymbol,	NoSymbol,
+    /* 0xeb */  NoSymbol,	NoSymbol,
+    /* 0xec */  NoSymbol,	NoSymbol,
+    /* 0xed */  NoSymbol,	NoSymbol,
+    /* 0xee */  NoSymbol,	NoSymbol,
+    /* 0xef */  NoSymbol,	NoSymbol,
+    /* 0xf0 */  NoSymbol,	NoSymbol,
+    /* 0xf1 */  NoSymbol,	NoSymbol,
+    /* 0xf2 */  NoSymbol,	NoSymbol,
+    /* 0xf3 */  NoSymbol,	NoSymbol,
+    /* 0xf4 */  NoSymbol,	NoSymbol,
+    /* 0xf5 */  NoSymbol,	NoSymbol,
+    /* 0xf6 */  NoSymbol,	NoSymbol,
+    /* 0xf7 */  NoSymbol,	NoSymbol,
 };
-
-/*
- * FIXME: We have no way of ringing the bell ourselves.
- *
- * And recent versions of X don't have the system call.
- * Who cares.
- */
-static void
-EvdevKbdBell (int percent, DeviceIntPtr device, pointer arg, int unused)
-{
-#if 0
-    KeybdCtrl *ctrl = arg;
-
-    xf86OSRingBell(percent, ctrl->bell_pitch, ctrl->bell_duration);
-#endif
-}
 
 static void
 EvdevKbdCtrl(DeviceIntPtr device, KeybdCtrl *ctrl)
@@ -269,8 +351,22 @@ EvdevKbdCtrl(DeviceIntPtr device, KeybdCtrl *ctrl)
         ev[i].type = EV_LED;
         ev[i].code = bits[i].code;
         ev[i].value = (ctrl->leds & bits[i].xbit) > 0;
+    }
+    write(pInfo->fd, ev, sizeof(ev));
 
-	write(pInfo->fd, ev, sizeof ev);
+    if (device->key && device->key->xkbInfo && device->key->xkbInfo->desc
+	    && device->key->xkbInfo->desc->ctrls) {
+	XkbControlsRec *ctrls = device->key->xkbInfo->desc->ctrls;
+
+	ev[0].type = EV_REP;
+	ev[0].code = REP_DELAY;
+	ev[0].value = ctrls->repeat_delay;
+
+	ev[1].type = EV_REP;
+	ev[1].code = REP_PERIOD;
+	ev[1].value = ctrls->repeat_interval;
+
+	write(pInfo->fd, ev, sizeof(ev[0]) * 2);
     }
 }
 
@@ -328,7 +424,7 @@ EvdevKeyInit (DeviceIntPtr device)
 	    state->key->xkb_options);
 
     XkbInitKeyboardDeviceStruct (device, &state->key->xkbnames, &keySyms, modMap,
-	    EvdevKbdBell, EvdevKbdCtrl);
+	    NULL, EvdevKbdCtrl);
 
     return Success;
 }
@@ -355,17 +451,11 @@ EvdevKeyNew (InputInfoPtr pInfo)
     evdevStatePtr state = &pEvdev->state;
     int i, keys = 0;
 
-    for (i = 0; i <= KEY_UNKNOWN; i++)
+    for (i = 0; i <= 0xF7; i++)
 	if (test_bit (i, pEvdev->bits.key)) {
 	    keys = 1;
 	    break;
 	}
-    if (!keys)
-	for (i = KEY_OK; i <= KEY_MAX; i++)
-	    if (test_bit (i, pEvdev->bits.key)) {
-		keys = 1;
-		break;
-	    }
 
     if (!keys)
 	return !Success;
@@ -376,19 +466,22 @@ EvdevKeyNew (InputInfoPtr pInfo)
 
     pInfo->flags |= XI86_KEYBOARD_CAPABLE | XI86_CONFIGURED;
 
-    SetXkbOption (pInfo, "XkbRules", __XKBDEFRULES__, &state->key->xkb_rules);
-    SetXkbOption (pInfo, "XkbModel", "evdev", &state->key->xkb_model);
-    SetXkbOption (pInfo, "XkbLayout", "us", &state->key->xkb_layout);
-    SetXkbOption (pInfo, "XkbVariant", NULL, &state->key->xkb_variant);
-    SetXkbOption (pInfo, "XkbOptions", NULL, &state->key->xkb_options);
-
-    /*
-    SetXkbOption (pInfo, "XkbKeycodes", NULL, &state->key->xkbnames.keycodes);
-    SetXkbOption (pInfo, "XkbTypes", NULL, &state->key->xkbnames.types);
-    SetXkbOption (pInfo, "XkbCompat", NULL, &state->key->xkbnames.compat);
-    SetXkbOption (pInfo, "XkbSymbols", NULL, &state->key->xkbnames.symbols);
-    SetXkbOption (pInfo, "XkbGeometry", NULL, &state->key->xkbnames.geometry);
-    */
+    SetXkbOption (pInfo, "xkb_rules", NULL, &state->key->xkb_rules);
+    if (!state->key->xkb_rules)
+        SetXkbOption (pInfo, "XkbRules", __XKBDEFRULES__,
+                      &state->key->xkb_rules);
+    SetXkbOption (pInfo, "xkb_model", NULL, &state->key->xkb_model);
+    if (!state->key->xkb_model)
+        SetXkbOption (pInfo, "XkbModel", "evdev", &state->key->xkb_model);
+    SetXkbOption (pInfo, "xkb_layout", NULL, &state->key->xkb_layout);
+    if (!state->key->xkb_layout)
+        SetXkbOption (pInfo, "XkbLayout", "us", &state->key->xkb_layout);
+    SetXkbOption (pInfo, "xkb_variant", NULL, &state->key->xkb_variant);
+    if (!state->key->xkb_variant)
+        SetXkbOption (pInfo, "XkbVariant", NULL, &state->key->xkb_variant);
+    SetXkbOption (pInfo, "xkb_options", NULL, &state->key->xkb_options);
+    if (!state->key->xkb_options)
+        SetXkbOption (pInfo, "XkbOptions", NULL, &state->key->xkb_options);
 
     return Success;
 }
