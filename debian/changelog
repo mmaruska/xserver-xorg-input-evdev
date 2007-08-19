@@ -5,8 +5,10 @@ xserver-xorg-input-evdev (1:1.2.0~git20070819-1) UNRELEASED; urgency=low
   * Update debian/copyright.
   * Generate the Provides field automatically.
   * Add myself to uploaders, and remove Branden with his permission.
+  * Drop build-dep on linux-kernel-headers, which is provided by
+    build-essential.
 
- -- Julien Cristau <jcristau@debian.org>  Sun, 19 Aug 2007 17:19:50 +0200
+ -- Julien Cristau <jcristau@debian.org>  Sun, 19 Aug 2007 17:20:29 +0200
 
 xserver-xorg-input-evdev (1:1.1.5-3) unstable; urgency=low
 
