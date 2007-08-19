@@ -3,8 +3,9 @@ xserver-xorg-input-evdev (1:1.2.0~git20070819-1) UNRELEASED; urgency=low
   * New git snapshot from upstream's master branch.
     + manpage typos fixed (closes: #432063).  Thanks, A. Costa!
   * Update debian/copyright.
+  * Generate the Provides field automatically.
 
- -- Julien Cristau <jcristau@debian.org>  Sun, 19 Aug 2007 15:59:21 +0200
+ -- Julien Cristau <jcristau@debian.org>  Sun, 19 Aug 2007 17:15:25 +0200
 
 xserver-xorg-input-evdev (1:1.1.5-3) unstable; urgency=low
 
