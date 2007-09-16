@@ -317,6 +317,6 @@ enhance the keyboard behaviour.  Default: not set.
 .SH AUTHORS
 Zephaniah E. Hull.
 .fi
-Kristian Høgsberg.
+Kristian H\(/ogsberg.
 .SH "SEE ALSO"
 __xservername__(__appmansuffix__), __xconfigfile__(__filemansuffix__), xorgconfig(__appmansuffix__), Xserver(__appmansuffix__), X(__miscmansuffix__).
