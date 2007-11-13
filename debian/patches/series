@@ -1,1 +1,2 @@
 evdev_man_illegal_char.patch
+evdev_no_flush_on_init.diff

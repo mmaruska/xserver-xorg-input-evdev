@@ -1,0 +1,20 @@
+diff --git a/src/evdev_btn.c b/src/evdev_btn.c
+index c03f879..4f8ef22 100644
+--- a/src/evdev_btn.c
++++ b/src/evdev_btn.c
+@@ -322,6 +322,7 @@ EvdevBtnInit (DeviceIntRec *device)
+ int
+ EvdevBtnOn (DeviceIntRec *device)
+ {
++#if 0
+     InputInfoRec *pInfo = device->public.devicePrivate;
+     evdevDeviceRec *pEvdev = pInfo->private;
+     int i, blocked;
+@@ -333,6 +334,7 @@ EvdevBtnOn (DeviceIntRec *device)
+     for (i = 1; i <= pEvdev->state.btn->buttons; i++)
+ 	xf86PostButtonEvent (device, 0, i, 0, 0, 0);
+     xf86UnblockSIGIO (blocked);
++#endif
+ 
+     return Success;
+ }

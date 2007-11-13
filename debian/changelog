@@ -1,3 +1,10 @@
+xserver-xorg-input-evdev (1:1.2.0~git20070819-4) unstable; urgency=low
+
+  * New patch evdev_no_flush_on_init.diff: don't send button release events on
+    init.
+
+ -- Julien Cristau <jcristau@debian.org>  Tue, 13 Nov 2007 21:27:37 +0100
+
 xserver-xorg-input-evdev (1:1.2.0~git20070819-3) unstable; urgency=low
 
   * Upload to unstable
