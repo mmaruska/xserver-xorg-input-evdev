@@ -1,11 +1,11 @@
-xserver-xorg-input-evdev (1:1.2.0-1) UNRELEASED; urgency=low
+xserver-xorg-input-evdev (1:1.2.0-1) unstable; urgency=low
 
   * New upstream releases
     + includes manpage fixes from Peter Samuelson (close: #446118)
     + drop evdev_man_illegal_char.patch, included upstream
   * Bump Standards-Version to 3.7.3.
 
- -- Julien Cristau <jcristau@debian.org>  Thu, 06 Dec 2007 17:05:02 +0100
+ -- Julien Cristau <jcristau@debian.org>  Thu, 06 Dec 2007 17:05:24 +0100
 
 xserver-xorg-input-evdev (1:1.2.0~git20070819-4) unstable; urgency=low
 
