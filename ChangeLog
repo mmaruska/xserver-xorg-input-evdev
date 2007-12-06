@@ -1,3 +1,30 @@
+commit fa15e909933252d5cc0a2a272506effbcf21d6f9
+Author: Peter Samuelson <peter@p12n.org>
+Date:   Thu Oct 11 07:27:30 2007 +0200
+
+    Fix one additional typo in evdev.man (axis named BRAKE, not BREAK).
+
+commit 12a27693b9bb41b9222c5c2256815d225ee75929
+Author: Peter Samuelson <peter@p12n.org>
+Date:   Thu Oct 11 00:09:40 2007 +0200
+
+    evdev.man minor fixes
+    
+    * Use \- (ASCII dash) instead of - (hyphen), where appropriate
+    * Use a roff escape instead of a UTF-8 character.
+    * Consistent use of quote characters.
+    * Consistent use of typographic conventions:
+      italic "n" in place of "<N>" or "integer" or "number",
+      bold for option names, bit maps, etc.
+    
+    Debian bug #446118
+
+commit 1c40c7db188bc9030aaf256004b914815e821940
+Author: James Cloos <cloos@jhcloos.com>
+Date:   Mon Sep 3 05:52:08 2007 -0400
+
+    Add *~ to .gitignore to skip patch/emacs droppings
+
 commit e2be2ffa473583b98b93a319163bb54eb5d83ed6
 Author: Daniel Stone <daniel@fooishbar.org>
 Date:   Wed Aug 1 00:02:33 2007 +0300
