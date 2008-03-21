@@ -5,8 +5,8 @@ Maintainer: Debian X Strike Force <debian-x@lists.debian.org>
 Uploaders: David Nusinow <dnusinow@debian.org>, Drew Parsons <dparsons@debian.org>, Julien Cristau <jcristau@debian.org>
 Build-Depends: debhelper (>= 5.0.0), pkg-config, quilt, xserver-xorg-dev (>= 2:1.4), x11proto-core-dev, x11proto-randr-dev, x11proto-input-dev, x11proto-kb-dev
 Standards-Version: 3.7.3
-XS-Vcs-Git: git://git.debian.org/git/pkg-xorg/driver/xserver-xorg-input-evdev
-XS-Vcs-Browser: http://git.debian.org/?p=pkg-xorg/driver/xserver-xorg-input-evdev.git
+Vcs-Git: git://git.debian.org/git/pkg-xorg/driver/xserver-xorg-input-evdev
+Vcs-Browser: http://git.debian.org/?p=pkg-xorg/driver/xserver-xorg-input-evdev.git
 
 Package: xserver-xorg-input-evdev
 Architecture: any
