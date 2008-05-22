@@ -3,6 +3,8 @@ xserver-xorg-input-evdev (1:1.99.2-1) UNRELEASED; urgency=low
   * Drop the XS- prefix from Vcs-* control fields.
   * New upstream release candidate.
   * Drop evdev_no_flush_on_init.diff, obsolete.
+  * New patch include-the-proper-header-for-XkbSetRulesDflts-and-X.patch, fix
+    a 'missing declaration' compiler warning by including the right header.
 
  -- Julien Cristau <jcristau@debian.org>  Fri, 21 Mar 2008 22:04:25 +0100
 
