@@ -5,6 +5,10 @@ xserver-xorg-input-evdev (1:1.99.2-1) UNRELEASED; urgency=low
   * Drop evdev_no_flush_on_init.diff, obsolete.
   * New patch include-the-proper-header-for-XkbSetRulesDflts-and-X.patch, fix
     a 'missing declaration' compiler warning by including the right header.
+  * Run dpkg-shlibdeps with --warnings=6.  Drivers reference symbols from
+    /usr/bin/Xorg and other modules, and that's not a bug, so we want
+    dpkg-shlibdeps to shut up about symbols it can't find.  Build-depend on
+    dpkg-dev >= 1.14.17.
 
  -- Julien Cristau <jcristau@debian.org>  Fri, 21 Mar 2008 22:04:25 +0100
 
