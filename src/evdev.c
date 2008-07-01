@@ -33,7 +33,6 @@
 #include <X11/XF86keysym.h>
 #include <X11/extensions/XIproto.h>
 
-#include <linux/input.h>
 #include <unistd.h>
 
 #include <misc.h>
@@ -44,10 +43,7 @@
 #include <exevents.h>
 #include <mipointer.h>
 
-#if defined(XKB)
-/* XXX VERY WRONG.  this is a client side header. */
-#include <X11/extensions/XKBstr.h>
-#endif
+#include "evdev.h"
 
 #include <xf86Module.h>
 
@@ -91,25 +87,6 @@
 #define MODEFLAG	8
 #define COMPOSEFLAG	16
 
-typedef struct {
-    int kernel24;
-    int screen;
-    int min_x, min_y, max_x, max_y;
-    int abs_x, abs_y, old_x, old_y;
-    int flags;
-    int tool;
-
-    /* XKB stuff has to be per-device rather than per-driver */
-    int noXkb;
-#ifdef XKB
-    char                    *xkb_rules;
-    char                    *xkb_model;
-    char                    *xkb_layout;
-    char                    *xkb_variant;
-    char                    *xkb_options;
-    XkbComponentNamesRec    xkbnames;
-#endif
-} EvdevRec, *EvdevPtr;
 
 static const char *evdevDefaults[] = {
     "XkbRules",     "base",
@@ -241,12 +218,15 @@ EvdevReadInput(InputInfoPtr pInfo)
             switch (ev.code) {
 	    /* swap here, pretend we're an X-conformant device. */
             case BTN_LEFT:
-                xf86PostButtonEvent(pInfo->dev, 0, 1, value, 0, 0);
+                if (!EvdevMBEmuFilterEvent(pInfo, ev.code, value))
+                    xf86PostButtonEvent(pInfo->dev, 0, 1, value, 0, 0);
                 break;
             case BTN_RIGHT:
-                xf86PostButtonEvent(pInfo->dev, 0, 3, value, 0, 0);
+                if (!EvdevMBEmuFilterEvent(pInfo, ev.code, value))
+                    xf86PostButtonEvent(pInfo->dev, 0, 3, value, 0, 0);
                 break;
             case BTN_MIDDLE:
+                EvdevMBEmuEnable(pInfo, FALSE);
                 xf86PostButtonEvent(pInfo->dev, 0, 2, value, 0, 0);
                 break;
 
@@ -726,7 +706,10 @@ EvdevAddAbsClass(DeviceIntPtr device)
     pEvdev->min_y = absinfo_y.minimum;
     pEvdev->max_y = absinfo_y.maximum;
 
-    if (!InitValuatorClassDeviceStruct(device, 2, GetMotionHistory,
+    if (!InitValuatorClassDeviceStruct(device, 2,
+#if GET_ABI_MAJOR(ABI_XINPUT_VERSION) < 3
+                                       GetMotionHistory,
+#endif
                                        GetMotionHistorySize(), Absolute))
         return !Success;
 
@@ -756,16 +739,19 @@ EvdevAddRelClass(DeviceIntPtr device)
 
     pInfo = device->public.devicePrivate;
 
-    if (!InitValuatorClassDeviceStruct(device, 2, GetMotionHistory,
+    if (!InitValuatorClassDeviceStruct(device, 2,
+#if GET_ABI_MAJOR(ABI_XINPUT_VERSION) < 3
+                                       GetMotionHistory,
+#endif
                                        GetMotionHistorySize(), Relative))
         return !Success;
 
     /* X valuator */
-    xf86InitValuatorAxisStruct(device, 0, 0, -1, 1, 0, 1);
+    xf86InitValuatorAxisStruct(device, 0, -1, -1, 1, 0, 1);
     xf86InitValuatorDefaults(device, 0);
 
     /* Y valuator */
-    xf86InitValuatorAxisStruct(device, 1, 0, -1, 1, 0, 1);
+    xf86InitValuatorAxisStruct(device, 1, -1, -1, 1, 0, 1);
     xf86InitValuatorDefaults(device, 1);
     xf86MotionHistoryAllocate(pInfo);
 
@@ -849,6 +835,8 @@ EvdevProc(DeviceIntPtr device, int what)
             xf86Msg(X_WARNING, "%s: Grab failed (%s)\n", pInfo->name,
                     strerror(errno));
         xf86AddEnabledDevice(pInfo);
+	if (pEvdev->flags & EVDEV_BUTTON_EVENTS)
+	    EvdevMBEmuPreInit(pInfo);
 	device->public.on = TRUE;
 	break;
 	    
@@ -857,6 +845,7 @@ EvdevProc(DeviceIntPtr device, int what)
             xf86Msg(X_WARNING, "%s: Release failed (%s)\n", pInfo->name,
                     strerror(errno));
         xf86RemoveEnabledDevice(pInfo);
+        EvdevMBEmuFinalize(pInfo);
 	device->public.on = FALSE;
 	break;
 
@@ -901,9 +890,14 @@ EvdevProbe(InputInfoPtr pInfo)
     int i, has_axes, has_buttons, has_keys;
     EvdevPtr pEvdev = pInfo->private;
 
-    if (ioctl(pInfo->fd, EVIOCGRAB, (void *)1) && errno == EINVAL) {
-        /* keyboards are unsafe in 2.4 */
-        pEvdev->kernel24 = 1;
+    if (ioctl(pInfo->fd, EVIOCGRAB, (void *)1)) {
+        if (errno == EINVAL) {
+            /* keyboards are unsafe in 2.4 */
+            pEvdev->kernel24 = 1;
+        } else {
+            xf86Msg(X_ERROR, "Grab failed. Device already configured?\n");
+            return 1;
+        }
     } else {
         ioctl(pInfo->fd, EVIOCGRAB, (void *)0);
     }
@@ -1018,10 +1012,6 @@ EvdevPreInit(InputDriverPtr drv, IDevPtr dev, int flags)
     pInfo->always_core_feedback = 0;
     pInfo->conf_idev = dev;
 
-    if (!(pEvdev = xcalloc(sizeof(*pEvdev), 1)))
-        return pInfo;
-    pInfo->private = pEvdev;
-
     if (!(pEvdev = xcalloc(sizeof(EvdevRec), 1)))
         return pInfo;
 
@@ -1045,7 +1035,7 @@ EvdevPreInit(InputDriverPtr drv, IDevPtr dev, int flags)
 	xf86DeleteInput(pInfo, 0);
         return NULL;
     }
-	
+
     xf86Msg(deviceFrom, "%s: Device: \"%s\"\n", pInfo->name, device);
     do {
         pInfo->fd = open(device, O_RDWR, 0);
@@ -1062,6 +1052,7 @@ EvdevPreInit(InputDriverPtr drv, IDevPtr dev, int flags)
     /* parse the XKB options during kbd setup */
 
     if (EvdevProbe(pInfo)) {
+	close(pInfo->fd);
 	xf86DeleteInput(pInfo, 0);
         return NULL;
     }
