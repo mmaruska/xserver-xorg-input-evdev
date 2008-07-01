@@ -1,5 +1,6 @@
-xserver-xorg-input-evdev (1:1.99.2-1) UNRELEASED; urgency=low
+xserver-xorg-input-evdev (1:2.0.1-1) UNRELEASED; urgency=low
 
+  [ Julien Cristau ]
   * Drop the XS- prefix from Vcs-* control fields.
   * New upstream release candidate.
   * Drop evdev_no_flush_on_init.diff, obsolete.
@@ -10,7 +11,7 @@ xserver-xorg-input-evdev (1:1.99.2-1) UNRELEASED; urgency=low
     dpkg-shlibdeps to shut up about symbols it can't find.  Build-depend on
     dpkg-dev >= 1.14.17.
 
- -- Julien Cristau <jcristau@debian.org>  Fri, 21 Mar 2008 22:04:25 +0100
+ -- Timo Aaltonen <tepsipakki@ubuntu.com>  Tue, 01 Jul 2008 19:26:00 +0300
 
 xserver-xorg-input-evdev (1:1.2.0-1) unstable; urgency=low
 
