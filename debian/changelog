@@ -4,8 +4,6 @@ xserver-xorg-input-evdev (1:2.0.1-1) UNRELEASED; urgency=low
   * Drop the XS- prefix from Vcs-* control fields.
   * New upstream release candidate.
   * Drop evdev_no_flush_on_init.diff, obsolete.
-  * New patch include-the-proper-header-for-XkbSetRulesDflts-and-X.patch, fix
-    a 'missing declaration' compiler warning by including the right header.
   * Run dpkg-shlibdeps with --warnings=6.  Drivers reference symbols from
     /usr/bin/Xorg and other modules, and that's not a bug, so we want
     dpkg-shlibdeps to shut up about symbols it can't find.  Build-depend on
