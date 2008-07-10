@@ -1,0 +1,26 @@
+From 9007585c1fce21e786372c2f1ca1c7776f3eafdb Mon Sep 17 00:00:00 2001
+From: Julien Cristau <jcristau@debian.org>
+Date: Thu, 22 May 2008 20:54:02 +0200
+Subject: [PATCH] include the proper header for XkbSetRulesDflts and XkbInitKeyboardDeviceStruct
+
+---
+ src/evdev.c |    3 +--
+ 1 files changed, 1 insertions(+), 2 deletions(-)
+
+diff --git a/src/evdev.c b/src/evdev.c
+index e212c14..18999f4 100644
+--- a/src/evdev.c
++++ b/src/evdev.c
+@@ -45,8 +45,7 @@
+ #include <mipointer.h>
+ 
+ #if defined(XKB)
+-/* XXX VERY WRONG.  this is a client side header. */
+-#include <X11/extensions/XKBstr.h>
++#include <xkbsrv.h>
+ #endif
+ 
+ #include <xf86Module.h>
+-- 
+1.5.5.1
+
