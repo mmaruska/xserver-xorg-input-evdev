@@ -2,7 +2,7 @@ xserver-xorg-input-evdev (1:2.0.1-1) UNRELEASED; urgency=low
 
   [ Julien Cristau ]
   * Drop the XS- prefix from Vcs-* control fields.
-  * New upstream release candidate.
+  * New upstream release.
   * Drop evdev_no_flush_on_init.diff, obsolete.
   * Run dpkg-shlibdeps with --warnings=6.  Drivers reference symbols from
     /usr/bin/Xorg and other modules, and that's not a bug, so we want

@@ -1,3 +1,168 @@
+commit b125b834f4ce4877204b9c8e98ad2641e2c7b082
+Author: Peter Hutterer <peter@cs.unisa.edu.au>
+Date:   Sun Jun 22 17:52:58 2008 +0930
+
+    evdev 2.0.1
+
+commit 05b20db8dbfb47bc370fe24e50ef563f1879be61
+Author: Peter Hutterer <peter@cs.unisa.edu.au>
+Date:   Sat Jun 21 16:42:12 2008 +0930
+
+    No need to finalize MB emulation after EvdevProbe anymore.
+    
+    Follow-up to 76800bfa75807e49398380b902f6c0f547cd4c0e.
+    (cherry picked from commit 5a0ea39b79b27b7c3117661a21e7ab5eba3c9b24)
+
+commit 43768d59da2c519dde5a8efaf0ff2b12b6c47fcc
+Author: Simon Munton <simon@munton.demon.co.uk>
+Date:   Sat Jun 21 10:19:07 2008 +0930
+
+    Close file descriptor if EvdevProbe fails.
+    
+    Signed-off-by: Peter Hutterer <peter@cs.unisa.edu.au>
+    (cherry picked from commit 373e13ae353d1e0022f8821adc528ebc5411d47d)
+
+commit 9c524f6963645bf42bbd41d4189d6319020a133d
+Author: Keith Packard <keithp@keithp.com>
+Date:   Fri Jun 20 18:20:55 2008 -0700
+
+    Enable middle button emulation at DEVICE_ON instead of DEVICE_INIT.
+    
+    This ensures that the middle button emulation is re-enabled after VT switch,
+    otherwise the block handler that deals with the timeouts would not get
+    re-registered.
+    
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+    (cherry picked from commit 76800bfa75807e49398380b902f6c0f547cd4c0e)
+
+commit 04003a98a9ca1b4b0c32d319fab07ee7afc83c75
+Author: Peter Hutterer <peter@cs.unisa.edu.au>
+Date:   Tue Jun 17 14:01:49 2008 +0930
+
+    evdev 2.0.0
+
+commit 0443fb430f2481c1f0d0d83730a9145b5794f559
+Author: Peter Hutterer <peter@cs.unisa.edu.au>
+Date:   Tue Jun 17 13:59:15 2008 +0930
+
+    Shut up compiler warning "implicit declaration of function 'xf86Msg'"
+
+commit 998f52010f92dc79f2ace6048a2f3fd600a97582
+Author: Peter Hutterer <peter@cs.unisa.edu.au>
+Date:   Thu Jun 12 11:23:10 2008 +0930
+
+    Finalize MB emulation if EvdevProbe fails.
+    
+    This avoids segfaults when HAL is restarted behind our backs. Also, only init
+    MB emulation when the device actually has a button.
+
+commit de07c04f5c2874b8e407913c3121e715e46653d2
+Author: Peter Hutterer <peter@cs.unisa.edu.au>
+Date:   Wed Jun 11 11:24:07 2008 +0930
+
+    evdev 1.99.4
+    
+    1.99.3 had a nasty bug, so here's a quick update.
+
+commit 01355b9d4b3ed92da42f90fb69384eb22cdcb3d9
+Author: Peter Hutterer <peter@cs.unisa.edu.au>
+Date:   Wed Jun 11 11:19:04 2008 +0930
+
+    If Emulate3Buttons is specified in the config, don't auto-deactivate it.
+    
+    Default setting is still "on" until middle button is pressed.  If the options
+    is however explicitly stated in the config file, it takes the value from the
+    config file, no matter if a middle button is present.
+
+commit 9591dc1f6cc89208805b120eabd055e8dabd3e40
+Author: Peter Hutterer <peter@cs.unisa.edu.au>
+Date:   Wed Jun 11 10:36:00 2008 +0930
+
+    Remove wakeup handlers when device is closed.
+    
+    Less SIGABRTs are less exciting, but sometimes boredom is what we want.
+
+commit 08ba40b2532bd61b60c9cf994b21300f596f7ebd
+Author: Adam Jackson <ajax@redhat.com>
+Date:   Tue Jun 10 17:35:33 2008 -0400
+
+    evdev 1.99.3
+
+commit 39dc453691804648f34dbd856bd7e66cfdc59d66
+Author: Peter Hutterer <peter@cs.unisa.edu.au>
+Date:   Tue Jun 10 22:48:01 2008 +0930
+
+    Disable middle mouse button emulation when a real middle MB event is detected.
+    
+    Devices may report middle mouse buttons even if they don't have one (PS/2
+    devices just don't know any better), so we can't be sure until we see the
+    event.
+
+commit e8887435ac065ec3071b2d8bf0895e8cb196ec3d
+Author: Peter Hutterer <peter@cs.unisa.edu.au>
+Date:   Tue Jun 10 15:55:40 2008 +0930
+
+    Enable middle-mouse button emulation.
+    
+    Ported from xf86-input-mouse, with a few cleanups.
+
+commit b0f6987ee6b133e28f3af18da62cfb5ca79fbe07
+Author: Peter Hutterer <peter@cs.unisa.edu.au>
+Date:   Tue Jun 10 22:41:43 2008 +0930
+
+    Plug a memory leak, we allocated pEvdev twice, dropping the first memory area.
+
+commit fec73e1418a4da1b64496faca27b06fef0aa5206
+Author: Sven Wegener <swegener@gentoo.org>
+Date:   Sat Jun 7 13:01:22 2008 +0200
+
+    evdev: Port b4a5a204 "Fix pointer crossing screen bug." to current master branch
+    
+    The commit b4a5a204 fixed an issue, where we can't move the pointer to
+    other screens and this happens in current master branch again. This commit
+    ports the old commit to the current master branch.
+    
+    Signed-off-by: Sven Wegener <swegener@gentoo.org>
+    Signed-off-by: Peter Hutterer <peter@cs.unisa.edu.au>
+
+commit da112737eb109dc263169e820b7ef903b7f8624f
+Author: Peter Hutterer <peter@cs.unisa.edu.au>
+Date:   Sun Jun 8 00:12:03 2008 +0930
+
+    Check for XINPUT ABI < 3 (corrected version)
+    
+    Thanks to Sven Wegener for pointing out the incorrect previous version.
+
+commit d40125ea8c2ce6ec0f98bdc0655f79aa7274152e
+Author: Peter Hutterer <peter@cs.unisa.edu.au>
+Date:   Sun Jun 8 00:09:40 2008 +0930
+
+    Revert "Check for XINPUT ABI, parameters of InitValuatorClassRec have changed."
+    
+    GetMotionEvents() doesn't exist, led to compile errors with servers pre-MPX
+    merge. Thanks to Sven Wegener for pointing this out.
+    
+    This reverts commit 42422d8f69e6806e1adfd93017cac064a75041c7.
+
+commit 42422d8f69e6806e1adfd93017cac064a75041c7
+Author: Peter Hutterer <peter@cs.unisa.edu.au>
+Date:   Mon May 26 19:17:19 2008 +0930
+
+    Check for XINPUT ABI, parameters of InitValuatorClassRec have changed.
+
+commit 15e0091f0b4b0d7dff29da143d405255a1c3bc12
+Author: Peter Hutterer <peter@cs.unisa.edu.au>
+Date:   Wed May 21 16:48:32 2008 +0930
+
+    Fail if the device cannot be grabbed during the probe.
+    
+    If the grab fails, this is most likely a sign that the device has been grabbed
+    already (probably by a device specified in xorg.conf). So let's not add the
+    device to the server's input device list, since it won't generate events
+    anyway.
+    
+    Exception: keyboards and kernel 2.4 are not affected.
+
 commit d45f315845e19a720af25dc5f6c8a4c654c6e225
 Author: Adam Jackson <ajax@redhat.com>
 Date:   Wed May 21 15:05:10 2008 -0400
