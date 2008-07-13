@@ -4,15 +4,13 @@ Date: Thu, 22 May 2008 20:54:02 +0200
 Subject: [PATCH] include the proper header for XkbSetRulesDflts and XkbInitKeyboardDeviceStruct
 
 ---
- src/evdev.c |    3 +--
+ src/evdev.h |    3 +--
  1 files changed, 1 insertions(+), 2 deletions(-)
 
-diff --git a/src/evdev.c b/src/evdev.c
-index e212c14..18999f4 100644
---- a/src/evdev.c
-+++ b/src/evdev.c
-@@ -45,8 +45,7 @@
- #include <mipointer.h>
+--- xserver-xorg-input-evdev.orig/src/evdev.h
++++ xserver-xorg-input-evdev/src/evdev.h
+@@ -36,8 +36,7 @@
+ #include <xf86_OSproc.h>
  
  #if defined(XKB)
 -/* XXX VERY WRONG.  this is a client side header. */
@@ -20,7 +18,4 @@ index e212c14..18999f4 100644
 +#include <xkbsrv.h>
  #endif
  
- #include <xf86Module.h>
--- 
-1.5.5.1
-
+ typedef struct {
