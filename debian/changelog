@@ -10,6 +10,7 @@ xserver-xorg-input-evdev (1:2.0.1-1) UNRELEASED; urgency=low
     /usr/bin/Xorg and other modules, and that's not a bug, so we want
     dpkg-shlibdeps to shut up about symbols it can't find.  Build-depend on
     dpkg-dev >= 1.14.17.
+  * Fix target dependencies in debian/rules.
 
  -- Timo Aaltonen <tepsipakki@ubuntu.com>  Tue, 01 Jul 2008 19:26:00 +0300
 
