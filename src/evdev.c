@@ -252,8 +252,15 @@ EvdevReadInput(InputInfoPtr pInfo)
 		break;
 
             default:
-		if (ev.code > BTN_TASK && ev.code < KEY_OK)
+		if (ev.code > BTN_TASK && ev.code < KEY_OK) {
+		    /* Some fancy mice with a lot of buttons generate
+		     * button events between BTN_TASK and BTN_JOYSTICK */
+		    if (ev.code < BTN_JOYSTICK)
+			xf86PostButtonEvent(pInfo->dev, 0,
+			                    ev.code - BTN_LEFT + 5,
+			                    value, 0, 0);
 		    break;
+		}
 
                 PostKbdEvent(pInfo, &ev, value);
 		break;
@@ -834,12 +841,15 @@ EvdevProc(DeviceIntPtr device, int what)
         if (!pEvdev->kernel24 && ioctl(pInfo->fd, EVIOCGRAB, (void *)1))
             xf86Msg(X_WARNING, "%s: Grab failed (%s)\n", pInfo->name,
                     strerror(errno));
-        xf86AddEnabledDevice(pInfo);
-	if (pEvdev->flags & EVDEV_BUTTON_EVENTS)
-	    EvdevMBEmuPreInit(pInfo);
-	device->public.on = TRUE;
+        if (errno != ENODEV)
+        {
+            xf86AddEnabledDevice(pInfo);
+            if (pEvdev->flags & EVDEV_BUTTON_EVENTS)
+                EvdevMBEmuPreInit(pInfo);
+            device->public.on = TRUE;
+        }
 	break;
-	    
+
     case DEVICE_OFF:
         if (!pEvdev->kernel24 && ioctl(pInfo->fd, EVIOCGRAB, (void *)0))
             xf86Msg(X_WARNING, "%s: Release failed (%s)\n", pInfo->name,
