@@ -1,3 +1,46 @@
+commit f135e074629c7cba01bbe9ff6bce77883c22bb29
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Mon Jul 14 13:34:36 2008 +0930
+
+    evdev 2.0.2
+
+commit e926356eb0dfd218e88d47d8ed1e3ccfb2f1c85a
+Author: Peter Hutterer <whot@possum.(none)>
+Date:   Mon Jul 14 13:06:32 2008 +0930
+
+    Don't enable the device if the grab failed with ENODEV.
+    
+    After suspend/resume, sometimes the device doesn't come back up on the same
+    node. Since we do not call PreInit for the device (which would detect this
+    situation), we continue to try to read a nonexisting file, spamming the log
+    file with "Read Error".
+    (cherry picked from commit bf0d81011e19a8bb5bbd80c6b496c8ae257b4f2c)
+
+commit bd56ab3d72c7baafd2ecd27cdadcef333fb39262
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Thu Jul 10 19:32:22 2008 +0930
+
+    Add .gitignore file.
+    (cherry picked from commit ef4bb69c1a64e784fef1c758ee439372ba329b0a)
+
+commit 2b30413598663b75acff0cafb21c2e3d8a727c9a
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Thu Jul 3 15:01:32 2008 +0930
+
+    Remove static ChangeLog, autogenerate as part of make dist.
+    
+    Hook taken from xserver's Makefile.am
+    (cherry picked from commit ec23c6b2f550f2679226da907c1d022295d453f1)
+
+commit 52fc8ee84656728a82073eae16da9e878cc3b39f
+Author: Ander Conselvan de Oliveira <ander@mandriva.com.br>
+Date:   Thu Jun 26 14:36:58 2008 -0300
+
+    Mice with a lot of buttons (e.g. Logitech MX1000) generate button events greater than BTN_TASK.
+    
+    Signed-off-by: Peter Hutterer <peter@cs.unisa.edu.au>
+    (cherry picked from commit 0830676a0ce3618eae9cf4c072998c16e164c687)
+
 commit b125b834f4ce4877204b9c8e98ad2641e2c7b082
 Author: Peter Hutterer <peter@cs.unisa.edu.au>
 Date:   Sun Jun 22 17:52:58 2008 +0930
