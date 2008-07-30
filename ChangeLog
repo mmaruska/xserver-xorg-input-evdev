@@ -1,3 +1,28 @@
+commit 2e9a71df5f8e8cdcdb80eec9e17501a75d5bd669
+Author: Michel Dänzer <michel@tungstengraphics.com>
+Date:   Tue Jul 29 10:06:07 2008 +0200
+
+    xf86-input-evdev: Fix EVIOCGBIT ioctl usage on big endian platforms.
+    
+    With this fix, on my PowerBook HAL hotplugging correctly detects my USB mouse,
+    and no longer thinks keyboards have random numbers of mouse buttons. :)
+    
+    The LONG_BITS and NBITS macro definitions are stolen from xf86-input-synaptics.
+    
+    Signed-off-by: Michel Dänzer <michel@tungstengraphics.com>
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    [cherry-picked from master and fixed the trivial conflict -- jcristau]
+
+commit 49de32e70f833628554342ef4225a4174158b412
+Author: Julien Cristau <jcristau@debian.org>
+Date:   Sun Jul 20 11:33:37 2008 +0200
+
+    Fill up the version info
+    
+    Report correct versions instead of
+    "compiled for 0.0.0, module version = 1.0.0"
+    (cherry picked from commit 2b7edaa4ab88e192d7285d39b4834d1e535b94d0)
+
 commit f135e074629c7cba01bbe9ff6bce77883c22bb29
 Author: Peter Hutterer <peter.hutterer@who-t.net>
 Date:   Mon Jul 14 13:34:36 2008 +0930
