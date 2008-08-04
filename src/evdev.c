@@ -162,7 +162,7 @@ EvdevReadInput(InputInfoPtr pInfo)
         if (len != sizeof ev) {
             /* The kernel promises that we always only read a complete
              * event, so len != sizeof ev is an error. */
-            xf86Msg(X_ERROR, "Read error: %s\n", strerror(errno));
+            xf86Msg(X_ERROR, "%s: Read error: %s\n", pInfo->name, strerror(errno));
             break;
         }
 
@@ -864,6 +864,7 @@ EvdevProc(DeviceIntPtr device, int what)
 
     case DEVICE_CLOSE:
 	xf86Msg(X_INFO, "%s: Close\n", pInfo->name);
+	close(pInfo->fd);
 	break;
     }
 
