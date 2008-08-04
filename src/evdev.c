@@ -42,6 +42,7 @@
 #include <xf86Xinput.h>
 #include <exevents.h>
 #include <mipointer.h>
+#include <xorgVersion.h>
 
 #include "evdev.h"
 
@@ -161,7 +162,7 @@ EvdevReadInput(InputInfoPtr pInfo)
         if (len != sizeof ev) {
             /* The kernel promises that we always only read a complete
              * event, so len != sizeof ev is an error. */
-            xf86Msg(X_ERROR, "Read error: %s\n", strerror(errno));
+            xf86Msg(X_ERROR, "%s: Read error: %s\n", pInfo->name, strerror(errno));
             break;
         }
 
@@ -305,7 +306,9 @@ EvdevReadInput(InputInfoPtr pInfo)
     }
 }
 
-#define TestBit(bit, array) (array[(bit) / 8] & (1 << ((bit) % 8)))
+#define LONG_BITS (sizeof(long) * 8)
+#define NBITS(x) (((x) + LONG_BITS - 1) / LONG_BITS)
+#define TestBit(bit, array) (array[(bit) / LONG_BITS]) & (1 << ((bit) % LONG_BITS))
 
 static void
 EvdevPtrCtrlProc(DeviceIntPtr device, PtrCtrl *ctrl)
@@ -861,6 +864,7 @@ EvdevProc(DeviceIntPtr device, int what)
 
     case DEVICE_CLOSE:
 	xf86Msg(X_INFO, "%s: Close\n", pInfo->name);
+	close(pInfo->fd);
 	break;
     }
 
@@ -894,9 +898,9 @@ EvdevConvert(InputInfoPtr pInfo, int first, int num, int v0, int v1, int v2,
 static int
 EvdevProbe(InputInfoPtr pInfo)
 {
-    char key_bitmask[(KEY_MAX + 7) / 8];
-    char rel_bitmask[(REL_MAX + 7) / 8];
-    char abs_bitmask[(ABS_MAX + 7) / 8];
+    long key_bitmask[NBITS(KEY_MAX)];
+    long rel_bitmask[NBITS(REL_MAX)];
+    long abs_bitmask[NBITS(ABS_MAX)];
     int i, has_axes, has_buttons, has_keys;
     EvdevPtr pEvdev = pInfo->private;
 
@@ -1101,8 +1105,8 @@ static XF86ModuleVersionInfo EvdevVersionRec =
     MODULEVENDORSTRING,
     MODINFOSTRING1,
     MODINFOSTRING2,
-    0, /* Missing from SDK: XORG_VERSION_CURRENT, */
-    1, 0, 0,
+    XORG_VERSION_CURRENT,
+    PACKAGE_VERSION_MAJOR, PACKAGE_VERSION_MINOR, PACKAGE_VERSION_PATCHLEVEL,
     ABI_CLASS_XINPUT,
     ABI_XINPUT_VERSION,
     MOD_CLASS_XINPUT,
