@@ -1,3 +1,13 @@
+xserver-xorg-input-evdev (1:2.0.3-1) UNRELEASED; urgency=low
+
+  * New upstream release, incorporates the two fixes from our previous
+    version.
+  * Pull from evdev-2.0-branch:
+    - Print the device name when we get a read error
+    - Actually close the fd on DEVICE_CLOSE
+
+ -- Julien Cristau <jcristau@debian.org>  Mon, 04 Aug 2008 12:53:54 +0200
+
 xserver-xorg-input-evdev (1:2.0.2-1.lenny1) unstable; urgency=low
 
   * Pull two fixes from upstream

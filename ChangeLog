@@ -1,3 +1,27 @@
+commit ef607b6cce8e1feb6632c6bc1e7f322095ce54d9
+Author: Julien Cristau <jcristau@debian.org>
+Date:   Mon Aug 4 09:16:53 2008 +0930
+
+    Actually close the fd on DEVICE_CLOSE (bug#16948)
+    
+    Fixes file descriptor leak.
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    (cherry picked from commit d9097df01b01afaf946fa04fca8ae8ab7108ff21)
+
+commit 906a5d6add75d3bf3077d0542352534256b734d4
+Author: Julien Cristau <jcristau@debian.org>
+Date:   Wed Jul 30 10:40:47 2008 +0200
+
+    Print the device name when we get a read error
+    (cherry picked from commit 5c074af5a9abba138023e3bc6954d1062f7c36dd)
+
+commit 5152d616cab6912a45e09c37c0330064d2f412f2
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Fri Aug 1 17:29:24 2008 +0930
+
+    evdev 2.0.3
+
 commit 2e9a71df5f8e8cdcdb80eec9e17501a75d5bd669
 Author: Michel Dänzer <michel@tungstengraphics.com>
 Date:   Tue Jul 29 10:06:07 2008 +0200
