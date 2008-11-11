@@ -1,4 +1,635 @@
-commit ef607b6cce8e1feb6632c6bc1e7f322095ce54d9
+commit 7ef4e2c5e14e558f41fb7f411e2976f517b6b526
+Author: Peter Hutterer <peter.hutterer@redhat.com>
+Date:   Mon Nov 3 13:47:15 2008 +1030
+
+    evdev 2.1 RC 3
+    
+    That's it, no more new features. Now it's down to bugfixing only.
+
+commit dd0eeacc24a80893209f24d9ad028a6bc7e3a390
+Author: Peter Hutterer <peter.hutterer@redhat.com>
+Date:   Mon Nov 3 13:25:06 2008 +1030
+
+    Add support for axes swapping.
+    
+    New option: SwapAxes (boolean)
+    New property: EVDEV_PROP_SWAP_AXES.
+    
+    Actual swapping code written by Donnie Berkholz.
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@redhat.com>
+    (cherry picked from commit 4826969f23a0b298da2750c2e23a92b9d91819dd)
+
+commit 67c0ea6c9421a5226c1b8bc3a198b1cb01f6b355
+Author: Peter Hutterer <peter.hutterer@redhat.com>
+Date:   Thu Oct 30 16:55:29 2008 +1030
+
+    Add support for run-time calibration.
+    
+    Some devices require run-time axis calibration. We can't change the min/max
+    ranges once we've initialised the valuator structs though, so in-driver
+    run-time calibration is required.
+    
+    If the property is set, the driver scales from the calibrated range to the
+    values reported to the X server (which then may scale to screen coordinates).
+    If the property is not set (i.e. zero items) no scaling is performed.
+    (cherry picked from commit 33eb36f26663c09c873acede1b35e91ef4c64479)
+
+commit 6bcbbc0411cf3466edeb1fcbb393290cadfd3082
+Author: Peter Hutterer <peter.hutterer@redhat.com>
+Date:   Wed Oct 29 13:50:07 2008 +1030
+
+    Treat BTN_[0-2] as LMR buttons if necessary.
+    
+    Treat BTN_[0-2] as LMR buttons on devices that do not advertise BTN_LEFT,
+    BTN_MIDDLE, BTN_RIGHT (e.g. 3Dconnexion SpaceNavigator).
+    
+    Otherwise, treat BTN_[0+n] as button 5+n. Note: This causes duplicate
+    mappings for BTN_0 + n and  BTN_SIDE + n.
+    
+    This also fixes a bug where we could end up with negative button numbers after
+    trying to map BTN_0.
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@redhat.com>
+    (cherry picked from commit 64554e4799a697d37dfd8be480f8eee636b9bea1)
+
+commit 534a3734d088ff0155ebc7fca7ab246635cd725a
+Author: Peter Hutterer <peter.hutterer@redhat.com>
+Date:   Wed Oct 29 13:28:19 2008 +1030
+
+    Remove obsolete FIXME
+    
+    xkeyboard-config's maps are perfectly able to cope with evdev now.
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@redhat.com>
+    (cherry picked from commit b77f9398570fb8eae1fcf50bc3c10c9c390c6bac)
+
+commit 215c230d5c036e7d5c8e2621cf272a078149d969
+Author: Peter Hutterer <peter.hutterer@redhat.com>
+Date:   Tue Oct 28 12:09:26 2008 +1030
+
+    Flush input after re-opening the fd.
+    
+    Suggested by Julien Cristau.
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@redhat.com>
+    (cherry picked from commit a43ab4999b9cad10f77aa6c703d3c61b754f1fd4)
+
+commit 8f96530449b264e7f1f21ab1d030c5b361937774
+Author: Peter Hutterer <peter.hutterer@redhat.com>
+Date:   Mon Oct 27 15:54:49 2008 +1030
+
+    emuMB: add EvdevMBEmuOn and call from EvdevOn to register wakeup handlers.
+    
+    This got broken in b0737bdbd1f6e601eb4984b6f4cb49279190984c, when the
+    EmuMBPreInit call was removed from EvdevOn. As a result, VT switching away and
+    back wouldn't restore the wakeup handlers and mouse button presses
+    disappeared.
+    (cherry picked from commit af096e8c5d8b425f725a37bf4a98e205e70716e9)
+
+commit 4fb97edcd4e3de23a8476ca4d0267f55293cccad
+Author: Peter Hutterer <peter.hutterer@redhat.com>
+Date:   Fri Oct 24 13:09:46 2008 +1030
+
+    Fix axis inversion for absolute coordinates.
+    
+    If min_x/y was not equal to 0, the inverted calculated range was off and leads
+    to inaccessible or out-of-range areas.
+    (cherry picked from commit 12498042fcc08e34aef0117ce84192f59542fd56)
+
+commit 4e86393bc0873235c1381faee5559b1aeba63be5
+Author: Peter Hutterer <peter.hutterer@redhat.com>
+Date:   Fri Oct 24 09:21:36 2008 +1030
+
+    emulate MB: fix confusing log message.
+    
+    If we're forcing MB emulation behaviour as per config, then at least state
+    whether we're forcing it off or on.
+    
+    Found by Michel Dänzer.
+    (cherry picked from commit 0f8fcfccb3251ee3df80d90ae5d7df638722d24e)
+
+commit a64a78791f8350a01193ae216341fbb3d3d66567
+Author: Peter Hutterer <peter.hutterer@redhat.com>
+Date:   Thu Oct 23 17:16:36 2008 +1030
+
+    evdev 2.1 RC 2
+
+commit 09b2a5e87b9f05cb2cb7e794e49ba9650dd94eab
+Author: Peter Hutterer <peter.hutterer@redhat.com>
+Date:   Thu Oct 23 14:05:41 2008 +1030
+
+    Silence compiler warning by memsetting the struct properly.
+    (cherry picked from commit 0ab4c09e504ba3822c5e030732b770140165e725)
+
+commit fa18a4a38d3cdf9ab94dcc5586cade3016a97616
+Author: Peter Hutterer <peter.hutterer@redhat.com>
+Date:   Thu Oct 23 13:22:17 2008 +1030
+
+    MB emulation timeout is stored as Time, make the property 32-bit too.
+    (cherry picked from commit d348eb8ce78640363c159e1a4fdbfa9b596fa5bb)
+
+commit 172523d74557f4c82209f9dd4869d7735944c9e7
+Author: Peter Hutterer <peter.hutterer@redhat.com>
+Date:   Wed Oct 22 18:01:58 2008 +1030
+
+    Init ioctl bitmasks to 0, shuts up valgrind too.
+    (cherry picked from commit 2c1698fa615a083de7dd647622a302d5de77dc0c)
+
+commit 8fb820ffafdc8962ed747f918c6ecc1c4f451b0e
+Author: Søren Hauberg <hauberg@gmail.com>
+Date:   Wed Oct 1 11:06:31 2008 +0930
+
+    Add touchscreen support.
+    
+    Touchscreens are devices that do not have buttons and only advertise
+    BTN_TOUCH. Add a new flag to note the device type.
+    
+    If BTN_TOUCH is detected, change it to BTN_LEFT and process it normally.
+    (cherry picked from commit 8c39302594445ba774ea3fec66417492cc5643e0)
+
+commit c7893b212d4d633c3229901bace6571d67ec1315
+Author: Julien Cristau <jcristau@debian.org>
+Date:   Tue Oct 21 19:21:21 2008 +0200
+
+    Fix TestBit() on 64bit
+    
+    Reported by Albert Damen <albrt@gmx.net>
+    X.Org Bug#18150 <http://bugs.freedesktop.org/show_bug.cgi?id=18150>
+    (cherry picked from commit f57e8face94c9e6986b35ca2ec231e284b9f58cf)
+
+commit e9dd721e2dd24e9bdc5092bcc0bbe94a2ac065ff
+Author: Peter Hutterer <peter.hutterer@redhat.com>
+Date:   Thu Oct 16 15:23:06 2008 +1030
+
+    Add option "GrabDevice", don't grab the device by default.
+    
+    We now have the matching code in the server to set the console to RAW mode and
+    don't need to grab the devices anymore.
+    
+    This is an updated version of e8534d47c8524ac081c2e3e6ebaabe4c6b274a18, which
+    was reverted in 6dc41991557fa55a9e2f5aaf0fe40c70a08d41fd.
+    (cherry picked from commit 4912e2aa7f867a86d383010023b8426c881fb3b0)
+
+commit cab104fd9e508030db623bae2eb70bd5dd1bf450
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Thu Oct 16 22:35:42 2008 +1030
+
+    Don't post keycodes > 255.
+    
+    If we only have keys > 255 we don't set up a key class rec, so don't post
+    them. It makes the server unhappy.
+    
+    Signed-off-by: Julien Cristau <jcristau@debian.org>
+    (cherry picked from commit 7243116f55609a2a5f73bb88cf6ad6386c9bbc0b)
+
+commit 708eb345997336f2df58b1d8c5ef36572e8f420c
+Author: Peter Hutterer <peter.hutterer@redhat.com>
+Date:   Tue Oct 14 17:19:58 2008 +1030
+
+    evdev 2.1 RC 1.
+
+commit 36a687796f3a810812bc7e22791fe21f2be618d6
+Author: Peter Hutterer <peter.hutterer@redhat.com>
+Date:   Tue Oct 14 17:02:43 2008 +1030
+
+    Fix "Device reopened after N attempts" message.
+    (cherry picked from commit 0089d931ac5fb290c82908da652b28c8b515d449)
+
+commit 26229df106f604ffad9a602e128108e93678c403
+Author: Peter Hutterer <peter.hutterer@redhat.com>
+Date:   Tue Oct 14 16:45:44 2008 +1030
+
+    Don't init draglock, etc. if we don't have the required capabilities.
+    (cherry picked from commit 0f5a5ac09ebc89e984b72d395475bb9f412e240c)
+
+commit f4616d87fc6e5a111ec1ad67281c93a2c8bc1011
+Author: Peter Hutterer <peter.hutterer@redhat.com>
+Date:   Tue Oct 14 16:41:54 2008 +1030
+
+    8-bit properties should use 8-bit storage types...
+    (cherry picked from commit 36d68b006d6bb3d41c93888acead73043ca304a1)
+
+commit 2aa5ca8cdd7f0c00983cab86829a6c668fc0fe80
+Author: Peter Hutterer <peter.hutterer@redhat.com>
+Date:   Tue Oct 14 16:25:27 2008 +1030
+
+    Don't include the client-side header anymore. xkbstr.h is server SDK.
+    (cherry picked from commit bb1f42168761b928478a9cb066457b525c41ddd9)
+
+commit 39263dc65d5240f74fd5f1b0ec5bdf53a007d5e9
+Author: Peter Hutterer <peter.hutterer@redhat.com>
+Date:   Tue Oct 14 16:21:00 2008 +1030
+
+    Tidy up evdev.h
+    
+    This includes shuffling some functions around so we don't need the prototypes
+    in evdev.h.
+    (cherry picked from commit 0405f7b17fb0ce5cadcc6c5aa6eeb61bdacdf9cd)
+
+commit 57521e4e60c47b4683910d7f3cec42d1fa276810
+Author: Peter Hutterer <peter.hutterer@redhat.com>
+Date:   Tue Oct 14 16:14:13 2008 +1030
+
+    Rename DragLockInit to DragLockPreInit, remove superfluous "return".
+    (cherry picked from commit 088e0a175a4913bf827c1f7e19de09fdf987d347)
+
+commit 7da15223097a13fc8dac68a18a40342d5070bfa3
+Author: Peter Hutterer <peter.hutterer@redhat.com>
+Date:   Tue Oct 14 16:12:13 2008 +1030
+
+    Register property handler from within the modules, not the main evdev file.
+    (cherry picked from commit cefedeb205291001e7e47b7516de261dbccce059)
+
+commit b4fcb825fc989131c399e3473576f539a81f3aac
+Author: Peter Hutterer <peter.hutterer@redhat.com>
+Date:   Tue Oct 14 16:09:20 2008 +1030
+
+    Clean up program flow - don't call PreInit for "modules" on DEVICE_INIT.
+    
+    Call the PreInit functions for MB Emulation, wheel emu, and draglock during
+    PreInit, not on DEVICE_INIT. This way, we only parse the options once and
+    don't overwrite with defaults when coming back from a VT switch.
+    (cherry picked from commit b0737bdbd1f6e601eb4984b6f4cb49279190984c)
+
+commit 7c955ad050e6f7011e513af823d3229686ee982e
+Author: Peter Hutterer <peter.hutterer@redhat.com>
+Date:   Tue Oct 14 16:01:17 2008 +1030
+
+    Janitor: clean up xf86Msg use, might as well use X_CONFIG directly.
+    (cherry picked from commit 5f2c8a2dcdf98b39997ee5e7c9a9ace3b640bfa3)
+
+commit 4f80c0f2cb77b9a51ab27577c318469f7eaf1e15
+Author: Peter Hutterer <peter.hutterer@redhat.com>
+Date:   Tue Oct 14 15:30:20 2008 +1030
+
+    Add property support for ReopenAttempts option.
+    (cherry picked from commit ff783fce65a63707555098759692b22147646263)
+
+commit 5070d64aa85f9bf137836ad46b3da9581e139a1a
+Author: Peter Hutterer <peter.hutterer@redhat.com>
+Date:   Tue Oct 14 15:06:40 2008 +1030
+
+    Document properties in man page.
+    (cherry picked from commit c638aa4a88116a1219cf4941aacd630e070db099)
+
+commit caacacf0576fe3a4c63593ecd2085a82fa0b406c
+Author: Peter Hutterer <peter.hutterer@redhat.com>
+Date:   Tue Oct 14 15:06:17 2008 +1030
+
+    Document InvertX/Y options.
+    (cherry picked from commit b46677e346c33379cac814895641349cbd3b37f2)
+
+commit 9065d0ccb26d013f26570d29c332bf1c93fabb2d
+Author: Peter Hutterer <peter.hutterer@redhat.com>
+Date:   Wed Oct 8 16:16:58 2008 +1030
+
+    Remove "Path" option.
+    
+    Path was just an alias for Device anyway, so we might as well not parse it.
+    By now you should be using HAL anyway which fills in Device for you.
+
+commit a9fcce1833f167ed8aa79d4dbfbbc3d6bca2e7fd
+Author: Peter Hutterer <peter.hutterer@redhat.com>
+Date:   Wed Oct 8 16:15:14 2008 +1030
+
+    Remove parsing of ScreenNumber option.
+    
+    Was unused anyway, so we might as well not parse it.
+
+commit ab934d840dac8df761691533985a9d998ec5e21e
+Author: Peter Hutterer <peter.hutterer@redhat.com>
+Date:   Wed Oct 8 16:14:51 2008 +1030
+
+    Janitor: purge unused headers, reshuffle for readability, fix whitespace errors.
+
+commit 6f6ac982951165a6ac77b3e32750c47780ea4990
+Author: Peter Hutterer <peter.hutterer@redhat.com>
+Date:   Wed Oct 8 14:25:53 2008 +1030
+
+    Add checkonly handling to property handlers.
+    
+    If checkonly is TRUE, we can only check if applying the value would succeed.
+    The value is actually applied if checkonly is FALSE.
+
+commit a2633c807812e6e8ad9c82e2a5940dfbf370aff5
+Author: Peter Hutterer <peter.hutterer@redhat.com>
+Date:   Wed Oct 8 14:52:13 2008 +1030
+
+    Fix up bad return code in draglock property handler.
+
+commit e6c699dedcd6f3b5db497fe2d226806ca4bbe683
+Author: Peter Hutterer <peter.hutterer@redhat.com>
+Date:   Wed Oct 8 14:35:12 2008 +1030
+
+    Stricter value checking for property changes.
+
+commit 847eac826286e6202f42b9a2ccc160a232a710a3
+Author: Julien Cristau <jcristau@debian.org>
+Date:   Sat Oct 11 02:10:48 2008 +0200
+
+    Set pInfo->fd to -1 on DEVICE_CLOSE
+    
+    This allows the reopen logic to kick in later.
+    DEVICE_CLOSE gets called on regen, so without this we'd keep a stale
+    file descriptor in pInfo->fd in subsequent sessions.
+    
+    Debian bug#496101 (http://bugs.debian.org/496101)
+
+commit a196672a6bafd4e7d3a2cca991a2a3bf4bdcd952
+Author: Peter Hutterer <peter.hutterer@redhat.com>
+Date:   Wed Oct 1 13:58:24 2008 +0930
+
+    Add property support for axis inversion.
+
+commit 3985d423204217a1f072fa6e0145cba547f79a97
+Author: Søren Hauberg <hauberg@gmail.com>
+Date:   Wed Oct 1 11:07:57 2008 +0930
+
+    Add support for axis inversion.
+
+commit e138e4b79a750e22712802b84bf36a70a929d12f
+Author: Peter Hutterer <peter.hutterer@redhat.com>
+Date:   Fri Sep 26 10:42:05 2008 +0930
+
+    Install xorg-evdev.pc for clients who need evdev-properties.h
+
+commit 125e2b8ce23b8ceea250ae52ba69cd14af5592f9
+Author: Peter Hutterer <peter.hutterer@redhat.com>
+Date:   Thu Oct 2 10:56:04 2008 +0930
+
+    Close fd on DEVICE_OFF. (LP #276887)
+    
+    Leaving the fd open means we still get keyboard events after VT switching
+    away. Coming back, some of these events are replayed on the application that
+    has the current focus.
+    
+    Reproduceable:
+    1. open terminal, focus.
+    2. VT switch away
+    3. type something, preferably a password
+    4. VT switch back, trigger a mouse event
+    5. Observe the X server guessing your password.
+    
+    Closing the fd on DEVICE_OFF fixes this. Reopen is handled by the reopen
+    code introduced with
+    
+        commit 9930477cbeb4acfd070ae70894d13ffabfc347b8
+        Author: Peter Hutterer <peter.hutterer@redhat.com>
+        Date:   Tue Aug 26 14:33:40 2008 +0930
+    
+            Attempt to re-open devices on read errors.
+    
+    Launchpad Bug 276887
+    <https://bugs.edge.launchpad.net/ubuntu/+source/xorg-server/+bug/276887>
+
+commit 91bc0a0ba3c4c941b2b7695b6d4f303fb7128fd9
+Author: Peter Hutterer <peter.hutterer@redhat.com>
+Date:   Wed Oct 1 13:36:09 2008 +0930
+
+    Remove useless initialization of rc.
+
+commit 4c55186aedd9030ac46654cee18b09173db988e8
+Author: Peter Hutterer <peter.hutterer@redhat.com>
+Date:   Wed Oct 1 13:58:47 2008 +0930
+
+    Change DragLock atom name - prepend with Evdev.
+
+commit 62069b97d216fb9b4e7db0c60f87ab006ad7011c
+Author: Peter Hutterer <peter.hutterer@redhat.com>
+Date:   Fri Sep 26 10:57:07 2008 +0930
+
+    Move misplaced #endif
+
+commit 2718a5c56b9f34360738b6525c89ea0af4c368d1
+Author: Peter Hutterer <peter.hutterer@redhat.com>
+Date:   Fri Sep 26 10:46:47 2008 +0930
+
+    Register property handlers directly, instead of abstracting them.
+    
+    This removes a left-over from the early device property code where we could
+    only have a single handler. Now it's easier to just register the handlers for
+    each subsystem (emulate wheel, draglock and MB emulation).
+
+commit 90d1d494f82255b07d07800d8270ad754163b7ab
+Author: Peter Hutterer <peter.hutterer@redhat.com>
+Date:   Fri Sep 26 13:49:28 2008 +0930
+
+    Cleanup: "valid_vals" should be "vals" now.
+
+commit a77c2622cc7979cea6c1549f1978fae575b76c6c
+Author: Peter Hutterer <peter.hutterer@redhat.com>
+Date:   Fri Sep 26 13:47:24 2008 +0930
+
+    Add evdev-properties.h file with #defines for all property names.
+
+commit 84a0e39c0dd8bcc80d4f6912562260c1771f311f
+Author: Peter Hutterer <peter.hutterer@redhat.com>
+Date:   Thu Sep 18 16:44:27 2008 +0930
+
+    Use new property API (no ConfigureDP, less args to ChangeDP)
+    
+    Return appropriate status codes from property handlers.
+    Make properties non-deletable.
+
+commit 73869372212f7afc18e02184f347bcd94ce19d04
+Author: Peter Hutterer <peter.hutterer@redhat.com>
+Date:   Thu Sep 18 16:47:35 2008 +0930
+
+    draglock: Shut up compiler warning.
+
+commit fcf8375f2b960993686bd08fd4d0e2d8623b4680
+Author: Peter Hutterer <peter.hutterer@redhat.com>
+Date:   Fri Sep 26 12:53:29 2008 +0930
+
+    Don't require randrproto.
+
+commit 9930477cbeb4acfd070ae70894d13ffabfc347b8
+Author: Peter Hutterer <peter.hutterer@redhat.com>
+Date:   Tue Aug 26 14:33:40 2008 +0930
+
+    Attempt to re-open devices on read errors.
+    
+    Coming back from resume may leave us with a file descriptor that can be opened
+    but fails on the first read (ENODEV).
+    In this case, try to open the device until it becomes available or until the
+    predefined count expires. To be safe, we cache the information from the device
+    and compare against it when we re-open. This way we ensure that if the
+    topology changes under us, we don't open a completely different device. If a
+    device has changed, we disable it.
+    
+    Adds option "ReopenAttempts" <int>
+
+commit 4509ec1daf8a03b261c1fa8aa48b5def3f336aed
+Author: Peter Hutterer <peter.hutterer@redhat.com>
+Date:   Thu Sep 4 18:22:56 2008 +0930
+
+    Use HAVE_PROPERTIES define instead of GET_ABI_MAJOR for property compilation.
+
+commit a205dfc091e6d7c67e3fa1421fe8a43f5ed40b00
+Author: Peter Hutterer <peter.hutterer@redhat.com>
+Date:   Fri Aug 22 14:07:17 2008 +0930
+
+    Shut up "unused variable" compiler warnings.
+    
+    Hide properties behind ifdefs, fake use of "val".
+
+commit 184206e7174dc08239d6a78a1ca912176e3f6229
+Author: Peter Hutterer <peter.hutterer@redhat.com>
+Date:   Mon Aug 25 17:24:15 2008 +0930
+
+    Wheel emulation: initial values must be char.
+    
+    parsing int* to char* in XIChangeDeviceProperty means we lose values.
+
+commit 79ff677c52d38f67144f09bd534aaef862946a5e
+Author: Peter Hutterer <peter.hutterer@redhat.com>
+Date:   Fri Aug 22 09:00:13 2008 +0930
+
+    Init all emulateWheel values, even if EmulateWheel is disabled.
+    
+    Even if we don't want EmulateWheel, we can at least init everything to usable
+    values. This way we only need to toggle "enabled", rather than initialising
+    the whole lot before usage.
+
+commit 37e3addf89923bfc1e7ae23b678614f4ca926dcf
+Author: Dan Nicholson <dbn.lists@gmail.com>
+Date:   Wed Aug 20 18:16:41 2008 -0700
+
+    Add wheel timeout property support
+    
+    Copied from the wheel inertia property support.
+    
+    Signed-off-by: Dan Nicholson <dbn.lists@gmail.com>
+    Signed-off-by: Peter Hutterer <peter.hutterer@redhat.com>
+
+commit e237de0dea9fe24e1c4efc78523bfdd86ed73876
+Author: Dan Nicholson <dbn.lists@gmail.com>
+Date:   Wed Aug 20 18:16:40 2008 -0700
+
+    Add timeout support for mouse wheel emulation
+    
+    Support the EmulateWheelTimeout option as the mouse driver does.
+    
+    Signed-off-by: Dan Nicholson <dbn.lists@gmail.com>
+    Signed-off-by: Peter Hutterer <peter.hutterer@redhat.com>
+
+commit 92c6611b6f4495103fccea38dcafc6c6bf18049a
+Author: Peter Hutterer <peter.hutterer@redhat.com>
+Date:   Mon Aug 18 12:13:15 2008 +0930
+
+    Add property support for drag lock.
+
+commit bd405ddc83b9ad1ceed47f572245fccae598e6bb
+Author: Chris Salch <emeraldd.chris@gmail.com>
+Date:   Sun Aug 17 12:31:23 2008 -0500
+
+    Adding in DragLockButtons functionality.
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@redhat.com>
+
+commit 36d702006d5aace50083ca52b7065d465b497077
+Author: Daniel Stone <daniel@fooishbar.org>
+Date:   Sat Aug 16 15:33:23 2008 +0300
+
+    Force rules, not model, to be evdev
+    
+    xkeyboard-config recently changed to a separate ruleset for the evdev
+    driver, so match that by only forcing the ruleset, not the model, to be
+    evdev.
+
+commit 6dc41991557fa55a9e2f5aaf0fe40c70a08d41fd
+Author: Peter Hutterer <peter.hutterer@redhat.com>
+Date:   Fri Aug 15 09:23:02 2008 +0930
+
+    Revert "Don't grab devices unless specified through the config options."
+    
+    Not such a good idea, CTRL+C terminates the server and other issues. Reverting
+    for now until a better solution is found, at least this way the driver is
+    usable.
+    
+    See also: http://lists.freedesktop.org/archives/xorg/2008-August/038032.html
+    
+    This reverts commit e8534d47c8524ac081c2e3e6ebaabe4c6b274a18.
+
+commit e8534d47c8524ac081c2e3e6ebaabe4c6b274a18
+Author: Peter Hutterer <peter.hutterer@redhat.com>
+Date:   Thu Aug 14 13:38:50 2008 +0930
+
+    Don't grab devices unless specified through the config options.
+    
+    Grabbing event devices stops in-kernel event forwarding, most notably rfkill
+    and the "Macintosh mouse button emulation" device. Let's not do that.
+    
+    Option "GrabDevice" forces grabbing the device.
+
+commit 555f5a7cbf3c980c436c205e9b23a78f3e19bdfe
+Author: Chris Salch <chrissalch@letu.edu>
+Date:   Fri Aug 8 15:56:27 2008 +0930
+
+    Filter wheel events before middle mouse button emulation.
+    
+    The Emulate3Button needs to be the last filter function, otherwise the timeout
+    code causes it to hijack button presses for the first 3 buttons.
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@redhat.com>
+
+commit 134829d911c698704595014ba402516ae9a2f36c
+Author: Peter Hutterer <peter.hutterer@redhat.com>
+Date:   Thu Aug 7 17:34:54 2008 +0930
+
+    Simplify the property handler registration.
+    
+    Instead of having separate handlers for each property, just handle all of them
+    in one handler for emuMB, and one handler for emuWheel.
+
+commit 4e121b297ee0a9b179f8188926564fb8b2c3f6c8
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Thu Aug 7 16:57:06 2008 +0930
+
+    Add EVDEV_MAXBUTTONS instead of checking against 32.
+    
+    Numbers are so lame, defines are all the rage now I've heard.
+
+commit 9793de81373bb78b9ddbb2487e0af5d2ddd0b246
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Thu Aug 7 16:53:51 2008 +0930
+
+    Expose wheel emulation through device properties.
+    
+    Don't enable wheel emulation with 0 inertia - bad things happen.
+
+commit a9d72b40fbe178fa4fbb9d0e7c02dc6c5250969a
+Author: Chris Salch <emeraldd.chris@gmail.com>
+Date:   Wed Aug 6 22:08:13 2008 -0500
+
+    Adding mouse wheel emulation code.
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+
+commit c1f7f8c3d22ecae7839f82ea8b584069f54f1f5e
+Author: Adam Jackson <ajax@redhat.com>
+Date:   Thu Aug 7 09:21:26 2008 +0930
+
+    Print a warning if a keycode exceeds the range accepted by the server.
+    
+    Keycodes over 255 are silently ignored in the server. The least we can do is
+    put a warning in the logs.
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+
+commit 40e1474d84c09d93197ac5db34a88e654386e68f
+Author: Chris Salch <emeraldd.chris@gmail.com>
+Date:   Mon Aug 4 20:19:47 2008 -0500
+
+    Adding a function to map button events to button numbers.
+    
+    Remove code duplication, let the mapping function hand us the actual button
+    event to be passed up to the server.
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+
+commit d9097df01b01afaf946fa04fca8ae8ab7108ff21
 Author: Julien Cristau <jcristau@debian.org>
 Date:   Mon Aug 4 09:16:53 2008 +0930
 
@@ -7,22 +638,14 @@ Date:   Mon Aug 4 09:16:53 2008 +0930
     Fixes file descriptor leak.
     
     Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
-    (cherry picked from commit d9097df01b01afaf946fa04fca8ae8ab7108ff21)
 
-commit 906a5d6add75d3bf3077d0542352534256b734d4
+commit 5c074af5a9abba138023e3bc6954d1062f7c36dd
 Author: Julien Cristau <jcristau@debian.org>
 Date:   Wed Jul 30 10:40:47 2008 +0200
 
     Print the device name when we get a read error
-    (cherry picked from commit 5c074af5a9abba138023e3bc6954d1062f7c36dd)
 
-commit 5152d616cab6912a45e09c37c0330064d2f412f2
-Author: Peter Hutterer <peter.hutterer@who-t.net>
-Date:   Fri Aug 1 17:29:24 2008 +0930
-
-    evdev 2.0.3
-
-commit 2e9a71df5f8e8cdcdb80eec9e17501a75d5bd669
+commit 72551662a09eedf696508aaacf6aa02c0254e4de
 Author: Michel Dänzer <michel@tungstengraphics.com>
 Date:   Tue Jul 29 10:06:07 2008 +0200
 
@@ -35,9 +658,20 @@ Date:   Tue Jul 29 10:06:07 2008 +0200
     
     Signed-off-by: Michel Dänzer <michel@tungstengraphics.com>
     Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
-    [cherry-picked from master and fixed the trivial conflict -- jcristau]
 
-commit 49de32e70f833628554342ef4225a4174158b412
+commit 53e7525744cd7c47707c7339f0b771f59f99b97c
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Mon Jul 21 18:15:35 2008 +0930
+
+    Add support for ButtonMapping option.
+
+commit 5d13259a5ddab31dbb2158975c8ccbb1f3c99046
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Mon Jul 21 13:10:06 2008 +0930
+
+    Guard property changes against ABI_XINPUT < 3.
+
+commit 2b7edaa4ab88e192d7285d39b4834d1e535b94d0
 Author: Julien Cristau <jcristau@debian.org>
 Date:   Sun Jul 20 11:33:37 2008 +0200
 
@@ -45,15 +679,8 @@ Date:   Sun Jul 20 11:33:37 2008 +0200
     
     Report correct versions instead of
     "compiled for 0.0.0, module version = 1.0.0"
-    (cherry picked from commit 2b7edaa4ab88e192d7285d39b4834d1e535b94d0)
 
-commit f135e074629c7cba01bbe9ff6bce77883c22bb29
-Author: Peter Hutterer <peter.hutterer@who-t.net>
-Date:   Mon Jul 14 13:34:36 2008 +0930
-
-    evdev 2.0.2
-
-commit e926356eb0dfd218e88d47d8ed1e3ccfb2f1c85a
+commit bf0d81011e19a8bb5bbd80c6b496c8ae257b4f2c
 Author: Peter Hutterer <whot@possum.(none)>
 Date:   Mon Jul 14 13:06:32 2008 +0930
 
@@ -63,58 +690,102 @@ Date:   Mon Jul 14 13:06:32 2008 +0930
     node. Since we do not call PreInit for the device (which would detect this
     situation), we continue to try to read a nonexisting file, spamming the log
     file with "Read Error".
-    (cherry picked from commit bf0d81011e19a8bb5bbd80c6b496c8ae257b4f2c)
 
-commit bd56ab3d72c7baafd2ecd27cdadcef333fb39262
+commit ef4bb69c1a64e784fef1c758ee439372ba329b0a
 Author: Peter Hutterer <peter.hutterer@who-t.net>
 Date:   Thu Jul 10 19:32:22 2008 +0930
 
     Add .gitignore file.
-    (cherry picked from commit ef4bb69c1a64e784fef1c758ee439372ba329b0a)
 
-commit 2b30413598663b75acff0cafb21c2e3d8a727c9a
+commit d1818ef2066d7e526e0f64fffd41e06061ceb017
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Tue Jul 8 16:37:42 2008 +0930
+
+    Add support for device properties, currently MB emulation and timeout.
+
+commit a9223edcd869288cf6e90f2214e607db510c7027
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Thu Jul 10 16:55:21 2008 +0930
+
+    Clean out configure.ac
+    
+    We're not building with or without XInput. Same with xkb.
+
+commit ec23c6b2f550f2679226da907c1d022295d453f1
 Author: Peter Hutterer <peter.hutterer@who-t.net>
 Date:   Thu Jul 3 15:01:32 2008 +0930
 
     Remove static ChangeLog, autogenerate as part of make dist.
     
     Hook taken from xserver's Makefile.am
-    (cherry picked from commit ec23c6b2f550f2679226da907c1d022295d453f1)
 
-commit 52fc8ee84656728a82073eae16da9e878cc3b39f
+commit 18d70d796fe68116907d86fc27ed77528a51ff1d
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Thu Jul 3 14:50:45 2008 +0930
+
+    Update COPYING with the correct copyright info.
+    
+    Fix up licence of emuMB.c, was using Red Hat instead of "The authors", but
+    this code wasn't contributed by RH anyway.
+
+commit 37b854cb643fa9c5087eccdd1b6ba940d5413bf9
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Thu Jul 3 14:45:41 2008 +0930
+
+    Remove stale comments.
+    
+    Ctrl+Alt+Backspace works, I'm using it daily.
+    CapsLock doesn't repeat, otherwise we wouldn't have Bug 16318.
+
+commit 8c06093191761f9bd2f3c5eb0b57d7b9feca70bc
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Thu Jul 3 14:44:52 2008 +0930
+
+    Remove EvdevConvert, nobody calls it now anyway.
+    
+    Conversion is now done in the DIX.
+
+commit 0830676a0ce3618eae9cf4c072998c16e164c687
 Author: Ander Conselvan de Oliveira <ander@mandriva.com.br>
 Date:   Thu Jun 26 14:36:58 2008 -0300
 
     Mice with a lot of buttons (e.g. Logitech MX1000) generate button events greater than BTN_TASK.
     
     Signed-off-by: Peter Hutterer <peter@cs.unisa.edu.au>
-    (cherry picked from commit 0830676a0ce3618eae9cf4c072998c16e164c687)
 
-commit b125b834f4ce4877204b9c8e98ad2641e2c7b082
+commit 1cf7b8f7ee224d823d94ea65458f5269a1a77d2e
 Author: Peter Hutterer <peter@cs.unisa.edu.au>
-Date:   Sun Jun 22 17:52:58 2008 +0930
+Date:   Sat Jun 28 17:50:26 2008 +0930
 
-    evdev 2.0.1
+    Count buttons at probe and print to log.
+    
+    We don't really do anything with the number other than print it since I'm sure
+    that half the mice don't report the correct number anyway (especially with the
+    wheel button mapping). But having a bit more debug info is good.
 
-commit 05b20db8dbfb47bc370fe24e50ef563f1879be61
+commit 826e6e7dd408659af9a1751ed16e437db8c8dc34
+Author: Peter Hutterer <peter@cs.unisa.edu.au>
+Date:   Sun Jun 22 17:52:40 2008 +0930
+
+    Bump to 2.0.99.
+
+commit 5a0ea39b79b27b7c3117661a21e7ab5eba3c9b24
 Author: Peter Hutterer <peter@cs.unisa.edu.au>
 Date:   Sat Jun 21 16:42:12 2008 +0930
 
     No need to finalize MB emulation after EvdevProbe anymore.
     
     Follow-up to 76800bfa75807e49398380b902f6c0f547cd4c0e.
-    (cherry picked from commit 5a0ea39b79b27b7c3117661a21e7ab5eba3c9b24)
 
-commit 43768d59da2c519dde5a8efaf0ff2b12b6c47fcc
+commit 373e13ae353d1e0022f8821adc528ebc5411d47d
 Author: Simon Munton <simon@munton.demon.co.uk>
 Date:   Sat Jun 21 10:19:07 2008 +0930
 
     Close file descriptor if EvdevProbe fails.
     
     Signed-off-by: Peter Hutterer <peter@cs.unisa.edu.au>
-    (cherry picked from commit 373e13ae353d1e0022f8821adc528ebc5411d47d)
 
-commit 9c524f6963645bf42bbd41d4189d6319020a133d
+commit 76800bfa75807e49398380b902f6c0f547cd4c0e
 Author: Keith Packard <keithp@keithp.com>
 Date:   Fri Jun 20 18:20:55 2008 -0700
 
@@ -125,7 +796,6 @@ Date:   Fri Jun 20 18:20:55 2008 -0700
     re-registered.
     
     Signed-off-by: Keith Packard <keithp@keithp.com>
-    (cherry picked from commit 76800bfa75807e49398380b902f6c0f547cd4c0e)
 
 commit 04003a98a9ca1b4b0c32d319fab07ee7afc83c75
 Author: Peter Hutterer <peter@cs.unisa.edu.au>

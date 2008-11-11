@@ -35,18 +35,38 @@
 #include <xf86Xinput.h>
 #include <xf86_OSproc.h>
 
-#if defined(XKB)
-/* XXX VERY WRONG.  this is a client side header. */
-#include <X11/extensions/XKBstr.h>
+#ifdef XKB
+#include <xkbstr.h>
 #endif
 
+#define EVDEV_MAXBUTTONS 32
+
+#if GET_ABI_MAJOR(ABI_XINPUT_VERSION) >= 3
+#define HAVE_PROPERTIES 1
+#endif
+
+#define LONG_BITS (sizeof(long) * 8)
+#define NBITS(x) (((x) + LONG_BITS - 1) / LONG_BITS)
+
+/* axis specific data for wheel emulation */
 typedef struct {
-    int kernel24;
+    int up_button;
+    int down_button;
+    int traveled_distance;
+} WheelAxis, *WheelAxisPtr;
+
+typedef struct {
+    const char *device;
+    int grabDevice;         /* grab the event device? */
     int screen;
     int min_x, min_y, max_x, max_y;
     int abs_x, abs_y, old_x, old_y;
     int flags;
     int tool;
+    int buttons;            /* number of buttons */
+    BOOL swap_axes;
+    BOOL invert_x;
+    BOOL invert_y;
 
     /* XKB stuff has to be per-device rather than per-driver */
     int noXkb;
@@ -67,7 +87,47 @@ typedef struct {
         Time                expires;     /* time of expiry */
         Time                timeout;
     } emulateMB;
+    struct {
+	int                 meta;           /* meta key to lock any button */
+	BOOL                meta_state;     /* meta_button state */
+	unsigned int        lock_pair[EVDEV_MAXBUTTONS];  /* specify a meta/lock pair */
+	BOOL                lock_state[EVDEV_MAXBUTTONS]; /* state of any locked buttons */
+    } dragLock;
+    struct {
+        BOOL                enabled;
+        int                 button;
+        int                 button_state;
+        int                 inertia;
+        WheelAxis           X;
+        WheelAxis           Y;
+        Time                expires;     /* time of expiry */
+        Time                timeout;
+    } emulateWheel;
+    /* run-time calibration */
+    struct {
+        int                 min_x;
+        int                 max_x;
+        int                 min_y;
+        int                 max_y;
+    } calibration;
+
+    unsigned char btnmap[32];           /* config-file specified button mapping */
+
+    int reopen_attempts; /* max attempts to re-open after read failure */
+    int reopen_left;     /* number of attempts left to re-open the device */
+    OsTimerPtr reopen_timer;
+
+    /* Cached info from device. */
+    char name[1024];
+    long bitmask[NBITS(EV_MAX)];
+    long key_bitmask[NBITS(KEY_MAX)];
+    long rel_bitmask[NBITS(REL_MAX)];
+    long abs_bitmask[NBITS(ABS_MAX)];
+    long led_bitmask[NBITS(LED_MAX)];
+    struct input_absinfo absinfo[ABS_MAX];
 } EvdevRec, *EvdevPtr;
+
+unsigned int EvdevUtilButtonEventToButtonNumber(EvdevPtr pEvdev, int code);
 
 /* Middle Button emulation */
 int  EvdevMBEmuTimer(InputInfoPtr);
@@ -75,7 +135,22 @@ BOOL EvdevMBEmuFilterEvent(InputInfoPtr, int, BOOL);
 void EvdevMBEmuWakeupHandler(pointer, int, pointer);
 void EvdevMBEmuBlockHandler(pointer, struct timeval**, pointer);
 void EvdevMBEmuPreInit(InputInfoPtr);
+void EvdevMBEmuOn(InputInfoPtr);
 void EvdevMBEmuFinalize(InputInfoPtr);
 void EvdevMBEmuEnable(InputInfoPtr, BOOL);
 
+/* Mouse Wheel emulation */
+void EvdevWheelEmuPreInit(InputInfoPtr pInfo);
+BOOL EvdevWheelEmuFilterButton(InputInfoPtr pInfo, unsigned int button, int value);
+BOOL EvdevWheelEmuFilterMotion(InputInfoPtr pInfo, struct input_event *pEv);
+
+/* Draglock code */
+void EvdevDragLockPreInit(InputInfoPtr pInfo);
+BOOL EvdevDragLockFilterEvent(InputInfoPtr pInfo, unsigned int button, int value);
+
+#ifdef HAVE_PROPERTIES
+void EvdevMBEmuInitProperty(DeviceIntPtr);
+void EvdevWheelEmuInitProperty(DeviceIntPtr);
+void EvdevDragLockInitProperty(DeviceIntPtr);
+#endif
 #endif

@@ -22,7 +22,7 @@
 
 AC_PREREQ(2.57)
 AC_INIT([xf86-input-evdev],
-        2.0.4,
+        2.0.99.3,
         [https://bugs.freedesktop.org/enter_bug.cgi?product=xorg],
         xf86-input-evdev)
 
@@ -44,24 +44,6 @@ AC_PROG_CC
 
 AH_TOP([#include "xorg-server.h"])
 
-#AC_DEFINE(XFree86LOADER,1,[Stub define for loadable drivers])
-#
-#AC_ARG_ENABLE(XINPUT, AS_HELP_STRING([--enable-xinput],
-#              [Build XInput support (default: yes)]),
-#              [XINPUT=$enableval],[XINPUT=yes])
-#AM_CONDITIONAL(XINPUT, test "x$XINPUT" = "xyes")
-#if test "x$XINPUT" = "xyes" ; then
-#    AC_DEFINE(XINPUT,1,[Enable XInput support])
-#fi
-#
-#AC_ARG_ENABLE(XKB, AS_HELP_STRING([--enable-xkb],
-#              [Build XKB support (default: yes)]),
-#              [XKB=$enableval],[XKB=yes])
-#AM_CONDITIONAL(XKB, test "x$XKB" = "xyes")
-#if test "x$XKB" = "xyes" ; then
-#    AC_DEFINE(XKB,1,[Enable XKB support])
-#fi
-
 AC_ARG_WITH(xorg-module-dir,
             AC_HELP_STRING([--with-xorg-module-dir=DIR],
                            [Default xorg module directory [[default=$libdir/xorg/modules]]]),
@@ -71,12 +53,12 @@ inputdir=${moduledir}/input
 AC_SUBST(inputdir)
 
 # Checks for extensions
-XORG_DRIVER_CHECK_EXT(RANDR, randrproto)
 XORG_DRIVER_CHECK_EXT(XINPUT, inputproto)
 
 # Checks for pkg-config packages
 PKG_CHECK_MODULES(XORG, xorg-server xproto $REQUIRED_MODULES)
 sdkdir=$(pkg-config --variable=sdkdir xorg-server)
+AC_SUBST(sdkdir)
 
 CFLAGS="$CFLAGS $XORG_CFLAGS "' -I$(top_srcdir)/src'
 AC_SUBST([CFLAGS])
@@ -89,4 +71,8 @@ AC_HEADER_STDC
 XORG_MANPAGE_SECTIONS
 XORG_RELEASE_VERSION
 
-AC_OUTPUT([Makefile src/Makefile man/Makefile])
+AC_OUTPUT([Makefile
+           src/Makefile
+           man/Makefile
+           include/Makefile
+           xorg-evdev.pc])
