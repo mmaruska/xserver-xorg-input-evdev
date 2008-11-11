@@ -1,7 +1,14 @@
-xserver-xorg-input-evdev (1:2.0.4-1) UNRELEASED; urgency=low
+xserver-xorg-input-evdev (1:2.0.99.3-1) UNRELEASED; urgency=low
 
-  * New upstream release.
+  [ Timo Aaltonen ]
   * rules: Clean config.h.in.
+
+  [ Julien Cristau ]
+  * New upstream release.
+    + don't grab the device by default
+    + close the device on DEVICE_OFF, and reopen it on DEVICE_ON
+      (closes: #496101, #492146)
+  * Drop patch included upstream.
 
  -- Timo Aaltonen <tepsipakki@ubuntu.com>  Fri, 12 Sep 2008 14:52:54 +0300
 
