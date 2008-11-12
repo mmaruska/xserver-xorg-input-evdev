@@ -1,4 +1,4 @@
-xserver-xorg-input-evdev (1:2.0.99.3-1) UNRELEASED; urgency=low
+xserver-xorg-input-evdev (1:2.0.99.3-1) experimental; urgency=low
 
   [ Timo Aaltonen ]
   * rules: Clean config.h.in.
@@ -14,7 +14,7 @@ xserver-xorg-input-evdev (1:2.0.99.3-1) UNRELEASED; urgency=low
   * Depend on xserver-xorg-core >= 2:1.5.3, to make sure the console is set to
     RAW mode.
 
- -- Timo Aaltonen <tepsipakki@ubuntu.com>  Fri, 12 Sep 2008 14:52:54 +0300
+ -- Julien Cristau <jcristau@debian.org>  Wed, 12 Nov 2008 20:22:57 +0100
 
 xserver-xorg-input-evdev (1:2.0.3-2) experimental; urgency=low
 
