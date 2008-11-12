@@ -9,6 +9,8 @@ xserver-xorg-input-evdev (1:2.0.99.3-1) UNRELEASED; urgency=low
     + close the device on DEVICE_OFF, and reopen it on DEVICE_ON
       (closes: #496101, #492146)
   * Drop patch included upstream.
+  * Install (temporarily) an fdi file to get Xorg to load the evdev driver for
+    mice and keyboards.
 
  -- Timo Aaltonen <tepsipakki@ubuntu.com>  Fri, 12 Sep 2008 14:52:54 +0300
 
