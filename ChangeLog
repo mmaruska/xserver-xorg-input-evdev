@@ -1,3 +1,29 @@
+commit b879ae73510ad733c266fba80e0ec4b0f903e71b
+Author: Peter Hutterer <peter.hutterer@redhat.com>
+Date:   Mon Nov 17 09:27:25 2008 +1000
+
+    evdev 2.1
+
+commit 53566b7d4d7e641df4db5720ae9132eb4c812c84
+Author: Peter Hutterer <peter.hutterer@redhat.com>
+Date:   Mon Nov 17 10:03:11 2008 +1000
+
+    Store device file's minor/major to avoid duplicate devices.
+    
+    Devices added that use the same min/maj as an already added device are ignored
+    by the driver. This way users can have an xorg.conf entry on
+    /dev/input/by-id/blahblah and not get the same device added by HAL.
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@redhat.com>
+    (cherry picked from commit 63af314368cec47b6b8266db331f2c820e7a071f)
+
+commit 29c2765fc30c74171e51ba694ea4810916803c31
+Author: Fernando Carrijo <fcarrijo@yahoo.com.br>
+Date:   Thu Nov 6 13:20:16 2008 -0500
+
+    Fix error message
+    (cherry picked from commit 4c5c9c111d406e5590429377262b86e91868ef76)
+
 commit 7ef4e2c5e14e558f41fb7f411e2976f517b6b526
 Author: Peter Hutterer <peter.hutterer@redhat.com>
 Date:   Mon Nov 3 13:47:15 2008 +1030
