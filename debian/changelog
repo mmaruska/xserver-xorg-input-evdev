@@ -1,6 +1,8 @@
 xserver-xorg-input-evdev (1:2.1.0-1) UNRELEASED; urgency=low
 
   * New upstream release.
+    + Store device file's minor/major to avoid duplicate devices
+      (closes: #505635)
 
  -- Timo Aaltonen <tepsipakki@ubuntu.com>  Wed, 19 Nov 2008 15:34:39 +0200
 
