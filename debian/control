@@ -16,11 +16,7 @@ Replaces: xserver-xorg (<< 6.8.2-35)
 Description: X.Org X server -- evdev input driver
  This package provides the driver for input devices using evdev, the Linux
  kernel's event delivery mechanism.  This driver allows for multiple keyboards
- and mice to be treated as separate input devices, and matched on physical
- attributes such as which USB port they're connected to.
- .
- Note that this driver is different from Protocol "evdev" in the keyboard and
- mouse drivers, as shipped with Ubuntu 4.10 and 5.04, and Debian 3.1.
+ and mice to be treated as separate input devices.
  .
  More information about X.Org can be found at:
  <URL:http://www.X.org>

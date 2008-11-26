@@ -1,8 +1,14 @@
 xserver-xorg-input-evdev (1:2.1.0-1) UNRELEASED; urgency=low
 
+  [ Timo Aaltonen ]
   * New upstream release.
     + Store device file's minor/major to avoid duplicate devices
       (closes: #505635)
+
+  [ Julien Cristau ]
+  * debian/control: update the long description.  We don't do "clever" device
+    matching anymore, that's hal/udev's job.  Also drop the mention of
+    'Protocol "evdev"', which unexists since quite a while.
 
  -- Timo Aaltonen <tepsipakki@ubuntu.com>  Wed, 19 Nov 2008 15:34:39 +0200
 
