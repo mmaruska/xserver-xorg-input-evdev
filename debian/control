@@ -7,7 +7,7 @@ Build-Depends:
  debhelper (>= 5.0.0),
  pkg-config,
  quilt,
- xserver-xorg-dev (>= 2:1.4.99.906),
+ xserver-xorg-dev (>= 2:1.5.99.901),
  x11proto-core-dev,
  x11proto-randr-dev,
  x11proto-input-dev,
@@ -23,7 +23,7 @@ Vcs-Browser: http://git.debian.org/?p=pkg-xorg/driver/xserver-xorg-input-evdev.g
 
 Package: xserver-xorg-input-evdev
 Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends}, ${xserver:Depends}, xserver-xorg-core (>= 2:1.5.3)
+Depends: ${shlibs:Depends}, ${misc:Depends}, ${xserver:Depends}
 Provides: ${xinpdriver:Provides}
 Replaces: xserver-xorg (<< 6.8.2-35)
 Description: X.Org X server -- evdev input driver

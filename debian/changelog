@@ -2,6 +2,7 @@ xserver-xorg-input-evdev (1:2.1.1-1) UNRELEASED; urgency=low
 
   * New upstream release.
   * Update debian/copyright from upstream's COPYING.
+  * Build against xserver 1.6 rc1.
 
  -- Julien Cristau <jcristau@debian.org>  Wed, 03 Dec 2008 00:09:44 +0100
 
