@@ -1,8 +1,9 @@
-xserver-xorg-input-evdev (1:2.2.2-1) UNRELEASED; urgency=low
+xserver-xorg-input-evdev (1:2.2.2-1) unstable; urgency=low
 
   * New upstream release.
+  * Add myself to Uploaders.
 
- -- Brice Goglin <bgoglin@debian.org>  Thu, 30 Apr 2009 08:59:13 +0200
+ -- Brice Goglin <bgoglin@debian.org>  Thu, 30 Apr 2009 08:59:58 +0200
 
 xserver-xorg-input-evdev (1:2.2.1-1) unstable; urgency=low
 
