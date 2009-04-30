@@ -1,3 +1,43 @@
+commit cf887a2b7cff9eb99c872a9cf5a9382ff6317899
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Thu Apr 30 16:39:15 2009 +1000
+
+    evdev 2.2.2
+
+commit 1cc0651e1b44af505d7177b22c6083eae9b118cc
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Thu Apr 16 13:23:50 2009 +1000
+
+    Print read errors as X_NONE to avoid mallocs in the server.
+    
+    Messages of type X_NONE are just passed down to the log files, everything else
+    gets the (EE) or (II) prefixed. Since this mallocs, we can't use it in the
+    signal handler.
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    (cherry picked from commit 220e2dfb8f6aa08bd5f59e81c6883c057b945721)
+
+commit 48a747ea8603ece6bd25ba5b1ce92c2eb91a7c01
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Thu Apr 16 12:01:03 2009 +1000
+
+    Pre-allocate the reopen timer so we don't allocate during sigio handling.
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    (cherry picked from commit ddc126637404cb3d9356b7698779dcd8849f8718)
+
+commit aa58eb609617beb5d3199dab262f96003f57ab97
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Mon Apr 6 10:22:25 2009 +1000
+
+    Trigger read error handling if len is <= 0.
+    
+    Red Hat Bug 494245 <https://bugzilla.redhat.com/show_bug.cgi?id=494245>
+    
+    Reported-by: David Woodhouse <dwmw2@infradead.org>
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    (cherry picked from commit 98ecb5233bb3b899bd696a90d2733c6a345676dd)
+
 commit aff7228d972eedd556b13f06d8db0b5ffb622b46
 Author: Peter Hutterer <peter.hutterer@who-t.net>
 Date:   Tue Mar 24 15:13:23 2009 +1000
