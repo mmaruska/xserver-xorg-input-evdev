@@ -3,8 +3,9 @@ xserver-xorg-input-evdev (1:2.2.3-1) UNRELEASED; urgency=low
   * New upstream release.
     + Fix corrupted mouse motion events sending pointer to
       top-left of screen, cloces: #528994.
+  * Add README.source, bump Standards-Version to 3.8.2.
 
- -- Brice Goglin <bgoglin@debian.org>  Thu, 30 Jul 2009 09:10:10 +0200
+ -- Brice Goglin <bgoglin@debian.org>  Thu, 30 Jul 2009 09:14:15 +0200
 
 xserver-xorg-input-evdev (1:2.2.2-1) unstable; urgency=low
 
