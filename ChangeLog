@@ -1,3 +1,165 @@
+commit c0bee1b4d6d3664322b2f35775675ac84354f702
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Thu Jul 30 11:08:59 2009 +1000
+
+    evdev 2.2.3
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+
+commit 8acc999d404b9b6012588e2021324553dda9405d
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Thu Jul 30 09:38:31 2009 +1000
+
+    Evdev doesn't require inputproto.
+    
+    None of the inputproto headers seem to be included anywhere.
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    (cherry picked from commit 6f4634111a83808bc52e7e53733cf2d3bab0cccd)
+    
+    Conflicts:
+    
+    	configure.ac
+
+commit 3cce7fa38a152ba66d379591e6e3ece60bd73fdd
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Fri Jun 26 09:37:29 2009 +1000
+
+    If a device fails to initialize relative axes, init the abs. axes instead.
+    
+    Some devices have relative axes that don't count (scroll wheels). In this
+    case, don't claim we've initialized relative axes, continue with the
+    absolute axes instead.
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    (cherry picked from commit b07ab6ea97b779b26e7ae8326528c262cc9907a1)
+
+commit c793aa27381dc346d88a3e7d8bdb90dd8d3ed39c
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Mon Jul 20 14:52:34 2009 +1000
+
+    Don't register middle mouse button emulation handlers for keyboards.
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    (cherry picked from commit 2994825665790dc8e35b2944e0d411f3cc9f76fd)
+
+commit 9f3632c0b6c181706daf661646de5994217c0bb2
+Author: Oliver McFadden <oliver.mcfadden@nokia.com>
+Date:   Thu Jul 16 18:25:37 2009 +0300
+
+    Coverity Prevent: NO_EFFECT in EvdevWheelEmuSetProperty:
+    
+    Event unsigned_compare: Comparing unsigned less than zero is never true. "pEvdev->emulateWheel.timeout < 0UL"
+    342  	            if (pEvdev->emulateWheel.timeout < 0)
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    (cherry picked from commit 9bfd9e8a3683f14860149ae9f842e88828cc0960)
+
+commit 06b303f26d5fab17b7d82dbf2bda3f77dad2364c
+Author: Asbjørn Sannes <ace@sannes.org>
+Date:   Wed Jul 1 09:51:12 2009 +0200
+
+    evdev: Fix spelling of property in man page to match source code. #22571
+    
+    Signed-off-by: Asbjï¿½rn Sannes <ace@sannes.org>
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    (cherry picked from commit db8b1ca5cffbc48f7d9c5c166489c714ac92ea86)
+
+commit 4dda242d56a7830d5b44d7e58cf6a95f62a617ce
+Author: Derek Upham <sand@blarg.net>
+Date:   Thu May 21 00:15:28 2009 -0700
+
+    evdev: Prevent driver from processing motion events that it has not configured. #21832
+    
+    The current implementation initializes itself to support relative
+    motion events, or absolute motion events, or neither.  But the
+    event-handling code attempts to process all events, no matter what the
+    initialization was.  This patch reproduces the flag tests found during
+    init, to skip events that the driver doesn't support.
+    
+    Signed-off-by: Derek Upham <sand@blarg.net>
+    Signed-off-by: Julien Cristau <jcristau@debian.org>
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    (cherry picked from commit 0a3657d2ee62f4086e9687218cb33835ba61a0b3)
+
+commit 4efe0d272ed6ef7bda4cc005ad6033f2b1916fdc
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Thu May 21 13:30:10 2009 +1000
+
+    Deal with BTN_3 to BTN_9 buttons.
+    
+    These buttons were previously mapped to 0, i.e. inactive. This patch
+    slightly improves things in that the buttons are now mapped to 8+.
+    
+    Devices that have both BTN_3 and BTN_SIDE (or a similar pair in that
+    sequence) have both mapped to the same button number though.
+    Devices that have BTN_LEFT, BTN_0, BTN_3 and BTN_SIDE have the last three
+    mapped to 8 (and their followers have double-mappings too). We'll fix that
+    once we actually see devices affected by this.
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    (cherry picked from commit dc2191285e799be891787e1f64d10c1cba271240)
+
+commit 1432b5153ec2666845c2017eedc3c166fd8c8e3c
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Thu May 21 10:23:37 2009 +1000
+
+    Only initialize the number of buttons we actually have.
+    
+    This takes into account driver-configured button mappings, i.e. if device
+    with one button has this button mapped to 25 through the ButtonMapping
+    option, the X server will think the device has result 25 buttons.
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    (cherry picked from commit 255b9f6bbf374a315750019c6fadc5f82fb7d41d)
+
+commit b8519930e415043545e87ea660f6f0b3109537bf
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Wed May 20 11:57:01 2009 +1000
+
+    Ensure enough buttons are advertised to pass the button mapping.
+    
+    Some buttons are mapped to higher button numbers. For example, BTN_0 is
+    posted as button 8 if BTN_LEFT is present. On top of that, the
+    driver-specific button mapping may map the button to something else again.
+    We need to take these mappings into account when counting the number of
+    buttons on the device.
+    
+    Example: A device with BTN_LEFT and BTN_0 and a mapping from 1 -> 7 and 8 ->
+    2.
+    
+    BTN_LEFT is mapped to 1. 1 is mapped to 7. num_buttons is 7.
+    BTN_0 is mapped to 8. 8 is mapped to 2. num_buttons remains 7.
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    (cherry picked from commit b358f1eb3a4ef8fdee099114d6c70d6ea06eba95)
+
+commit 6d43a45b99e07325c74cbe1d20b04094ba99950d
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Wed May 20 11:47:37 2009 +1000
+
+    Up the number of button labels atoms to EVDEV_MAXBUTTONS.
+    
+    Button labels would smash memory if the device had less than 4 buttons and
+    did not advertise a wheel event. In this case the hard-coded wheel button
+    labels would write past the atoms[] boundary.
+    
+    Potential memory smash if a device had a BTN_LEFT and BTN_0, since the
+    latter would map to 8, regardless of the the number of actual buttons
+    (same with BTN_MIDDLE and BTN_1 or BTN_RIGHT and BTN_2).
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    (cherry picked from commit 33cc112ca1af377a85cfeb05dfb72f07d3850a95)
+
+commit 40d3ad3ac00fc21f2561c906d1246648a9f74087
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Wed May 20 11:42:35 2009 +1000
+
+    Only label axes and buttons if the device has axes or buttons.
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    (cherry picked from commit 3c43d880f13725a04fcd7c0c8d5978a36208e373)
+
 commit cf887a2b7cff9eb99c872a9cf5a9382ff6317899
 Author: Peter Hutterer <peter.hutterer@who-t.net>
 Date:   Thu Apr 30 16:39:15 2009 +1000
