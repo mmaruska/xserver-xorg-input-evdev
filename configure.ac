@@ -22,7 +22,7 @@
 
 AC_PREREQ(2.57)
 AC_INIT([xf86-input-evdev],
-        2.2.2,
+        2.2.3,
         [https://bugs.freedesktop.org/enter_bug.cgi?product=xorg],
         xf86-input-evdev)
 
@@ -67,9 +67,6 @@ if test "x$BUILD_TEST" = "xyes"; then
                   AC_CHECK_LIB([dl], [dlopen], DLOPEN_LIBS="-ldl"))
     AC_SUBST([DLOPEN_LIBS])
 fi
-
-# Checks for extensions
-XORG_DRIVER_CHECK_EXT(XINPUT, inputproto)
 
 # Checks for pkg-config packages. We need to be able to override sdkdir
 # to satisfy silly distcheck requirements.

@@ -362,6 +362,10 @@ EvdevProcessEvent(InputInfoPtr pInfo, struct input_event *ev)
 
     switch (ev->type) {
         case EV_REL:
+            /* Ignore EV_REL events if we never set up for them. */
+            if (!(pEvdev->flags & EVDEV_RELATIVE_EVENTS))
+                break;
+
             /* Handle mouse wheel emulation */
             if (EvdevWheelEmuFilterMotion(pInfo, ev))
                 break;
@@ -392,6 +396,10 @@ EvdevProcessEvent(InputInfoPtr pInfo, struct input_event *ev)
             break;
 
         case EV_ABS:
+            /* Ignore EV_ABS events if we never set up for them. */
+            if (!(pEvdev->flags & EVDEV_ABSOLUTE_EVENTS))
+                break;
+
             if (ev->code > ABS_MAX)
                 break;
             pEvdev->vals[pEvdev->axis_map[ev->code]] = value;
@@ -1053,6 +1061,9 @@ EvdevAddRelClass(DeviceIntPtr device)
     if (TestBit(REL_DIAL, pEvdev->rel_bitmask))
         num_axes--;
 
+    if (num_axes <= 0)
+        return !Success;
+
     pEvdev->num_vals = num_axes;
     memset(pEvdev->vals, 0, num_axes * sizeof(int));
 
@@ -1095,9 +1106,7 @@ EvdevAddButtonClass(DeviceIntPtr device)
     pInfo = device->public.devicePrivate;
     pEvdev = pInfo->private;
 
-    /* FIXME: count number of actual buttons */
-    if (!InitButtonClassDeviceStruct(device, ArrayLength(pEvdev->btnmap),
-                                     pEvdev->btnmap))
+    if (!InitButtonClassDeviceStruct(device, pEvdev->buttons, pEvdev->btnmap))
         return !Success;
 
     return Success;
@@ -1181,9 +1190,18 @@ EvdevInit(DeviceIntPtr device)
 
         FIXME: somebody volunteer to fix this.
      */
-    if (pEvdev->flags & EVDEV_RELATIVE_EVENTS)
-	EvdevAddRelClass(device);
-    else if (pEvdev->flags & EVDEV_ABSOLUTE_EVENTS)
+    if (pEvdev->flags & EVDEV_RELATIVE_EVENTS) {
+        if (EvdevAddRelClass(device) == Success)
+        {
+            if (pEvdev->flags & EVDEV_ABSOLUTE_EVENTS)
+                xf86Msg(X_INFO,"%s: relative axes found, ignoring absolute "
+                        "axes.\n", device->name);
+            pEvdev->flags &= ~EVDEV_ABSOLUTE_EVENTS;
+        } else
+            pEvdev->flags &= ~EVDEV_RELATIVE_EVENTS;
+    }
+
+    if (pEvdev->flags & EVDEV_ABSOLUTE_EVENTS)
         EvdevAddAbsClass(device);
 
 #ifdef HAVE_PROPERTIES
@@ -1466,8 +1484,14 @@ EvdevProbe(InputInfoPtr pInfo)
     /* count all buttons */
     for (i = BTN_MISC; i < BTN_JOYSTICK; i++)
     {
+        int mapping = 0;
         if (TestBit(i, pEvdev->key_bitmask))
-            num_buttons++;
+        {
+            mapping =
+                pEvdev->btnmap[EvdevUtilButtonEventToButtonNumber(pEvdev, i)];
+            if (mapping > num_buttons)
+                num_buttons = mapping;
+        }
     }
 
     if (num_buttons)
@@ -1763,6 +1787,17 @@ EvdevUtilButtonEventToButtonNumber(EvdevPtr pEvdev, int code)
         button = (TestBit(BTN_RIGHT, pEvdev->key_bitmask)) ?  10 : 3;
         break;
 
+        /* FIXME: BTN_3.. and BTN_SIDE.. have the same button mapping */
+    case BTN_3:
+    case BTN_4:
+    case BTN_5:
+    case BTN_6:
+    case BTN_7:
+    case BTN_8:
+    case BTN_9:
+	button = (code - BTN_0 + 5);
+        break;
+
     case BTN_SIDE:
     case BTN_EXTRA:
     case BTN_FORWARD:
@@ -1982,7 +2017,7 @@ EvdevInitProperty(DeviceIntPtr dev)
 
 #ifdef HAVE_LABELS
         /* Axis labelling */
-        if ((prop_axis_label = XIGetKnownProperty(AXIS_LABEL_PROP)))
+        if ((pEvdev->num_vals > 0) && (prop_axis_label = XIGetKnownProperty(AXIS_LABEL_PROP)))
         {
             Atom atom, atoms[pEvdev->num_vals];
             int natoms = pEvdev->num_vals;
@@ -2026,14 +2061,14 @@ EvdevInitProperty(DeviceIntPtr dev)
             XISetDevicePropertyDeletable(dev, prop_axis_label, FALSE);
         }
         /* Button labelling */
-        if ((prop_btn_label = XIGetKnownProperty(BTN_LABEL_PROP)))
+        if ((pEvdev->buttons > 0) && (prop_btn_label = XIGetKnownProperty(BTN_LABEL_PROP)))
         {
-            Atom atom, atoms[pEvdev->buttons];
+            Atom atom, atoms[EVDEV_MAXBUTTONS];
             int button, bmap;
 
             /* First, make sure all atoms are initialized */
             atom = XIGetKnownProperty(BTN_LABEL_PROP_BTN_UNKNOWN);
-            for (button = 0; button < pEvdev->buttons; button++)
+            for (button = 0; button < ArrayLength(atoms); button++)
                 atoms[button] = atom;
 
             for (button = BTN_MISC; button < BTN_JOYSTICK; button++)
