@@ -1,3 +1,45 @@
+commit bf356d939925b537921e1f82559f92baa3a76bcc
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Thu Aug 6 14:08:55 2009 +1000
+
+    evdev 2.2.4
+
+commit 4c1c4f2c830dbfc34503d8ee4996f5bcd5547b6a
+Author: Michael Witten <mfwitten@gmail.com>
+Date:   Tue Aug 4 03:11:49 2009 -0500
+
+    evdev.c: Fix/improve discrimination of rel/abs axes
+    
+    The relevant comment from evdev.c:
+    
+    We don't allow relative and absolute axes on the same device. The
+    reason is that some devices (MS Optical Desktop 2000) register both
+    rel and abs axes for x/y.
+    
+    The abs axes register min/max; this min/max then also applies to the
+    relative device (the mouse) and caps it at 0..255 for both axes.
+    So, unless you have a small screen, you won't be enjoying it much;
+    consequently, absolute axes are generally ignored.
+    
+    However, currenly only a device with absolute axes can be registered
+    as a touch{pad,screen}. Thus, given such a device, absolute axes are
+    used and relative axes are ignored.
+    
+    The code for initializing abs/rel axes has been abstracted out into
+    3 functions, so that initialization in EvdevInit(device) is as easy
+    as:
+    
+        if (pEvdev->flags & (EVDEV_TOUCHPAD | EVDEV_TOUCHSCREEN))
+            EvdevInitTouchDevice(device, pEvdev);
+        else if (pEvdev->flags & EVDEV_RELATIVE_EVENTS)
+            EvdevInitRelClass(device, pEvdev);
+        else if (pEvdev->flags & EVDEV_ABSOLUTE_EVENTS)
+            EvdevInitAbsClass(device, pEvdev);
+    
+    Signed-off-by: Michael Witten <mfwitten@gmail.com>
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    (cherry picked from commit f352598e45be86f9e24d9dba88c657f03f3b168e)
+
 commit c0bee1b4d6d3664322b2f35775675ac84354f702
 Author: Peter Hutterer <peter.hutterer@who-t.net>
 Date:   Thu Jul 30 11:08:59 2009 +1000
