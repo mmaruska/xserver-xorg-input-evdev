@@ -1,3 +1,33 @@
+commit cd24c2cc183d56603056805ed0084e3abb11c758
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Fri Aug 21 09:03:10 2009 +1000
+
+    evdev 2.2.5
+
+commit c8a0f1cf362152ae275717d367afa2179d6bbc0b
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Thu Aug 20 11:02:31 2009 +1000
+
+    Only take the driver-internal button mapping to count buttons (#23405)
+    
+    Regression:
+        If a user has multiple buttons mapped to the same button number, the
+        number of buttons counted is set to a wrong value.  e.g. a button
+        mapping of 1 1 1 for a mouse with three buttons would only initialize 1
+        button to the X server.
+    
+        In the future, the user cannot change this button mapping as the server
+        only knows about one button.
+    
+    The user-supplied button map (option ButtonMapping) shouldn't matter when
+    counting the buttons. Only the driver-internal mapping (BTN_0 -> button 1,
+    etc.) matters.
+    
+    X.Org Bug 23405 <http://bugs.freedesktop.org/show_bug.cgi?id=23405>
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    (cherry picked from commit 415b6ffa958e3103eeb52af4ccd881497169eed4)
+
 commit bf356d939925b537921e1f82559f92baa3a76bcc
 Author: Peter Hutterer <peter.hutterer@who-t.net>
 Date:   Thu Aug 6 14:08:55 2009 +1000
