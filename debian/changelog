@@ -2,6 +2,7 @@ xserver-xorg-input-evdev (1:2.2.99.1-1) UNRELEASED; urgency=low
 
   * New upstream snapshot.
   * Bump build-dep on xutils-dev for new xorg-macros.
+  * Build against xserver 1.7 RC.
 
  -- Julien Cristau <jcristau@debian.org>  Tue, 29 Sep 2009 20:45:28 +0200
 

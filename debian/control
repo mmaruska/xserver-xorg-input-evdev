@@ -7,7 +7,7 @@ Build-Depends:
  debhelper (>= 5.0.0),
  pkg-config,
  quilt,
- xserver-xorg-dev (>= 2:1.5.99.901),
+ xserver-xorg-dev (>= 2:1.6.99.900),
  x11proto-core-dev,
  x11proto-randr-dev,
  x11proto-input-dev,
