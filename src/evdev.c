@@ -89,7 +89,9 @@
 #define EVDEV_INITIALIZED	(1 << 5) /* WheelInit etc. called already? */
 #define EVDEV_TOUCHSCREEN	(1 << 6)
 #define EVDEV_CALIBRATED	(1 << 7) /* run-time calibrated? */
-#define EVDEV_TABLET		(1 << 8) /* run-time calibrated? */
+#define EVDEV_TABLET		(1 << 8) /* device looks like a tablet? */
+#define EVDEV_UNIGNORE_ABSOLUTE (1 << 9) /* explicitly unignore abs axes */
+#define EVDEV_UNIGNORE_RELATIVE (1 << 10) /* explicitly unignore rel axes */
 
 #define MIN_KEYCODE 8
 #define GLYPHS_PER_KEY 2
@@ -438,7 +440,7 @@ EvdevProcessValuators(InputInfoPtr pInfo, int v[MAX_VALUATORS], int *num_v,
         for (i = 0; i < REL_CNT; i++)
         {
             int map = pEvdev->axis_map[i];
-            if (pEvdev->delta[i] && map != -1)
+            if (map != -1)
             {
                 v[map] = pEvdev->delta[i];
                 if (map < first)
@@ -768,6 +770,7 @@ EvdevReadInput(InputInfoPtr pInfo)
         {
             if (errno == ENODEV) /* May happen after resume */
             {
+                EvdevMBEmuFinalize(pInfo);
                 xf86RemoveEnabledDevice(pInfo);
                 close(pInfo->fd);
                 pInfo->fd = -1;
@@ -1422,6 +1425,17 @@ EvdevInitButtonMapping(InputInfoPtr pInfo)
 }
 
 static void
+EvdevInitAnyClass(DeviceIntPtr device, EvdevPtr pEvdev)
+{
+    if (pEvdev->flags & EVDEV_RELATIVE_EVENTS &&
+        EvdevAddRelClass(device) == Success)
+        xf86Msg(X_INFO, "%s: initialized for relative axes.\n", device->name);
+    if (pEvdev->flags & EVDEV_ABSOLUTE_EVENTS &&
+        EvdevAddAbsClass(device) == Success)
+        xf86Msg(X_INFO, "%s: initialized for absolute axes.\n", device->name);
+}
+
+static void
 EvdevInitAbsClass(DeviceIntPtr device, EvdevPtr pEvdev)
 {
     if (EvdevAddAbsClass(device) == Success) {
@@ -1512,7 +1526,9 @@ EvdevInit(DeviceIntPtr device)
      * used and relative axes are ignored.
      */
 
-    if (pEvdev->flags & (EVDEV_TOUCHPAD | EVDEV_TOUCHSCREEN | EVDEV_TABLET))
+    if (pEvdev->flags & (EVDEV_UNIGNORE_RELATIVE | EVDEV_UNIGNORE_ABSOLUTE))
+        EvdevInitAnyClass(device, pEvdev);
+    else if (pEvdev->flags & (EVDEV_TOUCHPAD | EVDEV_TOUCHSCREEN | EVDEV_TABLET))
         EvdevInitTouchDevice(device, pEvdev);
     else if (pEvdev->flags & EVDEV_RELATIVE_EVENTS)
         EvdevInitRelClass(device, pEvdev);
@@ -1655,6 +1671,7 @@ static int
 EvdevCacheCompare(InputInfoPtr pInfo, BOOL compare)
 {
     EvdevPtr pEvdev = pInfo->private;
+    size_t len;
     int i;
 
     char name[1024]                  = {0};
@@ -1663,106 +1680,121 @@ EvdevCacheCompare(InputInfoPtr pInfo, BOOL compare)
     unsigned long rel_bitmask[NLONGS(REL_CNT)] = {0};
     unsigned long abs_bitmask[NLONGS(ABS_CNT)] = {0};
     unsigned long led_bitmask[NLONGS(LED_CNT)] = {0};
-    struct input_absinfo absinfo[ABS_CNT];
 
-    if (ioctl(pInfo->fd,
-              EVIOCGNAME(sizeof(name) - 1), name) < 0) {
+    if (ioctl(pInfo->fd, EVIOCGNAME(sizeof(name) - 1), name) < 0) {
         xf86Msg(X_ERROR, "ioctl EVIOCGNAME failed: %s\n", strerror(errno));
         goto error;
     }
 
-    if (compare && strcmp(pEvdev->name, name)) {
-        xf86Msg(X_ERROR, "%s: device name changed: %s != %s\n", pInfo->name, pEvdev->name, name);
+    if (!compare) {
+        strcpy(pEvdev->name, name);
+    } else if (strcmp(pEvdev->name, name)) {
+        xf86Msg(X_ERROR, "%s: device name changed: %s != %s\n",
+                pInfo->name, pEvdev->name, name);
         goto error;
     }
 
-    if (ioctl(pInfo->fd,
-              EVIOCGBIT(0, sizeof(bitmask)), bitmask) < 0) {
-        xf86Msg(X_ERROR, "%s: ioctl EVIOCGBIT failed: %s\n", pInfo->name, strerror(errno));
+    len = ioctl(pInfo->fd, EVIOCGBIT(0, sizeof(bitmask)), bitmask);
+    if (len < 0) {
+        xf86Msg(X_ERROR, "%s: ioctl EVIOCGBIT failed: %s\n",
+                pInfo->name, strerror(errno));
         goto error;
     }
 
-    if (compare && memcmp(pEvdev->bitmask, bitmask, sizeof(bitmask))) {
+    if (!compare) {
+        memcpy(pEvdev->bitmask, bitmask, len);
+    } else if (memcmp(pEvdev->bitmask, bitmask, len)) {
         xf86Msg(X_ERROR, "%s: device bitmask has changed\n", pInfo->name);
         goto error;
     }
 
-
-    if (ioctl(pInfo->fd,
-              EVIOCGBIT(EV_REL, sizeof(rel_bitmask)), rel_bitmask) < 0) {
-        xf86Msg(X_ERROR, "%s: ioctl EVIOCGBIT failed: %s\n", pInfo->name, strerror(errno));
+    len = ioctl(pInfo->fd, EVIOCGBIT(EV_REL, sizeof(rel_bitmask)), rel_bitmask);
+    if (len < 0) {
+        xf86Msg(X_ERROR, "%s: ioctl EVIOCGBIT failed: %s\n",
+                pInfo->name, strerror(errno));
         goto error;
     }
 
-    if (compare && memcmp(pEvdev->rel_bitmask, rel_bitmask, sizeof(rel_bitmask))) {
+    if (!compare) {
+        memcpy(pEvdev->rel_bitmask, rel_bitmask, len);
+    } else if (memcmp(pEvdev->rel_bitmask, rel_bitmask, len)) {
         xf86Msg(X_ERROR, "%s: device rel_bitmask has changed\n", pInfo->name);
         goto error;
     }
 
-    if (ioctl(pInfo->fd,
-              EVIOCGBIT(EV_ABS, sizeof(abs_bitmask)), abs_bitmask) < 0) {
-        xf86Msg(X_ERROR, "%s: ioctl EVIOCGBIT failed: %s\n", pInfo->name, strerror(errno));
+    len = ioctl(pInfo->fd, EVIOCGBIT(EV_ABS, sizeof(abs_bitmask)), abs_bitmask);
+    if (len < 0) {
+        xf86Msg(X_ERROR, "%s: ioctl EVIOCGBIT failed: %s\n",
+                pInfo->name, strerror(errno));
         goto error;
     }
 
-    if (compare && memcmp(pEvdev->abs_bitmask, abs_bitmask, sizeof(abs_bitmask))) {
+    if (!compare) {
+        memcpy(pEvdev->abs_bitmask, abs_bitmask, len);
+    } else if (memcmp(pEvdev->abs_bitmask, abs_bitmask, len)) {
         xf86Msg(X_ERROR, "%s: device abs_bitmask has changed\n", pInfo->name);
         goto error;
     }
 
-    if (ioctl(pInfo->fd,
-              EVIOCGBIT(EV_KEY, sizeof(key_bitmask)), key_bitmask) < 0) {
-        xf86Msg(X_ERROR, "%s: ioctl EVIOCGBIT failed: %s\n", pInfo->name, strerror(errno));
+    len = ioctl(pInfo->fd, EVIOCGBIT(EV_LED, sizeof(led_bitmask)), led_bitmask);
+    if (len < 0) {
+        xf86Msg(X_ERROR, "%s: ioctl EVIOCGBIT failed: %s\n",
+                pInfo->name, strerror(errno));
         goto error;
     }
 
-    if (compare && memcmp(pEvdev->key_bitmask, key_bitmask, sizeof(key_bitmask))) {
-        xf86Msg(X_ERROR, "%s: device key_bitmask has changed\n", pInfo->name);
-        goto error;
-    }
-
-    if (ioctl(pInfo->fd,
-              EVIOCGBIT(EV_LED, sizeof(led_bitmask)), led_bitmask) < 0) {
-        xf86Msg(X_ERROR, "%s: ioctl EVIOCGBIT failed: %s\n", pInfo->name, strerror(errno));
-        goto error;
-    }
-
-    if (compare && memcmp(pEvdev->led_bitmask, led_bitmask, sizeof(led_bitmask))) {
+    if (!compare) {
+        memcpy(pEvdev->led_bitmask, led_bitmask, len);
+    } else if (memcmp(pEvdev->led_bitmask, led_bitmask, len)) {
         xf86Msg(X_ERROR, "%s: device led_bitmask has changed\n", pInfo->name);
         goto error;
     }
 
-    memset(absinfo, 0, sizeof(absinfo));
-
-    for (i = ABS_X; i <= ABS_MAX; i++)
-    {
-        if (TestBit(i, abs_bitmask))
-        {
-            if (ioctl(pInfo->fd, EVIOCGABS(i), &absinfo[i]) < 0) {
-                xf86Msg(X_ERROR, "%s: ioctl EVIOCGABS failed: %s\n", pInfo->name, strerror(errno));
+    /*
+     * Do not try to validate absinfo data since it is not expected
+     * to be static, always refresh it in evdev structure.
+     */
+    for (i = ABS_X; i <= ABS_MAX; i++) {
+        if (TestBit(i, abs_bitmask)) {
+            len = ioctl(pInfo->fd, EVIOCGABS(i), &pEvdev->absinfo[i]);
+            if (len < 0) {
+                xf86Msg(X_ERROR, "%s: ioctl EVIOCGABSi(%d) failed: %s\n",
+                        pInfo->name, i, strerror(errno));
                 goto error;
             }
-            /* ignore current position (value) in comparison (bug #19819) */
-            absinfo[i].value = pEvdev->absinfo[i].value;
         }
     }
 
-    if (compare && memcmp(pEvdev->absinfo, absinfo, sizeof(absinfo))) {
-        xf86Msg(X_ERROR, "%s: device absinfo has changed\n", pInfo->name);
+    len = ioctl(pInfo->fd, EVIOCGBIT(EV_KEY, sizeof(key_bitmask)), key_bitmask);
+    if (len < 0) {
+        xf86Msg(X_ERROR, "%s: ioctl EVIOCGBIT failed: %s\n",
+                pInfo->name, strerror(errno));
         goto error;
     }
 
-    /* cache info */
-    if (!compare)
-    {
-        strcpy(pEvdev->name, name);
-        memcpy(pEvdev->bitmask, bitmask, sizeof(bitmask));
-        memcpy(pEvdev->key_bitmask, key_bitmask, sizeof(key_bitmask));
-        memcpy(pEvdev->rel_bitmask, rel_bitmask, sizeof(rel_bitmask));
-        memcpy(pEvdev->abs_bitmask, abs_bitmask, sizeof(abs_bitmask));
-        memcpy(pEvdev->led_bitmask, led_bitmask, sizeof(led_bitmask));
-        memcpy(pEvdev->absinfo, absinfo, sizeof(absinfo));
+    if (compare) {
+        /*
+         * Keys are special as user can adjust keymap at any time (on
+         * devices that support EVIOCSKEYCODE. However we do not expect
+         * buttons reserved for mice/tablets/digitizers and so on to
+         * appear/disappear so we will check only those in
+         * [BTN_MISC, KEY_OK) range.
+         */
+        size_t start_word = BTN_MISC / LONG_BITS;
+        size_t start_byte = start_word * sizeof(unsigned long);
+        size_t end_word = KEY_OK / LONG_BITS;
+        size_t end_byte = end_word * sizeof(unsigned long);
+
+        if (len >= start_byte &&
+            memcmp(&pEvdev->key_bitmask[start_word], &key_bitmask[start_word],
+                   min(len, end_byte) - start_byte + 1)) {
+            xf86Msg(X_ERROR, "%s: device key_bitmask has changed\n", pInfo->name);
+            goto error;
+        }
     }
+
+    /* Copy the data so we have reasonably up-to-date info */
+    memcpy(pEvdev->key_bitmask, key_bitmask, len);
 
     return Success;
 
@@ -1774,8 +1806,9 @@ error:
 static int
 EvdevProbe(InputInfoPtr pInfo)
 {
-    int i, has_rel_axes, has_abs_axes, has_xy, has_keys, num_buttons, has_scroll;
+    int i, has_rel_axes, has_abs_axes, has_keys, num_buttons, has_scroll;
     int kernel24 = 0;
+    int ignore_abs = 0, ignore_rel = 0;
     EvdevPtr pEvdev = pInfo->private;
 
     if (pEvdev->grabDevice && ioctl(pInfo->fd, EVIOCGRAB, (void *)1)) {
@@ -1791,9 +1824,29 @@ EvdevProbe(InputInfoPtr pInfo)
         ioctl(pInfo->fd, EVIOCGRAB, (void *)0);
     }
 
+    /* Trinary state for ignoring axes:
+       - unset: do the normal thing.
+       - TRUE: explicitly ignore them.
+       - FALSE: unignore axes, use them at all cost if they're present.
+     */
+    if (xf86FindOption(pInfo->options, "IgnoreRelativeAxes"))
+    {
+        if (xf86SetBoolOption(pInfo->options, "IgnoreRelativeAxes", FALSE))
+            ignore_rel = TRUE;
+        else
+            pEvdev->flags |= EVDEV_UNIGNORE_RELATIVE;
+
+    }
+    if (xf86FindOption(pInfo->options, "IgnoreAbsoluteAxes"))
+    {
+        if (xf86SetBoolOption(pInfo->options, "IgnoreAbsoluteAxes", FALSE))
+           ignore_abs = TRUE;
+        else
+            pEvdev->flags |= EVDEV_UNIGNORE_ABSOLUTE;
+    }
+
     has_rel_axes = FALSE;
     has_abs_axes = FALSE;
-    has_xy = FALSE;
     has_keys = FALSE;
     has_scroll = FALSE;
     num_buttons = 0;
@@ -1826,14 +1879,6 @@ EvdevProbe(InputInfoPtr pInfo)
     }
 
     if (has_rel_axes) {
-        xf86Msg(X_INFO, "%s: found relative axes\n", pInfo->name);
-        pEvdev->flags |= EVDEV_RELATIVE_EVENTS;
-        if (TestBit(REL_X, pEvdev->rel_bitmask) &&
-            TestBit(REL_Y, pEvdev->rel_bitmask)) {
-            xf86Msg(X_INFO, "%s: Found x and y relative axes\n", pInfo->name);
-            has_xy = TRUE;
-        }
-
         if (TestBit(REL_WHEEL, pEvdev->rel_bitmask) ||
             TestBit(REL_HWHEEL, pEvdev->rel_bitmask) ||
             TestBit(REL_DIAL, pEvdev->rel_bitmask)) {
@@ -1845,6 +1890,20 @@ EvdevProbe(InputInfoPtr pInfo)
             num_buttons = (num_buttons < 3) ? 7 : num_buttons + 4;
             pEvdev->num_buttons = num_buttons;
         }
+
+        if (!ignore_rel)
+        {
+            xf86Msg(X_INFO, "%s: Found relative axes\n", pInfo->name);
+            pEvdev->flags |= EVDEV_RELATIVE_EVENTS;
+
+            if (TestBit(REL_X, pEvdev->rel_bitmask) &&
+                TestBit(REL_Y, pEvdev->rel_bitmask)) {
+                xf86Msg(X_INFO, "%s: Found x and y relative axes\n", pInfo->name);
+            }
+        } else {
+            xf86Msg(X_INFO, "%s: Relative axes present but ignored.\n", pInfo->name);
+            has_rel_axes = FALSE;
+        }
     }
 
     for (i = 0; i < ABS_MAX; i++) {
@@ -1854,8 +1913,12 @@ EvdevProbe(InputInfoPtr pInfo)
         }
     }
 
-    if (has_abs_axes) {
-        xf86Msg(X_INFO, "%s: found absolute axes\n", pInfo->name);
+    if (ignore_abs && has_abs_axes)
+    {
+        xf86Msg(X_INFO, "%s: Absolute axes present but ignored.\n", pInfo->name);
+        has_abs_axes = FALSE;
+    } else if (has_abs_axes) {
+        xf86Msg(X_INFO, "%s: Found absolute axes\n", pInfo->name);
         pEvdev->flags |= EVDEV_ABSOLUTE_EVENTS;
 
         if ((TestBit(ABS_X, pEvdev->abs_bitmask) &&
@@ -1877,7 +1940,6 @@ EvdevProbe(InputInfoPtr pInfo)
                     pEvdev->flags |= EVDEV_BUTTON_EVENTS;
                 }
             }
-            has_xy = TRUE;
         }
     }
 
@@ -1937,12 +1999,32 @@ EvdevProbe(InputInfoPtr pInfo)
     return 0;
 }
 
+static void
+EvdevSetCalibration(InputInfoPtr pInfo, int num_calibration, int calibration[4])
+{
+    EvdevPtr pEvdev = pInfo->private;
+
+    if (num_calibration == 0) {
+        pEvdev->flags &= ~EVDEV_CALIBRATED;
+        pEvdev->calibration.min_x = 0;
+        pEvdev->calibration.max_x = 0;
+        pEvdev->calibration.min_y = 0;
+        pEvdev->calibration.max_y = 0;
+    } else if (num_calibration == 4) {
+        pEvdev->flags |= EVDEV_CALIBRATED;
+        pEvdev->calibration.min_x = calibration[0];
+        pEvdev->calibration.max_x = calibration[1];
+        pEvdev->calibration.min_y = calibration[2];
+        pEvdev->calibration.max_y = calibration[3];
+    }
+}
 
 static InputInfoPtr
 EvdevPreInit(InputDriverPtr drv, IDevPtr dev, int flags)
 {
     InputInfoPtr pInfo;
-    const char *device;
+    const char *device, *str;
+    int num_calibration = 0, calibration[4] = { 0, 0, 0, 0 };
     EvdevPtr pEvdev;
 
     if (!(pInfo = xf86AllocateInput(drv, 0)))
@@ -2014,6 +2096,19 @@ EvdevPreInit(InputDriverPtr drv, IDevPtr dev, int flags)
     pEvdev->invert_x = xf86SetBoolOption(pInfo->options, "InvertX", FALSE);
     pEvdev->invert_y = xf86SetBoolOption(pInfo->options, "InvertY", FALSE);
     pEvdev->swap_axes = xf86SetBoolOption(pInfo->options, "SwapAxes", FALSE);
+
+    str = xf86CheckStrOption(pInfo->options, "Calibration", NULL);
+    if (str) {
+        num_calibration = sscanf(str, "%d %d %d %d",
+                                 &calibration[0], &calibration[1],
+                                 &calibration[2], &calibration[3]);
+        if (num_calibration == 4)
+            EvdevSetCalibration(pInfo, num_calibration, calibration);
+        else
+            xf86Msg(X_ERROR,
+                    "%s: Insufficient calibration factors (%d). Ignoring calibration\n",
+                    pInfo->name, num_calibration);
+    }
 
     /* Grabbing the event device stops in-kernel event forwarding. In other
        words, it disables rfkill and the "Macintosh mouse button emulation".
@@ -2306,16 +2401,16 @@ static void EvdevInitAxesLabels(EvdevPtr pEvdev, int natoms, Atom *atoms)
     int labels_len = 0;
     char *misc_label;
 
-    if (pEvdev->flags & EVDEV_RELATIVE_EVENTS)
-    {
-        labels     = rel_labels;
-        labels_len = ArrayLength(rel_labels);
-        misc_label = AXIS_LABEL_PROP_REL_MISC;
-    } else if ((pEvdev->flags & EVDEV_ABSOLUTE_EVENTS))
+    if (pEvdev->flags & EVDEV_ABSOLUTE_EVENTS)
     {
         labels     = abs_labels;
         labels_len = ArrayLength(abs_labels);
         misc_label = AXIS_LABEL_PROP_ABS_MISC;
+    } else if ((pEvdev->flags & EVDEV_RELATIVE_EVENTS))
+    {
+        labels     = rel_labels;
+        labels_len = ArrayLength(rel_labels);
+        misc_label = AXIS_LABEL_PROP_REL_MISC;
     }
 
     memset(atoms, 0, natoms * sizeof(Atom));
@@ -2490,25 +2585,7 @@ EvdevSetProperty(DeviceIntPtr dev, Atom atom, XIPropertyValuePtr val,
             return BadMatch;
 
         if (!checkonly)
-        {
-            if (val->size == 0)
-            {
-                pEvdev->flags &= ~EVDEV_CALIBRATED;
-                pEvdev->calibration.min_x = 0;
-                pEvdev->calibration.max_x = 0;
-                pEvdev->calibration.min_y = 0;
-                pEvdev->calibration.max_y = 0;
-            } else if (val->size == 4)
-            {
-                CARD32 *vals = (CARD32*)val->data;
-
-                pEvdev->flags |= EVDEV_CALIBRATED;
-                pEvdev->calibration.min_x = vals[0];
-                pEvdev->calibration.max_x = vals[1];
-                pEvdev->calibration.min_y = vals[2];
-                pEvdev->calibration.max_y = vals[3];
-            }
-        }
+            EvdevSetCalibration(pInfo, val->size, val->data);
     } else if (atom == prop_swap)
     {
         if (val->format != 8 || val->type != XA_INTEGER || val->size != 1)
