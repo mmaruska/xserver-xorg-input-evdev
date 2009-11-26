@@ -1,3 +1,197 @@
+commit 4f05afd495214ad48ffab7bdb1cde69aacc5af8f
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Fri Nov 20 11:18:03 2009 +1000
+
+    evdev 2.3.1
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+
+commit c6964dd28a114e23de21f91c0323ae4f03fb0f16
+Author: Bartosz Brachaczek <b.brachaczek@gmail.com>
+Date:   Fri Nov 13 00:18:00 2009 +1000
+
+    Set all valuators for relative motion events (#24737)
+    
+    We should process all the deltas reported by a relative motion device,
+    otherwise some devices such as A4Tech X-750F or similar may trigger a
+    situation when the `v` array contains random values (it isn't
+    initialized anywhere) and later we process them and in effect the mouse
+    cursor "jumps" on the screen.
+    I'm not sure why, but we also must be sure that the `first` and `last`
+    variables reflect the axis map, otherwise the mouse cursor "jumps" on
+    the screen when clicking mouse buttons in some rare cases reported by
+    Bartek Iwaniec on Bugzilla. That's why a simple initialization of the
+    `v` array with zeros isn't sufficient.
+    
+    X.Org Bug 24737 <http://bugs.freedesktop.org/show_bug.cgi?id=24737>
+    
+    Signed-off-by: Bartosz Brachaczek <b.brachaczek@gmail.com>
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    (cherry picked from commit c1f16a4f59a584ab4546c2f16e20b06703042057)
+
+commit 175af93bdb5928236e5c402a77d164313497d72a
+Author: Dmitry Torokhov <dmitry.torokhov@gmail.com>
+Date:   Mon Nov 2 23:11:55 2009 -0800
+
+    Relax checks when reopening devices
+    
+    When checking whether we are dealing with the same device as before
+    when we try to reopen it evdev should not require exact match of
+    entire keymap. Users should be allowed to adjust keymaps to better
+    match their hardware even after X starts. However we don't expect
+    changes in [BTN_MISC, KEY_OK) range since these codes are reserved for
+    mice, joysticks, tablets and so forth, so we will limit the check to
+    this range.
+    
+    The same goes for absinfo - limits can change and it should not result
+    in device being disabled.
+    
+    Also check the length of the data returned by ioctl and don't try to
+    compare more than we were given.
+    
+    [peter: moved the key comparison below the led+abs comparison]
+    
+    Signed-off-by: Dmitry Torokhov <dtor@mail.ru>
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    (cherry picked from commit a0f7f34dc5effc5822c618bfbf3a0872669c30ad)
+
+commit 7c3c7f83d02c611d9660a6f6ef4201b71017d42d
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Mon Nov 2 13:57:18 2009 +1000
+
+    Fix drag-lock property handler for multiple draglock buttons.
+    
+    Parsing of the values was wrong. Given an input of 1 2 3 4, button 1 sets
+    the lock for button 2 and button 3 sets the lock for button 4.
+    
+    This also means we need to return BadMatch if the property isn't a multiple
+    of 2.
+    
+    Red Hat Bug 524428 <https://bugzilla.redhat.com/show_bug.cgi?id=524428>
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    (cherry picked from commit 11669d82790fd7c94c44c0d487d3fa5e203528e9)
+
+commit aa6399fdb9ec970e205b1efb336338ac870d2bcf
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Mon Oct 19 11:40:24 2009 +1000
+
+    evdev 2.3.0
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+
+commit 1d86f5dec16beaf9391f320d7702cc59e9486bf4
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Thu Oct 15 11:13:47 2009 +1000
+
+    Convert IgnoreAbsolute/RelativeAxes options into trinary state.
+    
+    The Xen Virtual Pointer device exports both absolute and relative axes from
+    the kernel device. Which coordinates are used is a run-time decision and
+    depends on the host-specific configuration.
+    0a3657d2ee62f4086e9687218cb33835ba61a0b3 broke these devices, and they are
+    now unusable out-of-the-box as there is no configuration to cover them.
+    
+    This patch converts the IgnoreAbsoluteAxes and the IgnoreRelativeAxes
+    configuration options into a trinary state.
+    1. If unset, configure the device as normal by trying to guess the right
+       axis setup.
+    2. If set to true, ignore the specific axis type completely (except for
+       wheel events).
+    3. If set to false, explicitly 'unignore' the axis type, alwas configuring
+       it if it is present on the device. This setting introduces seemingly
+       buggy behaviour (see Bug 21832)
+    
+    1. and 2. replicate the current driver behaviour.
+    The result of 3. is that is that if a device has absolute axes and the
+    options set to false, both axes will be initialized (absolute last to get
+    clipping right). This requires axis labelling priorty to switch from
+    relative first to absolute first.
+    
+    Relative events are forwarded into the server through the absolute axes,
+    the server scales this into the device absolute range and everyone is happy.
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+
+commit fbd86e2530f3f69f397d3bae9ad87cf8e2d14221
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Thu Oct 15 10:52:27 2009 +1000
+
+    Fix copy/paste typo in comment.
+
+commit 9ea1f9a6954c8dceee17076f10ff0f82f042de88
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Tue Oct 13 10:49:46 2009 +1000
+
+    Fix typo, use uppercase like the other messages
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+
+commit 57b54ee3995f2f678ef359e7663cad517a8b2433
+Author: Oliver McFadden <oliver.mcfadden@nokia.com>
+Date:   Mon Oct 12 16:32:51 2009 +0300
+
+    evdev: Support the "Calibration" string option.
+    
+    Originally based on a patch from Daniel Stone, this commit allows for
+    the calibration factors to be set either from Xorg.conf or via HAL.
+    
+    Previously the only way was via the properties interface.
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+
+commit f2dc0681febd297d95dae7c9e3ae19b771af8420
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Tue Oct 6 19:09:33 2009 +1000
+
+    Finalize the middle button emulation when a read error occurs (#23048)
+    
+    If a read error occurs, remove the block and wakeup handlers for middle
+    mouse button emulation. Otherwise, they'll still be around after the device
+    has been reopened and overwritten with the new ones created by EvdevOn. Once
+    this happened, future removal of the device can lead to a server crash.
+    
+    X.Org Bug 23048 <http://bugs.freedesktop.org/show_bug.cgi?id=23048>
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+
+commit 3fa49dfcab9081787840ed6bb9451cb73f65e248
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Thu Oct 8 14:26:41 2009 +1000
+
+    evdev 2.2.99.2
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+
+commit 941391ca34a7537542f0bb894fc0f02e200165b4
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Wed Sep 30 12:05:17 2009 +1000
+
+    Add explicit options to ignore relative or absolute axes.
+    
+    The X server cannot deal with devices that have both relative and absolute
+    axes. Evdev tries to guess wich axes to ignore given the device type and
+    disables absolute axes for mice and relative axes for tablets, touchscreens
+    and touchpad. This guess is sometimes wrong and causes exitus felis
+    domesticae parvulae.
+    
+    Two new configuration options are provided to explicitly allow ignoring an
+    axis. Mouse wheel axes are exempt and will work even if relative axes are
+    ignored.  No property, this option must be set in the configuration.
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Acked-by: Daniel Stone <daniel@fooishbar.org>
+
+commit 2144f7d83426136cc1a9de2fafb302683645c6da
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Wed Sep 30 11:49:21 2009 +1000
+
+    Remove unused has_xy.
+    
+    has_xy is only ever set, but not used for anything else.
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+
 commit 61b4e88e01f32e976f85e7970a7f5b21fcd84f97
 Author: Peter Hutterer <peter.hutterer@who-t.net>
 Date:   Mon Sep 21 16:56:28 2009 +1000
