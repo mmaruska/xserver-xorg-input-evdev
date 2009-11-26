@@ -1,6 +1,7 @@
 xserver-xorg-input-evdev (1:2.3.1-1) UNRELEASED; urgency=low
 
   * New upstream release.
+  * Replace the fdi file with an udev rule.
 
  -- Julien Cristau <jcristau@debian.org>  Thu, 26 Nov 2009 18:27:58 +0100
 
