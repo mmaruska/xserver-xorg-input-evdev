@@ -1,11 +1,11 @@
-xserver-xorg-input-evdev (1:2.3.1-1) UNRELEASED; urgency=low
+xserver-xorg-input-evdev (1:2.3.1-1) experimental; urgency=low
 
   * New upstream release.
     + Finalize the middle button emulation when a read error occurs
       (closes: #550970, #552012)
   * Replace the fdi file with an udev rule.
 
- -- Julien Cristau <jcristau@debian.org>  Thu, 26 Nov 2009 18:27:58 +0100
+ -- Julien Cristau <jcristau@debian.org>  Sat, 28 Nov 2009 20:42:52 +0100
 
 xserver-xorg-input-evdev (1:2.2.99.1-1) experimental; urgency=low
 
