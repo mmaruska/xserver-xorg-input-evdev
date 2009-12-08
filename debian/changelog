@@ -1,8 +1,12 @@
 xserver-xorg-input-evdev (1:2.3.1-2) UNRELEASED; urgency=low
 
+  [ Timo Aaltonen ]
   * Build against Xserver 1.7.
   * Run udevadm trigger on postinst, and depend on udev [linux-any].
   * Add xserver-xorg-input-evdev-dev for the header and .pc files.
+
+  [ Julien Cristau ]
+  * 65-xorg-evdev.rules: don't ignore change events.
 
  -- Timo Aaltonen <tjaalton@ubuntu.com>  Tue, 08 Dec 2009 13:47:20 +0200
 
