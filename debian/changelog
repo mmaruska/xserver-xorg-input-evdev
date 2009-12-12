@@ -1,4 +1,4 @@
-xserver-xorg-input-evdev (1:2.3.1-2) UNRELEASED; urgency=low
+xserver-xorg-input-evdev (1:2.3.2-1) UNRELEASED; urgency=low
 
   [ Timo Aaltonen ]
   * Build against Xserver 1.7.
@@ -7,6 +7,9 @@ xserver-xorg-input-evdev (1:2.3.1-2) UNRELEASED; urgency=low
 
   [ Julien Cristau ]
   * 65-xorg-evdev.rules: don't ignore change events.
+
+  [ Brice Goglin ]
+  * New upstream release.
 
  -- Timo Aaltonen <tjaalton@ubuntu.com>  Tue, 08 Dec 2009 13:47:20 +0200
 
