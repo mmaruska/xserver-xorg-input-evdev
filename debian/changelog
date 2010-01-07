@@ -1,4 +1,4 @@
-xserver-xorg-input-evdev (1:2.3.2-2) UNRELEASED; urgency=low
+xserver-xorg-input-evdev (1:2.3.2-2) unstable; urgency=low
 
   [ Timo Aaltonen ]
   * evdev.rules: Skip joysticks, since using evdev for those is
@@ -6,8 +6,9 @@ xserver-xorg-input-evdev (1:2.3.2-2) UNRELEASED; urgency=low
 
   [ Julien Cristau ]
   * evdev.rules: Match on ID_INPUT instead of device name + subsystem.
+  * Upload to unstable.
 
- -- Timo Aaltonen <tjaalton@ubuntu.com>  Wed, 06 Jan 2010 13:45:23 +0200
+ -- Julien Cristau <jcristau@debian.org>  Thu, 07 Jan 2010 20:21:57 +0000
 
 xserver-xorg-input-evdev (1:2.3.2-1) experimental; urgency=low
 
