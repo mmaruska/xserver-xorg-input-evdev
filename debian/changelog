@@ -3,6 +3,7 @@ xserver-xorg-input-evdev (1:2.3.2-3) UNRELEASED; urgency=low
   * 65-xorg-evdev.rules: instead of blacklisting joysticks, explicitly
     whitelist keyboards, mice, touchscreens and touchpads (closes: #564219).
     We'll need a better solution, but this should do for now.
+  * No need to test for linux in postinst, this package only exists on linux.
 
  -- Julien Cristau <jcristau@debian.org>  Tue, 12 Jan 2010 10:13:45 +0000
 
