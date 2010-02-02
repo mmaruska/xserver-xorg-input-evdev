@@ -83,6 +83,8 @@ binary-arch: build install serverabi
 	dh_install --sourcedir=debian/tmp --list-missing --exclude=evdev_drv.la --exclude=usr/share/man/man4
 	install -d debian/xserver-xorg-input-evdev/lib/udev/rules.d
 	install -m 644 debian/local/65-xorg-evdev.rules debian/xserver-xorg-input-evdev/lib/udev/rules.d/
+	install -d debian/xserver-xorg-input-evdev-udeb/lib/udev/rules.d
+	install -m 644 debian/local/65-xorg-evdev.rules debian/xserver-xorg-input-evdev-udeb/lib/udev/rules.d/
 	dh_installman
 	dh_link
 	dh_strip
