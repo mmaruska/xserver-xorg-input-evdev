@@ -9,6 +9,10 @@ xserver-xorg-input-evdev (1:2.3.2-4) UNRELEASED; urgency=low
   [ Robert Hooker ]
   * Build xserver-xorg-input-evdev-dev on arch: all.
 
+  [ Cyril Brulebois ]
+  * Add udeb needed for the graphical installer:
+    xserver-xorg-input-evdev-udeb.
+
  -- Robert Hooker <sarvatt@ubuntu.com>  Sun, 24 Jan 2010 14:44:34 -0500
 
 xserver-xorg-input-evdev (1:2.3.2-3) unstable; urgency=low
