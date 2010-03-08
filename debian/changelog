@@ -4,6 +4,7 @@ xserver-xorg-input-evdev (1:2.3.2-4) UNRELEASED; urgency=low
   * Rename the build directory to not include DEB_BUILD_GNU_TYPE for no
     good reason.  Thanks, Colin Watson!
   * Remove myself from Uploaders
+  * 65-xorg-evdev.rules: only set x11_driver for event devices.
 
   [ Robert Hooker ]
   * Build xserver-xorg-input-evdev-dev on arch: all.
