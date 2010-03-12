@@ -1,4 +1,4 @@
-xserver-xorg-input-evdev (1:2.3.2-4) UNRELEASED; urgency=low
+xserver-xorg-input-evdev (1:2.3.2-4) unstable; urgency=low
 
   [ Julien Cristau ]
   * Rename the build directory to not include DEB_BUILD_GNU_TYPE for no
@@ -15,7 +15,7 @@ xserver-xorg-input-evdev (1:2.3.2-4) UNRELEASED; urgency=low
   * Bump Standards-Version from 3.8.3 to 3.8.4 (no changes needed).
   * Add myself to Uploaders.
 
- -- Robert Hooker <sarvatt@ubuntu.com>  Sun, 24 Jan 2010 14:44:34 -0500
+ -- Cyril Brulebois <kibi@debian.org>  Fri, 12 Mar 2010 01:02:58 +0100
 
 xserver-xorg-input-evdev (1:2.3.2-3) unstable; urgency=low
 
