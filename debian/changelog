@@ -12,6 +12,7 @@ xserver-xorg-input-evdev (1:2.3.2-4) UNRELEASED; urgency=low
   [ Cyril Brulebois ]
   * Add udeb needed for the graphical installer:
     xserver-xorg-input-evdev-udeb.
+  * Bump Standards-Version from 3.8.3 to 3.8.4 (no changes needed).
 
  -- Robert Hooker <sarvatt@ubuntu.com>  Sun, 24 Jan 2010 14:44:34 -0500
 
