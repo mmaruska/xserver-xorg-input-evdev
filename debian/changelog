@@ -1,3 +1,10 @@
+xserver-xorg-input-evdev (1:2.3.2-5) UNRELEASED; urgency=low
+
+  * 65-xorg-evdev.rules: Check for ID_INPUT_TABLET too, and set x11_driver
+    if found.
+
+ -- Timo Aaltonen <tjaalton@ubuntu.com>  Sun, 21 Mar 2010 20:51:38 +0200
+
 xserver-xorg-input-evdev (1:2.3.2-4) unstable; urgency=low
 
   [ Julien Cristau ]
