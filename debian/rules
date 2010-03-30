@@ -85,6 +85,10 @@ binary-arch: build install serverabi
 	install -m 644 debian/local/65-xorg-evdev.rules debian/xserver-xorg-input-evdev/lib/udev/rules.d/
 	install -d debian/xserver-xorg-input-evdev-udeb/lib/udev/rules.d
 	install -m 644 debian/local/65-xorg-evdev.rules debian/xserver-xorg-input-evdev-udeb/lib/udev/rules.d/
+	install -d debian/xserver-xorg-input-evdev/usr/lib/X11/xorg.conf.d
+	install -m 644 debian/local/05-evdev.conf debian/xserver-xorg-input-evdev/usr/lib/X11/xorg.conf.d
+	install -d debian/xserver-xorg-input-evdev-udeb/usr/lib/X11/xorg.conf.d
+	install -m 644 debian/local/05-evdev.conf debian/xserver-xorg-input-evdev-udeb/usr/lib/X11/xorg.conf.d
 	dh_installman
 	dh_link
 	dh_strip
