@@ -3,6 +3,7 @@ xserver-xorg-input-evdev (1:2.3.2-6) UNRELEASED; urgency=low
   * Drop 05-evdev.conf, this moved to the server.
   * Build-Depend on xserver-xorg-dev 1.7.6.901.
   * Sanitize manpage installation.
+  * Update to new xsfbs, use ${xinpdriver:Depends} in debian/control.
 
  -- Julien Cristau <jcristau@debian.org>  Sat, 17 Apr 2010 00:35:44 +0200
 
