@@ -1,3 +1,9 @@
+xserver-xorg-input-evdev (1:2.3.2-7) UNRELEASED; urgency=low
+
+  * Build against Xserver 1.9.1 rc1.
+
+ -- Cyril Brulebois <kibi@debian.org>  Mon, 11 Oct 2010 10:53:39 +0200
+
 xserver-xorg-input-evdev (1:2.3.2-6) unstable; urgency=low
 
   [ Julien Cristau ]
