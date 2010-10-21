@@ -1,4 +1,4 @@
-xserver-xorg-input-evdev (1:2.5.0-1) UNRELEASED; urgency=low
+xserver-xorg-input-evdev (1:2.5.0-1) experimental; urgency=low
 
   [ Robert Hooker ]
   * New upstream release.
@@ -9,7 +9,7 @@ xserver-xorg-input-evdev (1:2.5.0-1) UNRELEASED; urgency=low
      - Forward keycodes > 255 (Closes: #500096).
      - No longer list README.mouse (Closes: #590529).
 
- -- Robert Hooker <sarvatt@ubuntu.com>  Mon, 18 Oct 2010 13:29:49 -0400
+ -- Cyril Brulebois <kibi@debian.org>  Thu, 21 Oct 2010 19:49:10 +0200
 
 xserver-xorg-input-evdev (1:2.3.2-7) experimental; urgency=low
 
