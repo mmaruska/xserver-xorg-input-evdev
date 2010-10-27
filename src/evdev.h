@@ -145,12 +145,14 @@ typedef struct {
         EV_QUEUE_PROXIMITY, /* xf86PostProximityEvent() */
         EV_QUEUE_TOUCH,	/*xf86PostTouchEvent() */
     } type;
+
     union {
         int key;	/* May be either a key code or button number. */
         unsigned int touch; /* Touch ID */
     } detail;
     int val;	/* State of the key/button/touch; pressed or released. */
     ValuatorMask *touchMask;
+    Time time;
 } EventQueueRec, *EventQueuePtr;
 
 typedef struct {
@@ -245,6 +247,7 @@ typedef struct {
     int reopen_attempts; /* max attempts to re-open after read failure */
     int reopen_left;     /* number of attempts left to re-open the device */
     OsTimerPtr reopen_timer;
+    BOOL use_timestamps;
 
     /* minor/major number */
     dev_t min_maj;

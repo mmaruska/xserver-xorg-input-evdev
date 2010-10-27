@@ -110,6 +110,8 @@ static void EvdevSetCalibration(InputInfoPtr pInfo, int num_calibration, int cal
 static int EvdevOpenDevice(InputInfoPtr pInfo);
 static void EvdevCloseDevice(InputInfoPtr pInfo);
 
+static int EvdevRequestTimestamps(InputInfoPtr pInfo);
+
 static void EvdevInitAxesLabels(EvdevPtr pEvdev, int mode, int natoms, Atom *atoms);
 static void EvdevInitOneAxisLabel(EvdevPtr pEvdev, int mapped_axis,
                                   const char **labels, int label_idx, Atom *atoms);
@@ -290,6 +292,8 @@ EvdevQueueKbdEvent(InputInfoPtr pInfo, struct input_event *ev, int value)
         pQueue->type = EV_QUEUE_KEY;
         pQueue->detail.key = code;
         pQueue->val = value;
+        if (pEvdev->use_timestamps)
+            pQueue->time = (ev->time.tv_sec * 1000 + ev->time.tv_usec / 1000);
     }
 }
 
@@ -1981,6 +1985,7 @@ EvdevOn(DeviceIntPtr device)
         return rc;
 
     EvdevGrabDevice(pInfo, 1, 0);
+    EvdevRequestTimestamps(pInfo);
 
     xf86FlushInput(pInfo->fd);
     xf86AddEnabledDevice(pInfo);
@@ -2125,6 +2130,25 @@ EvdevForceXY(InputInfoPtr pInfo, int mode)
         libevdev_enable_event_code(pEvdev->dev, EV_ABS, ABS_Y, &abs);
     }
 }
+
+static int
+EvdevRequestTimestamps(InputInfoPtr pInfo)
+{
+    EvdevPtr pEvdev = pInfo->private;
+
+#ifdef EVIOCTIME
+    int time_parameter = EV_USE_MONOTONIC_TIME;
+    if (ioctl(pInfo->fd, EVIOCTIME, &time_parameter) == 0)
+    {
+	pEvdev->use_timestamps = TRUE;
+	return Success;
+    }
+#endif
+    xf86Msg(X_NONE, "%s: monotonic timestamping unavailable\n", pInfo->name);
+    pEvdev->use_timestamps = FALSE;
+    return !Success;
+}
+
 
 static int
 EvdevProbe(InputInfoPtr pInfo)
@@ -2645,6 +2669,7 @@ EvdevPreInit(InputDriverPtr drv, InputInfoPtr pInfo, int flags)
         goto error;
     }
 
+    EvdevRequestTimestamps(pInfo);
     EvdevInitButtonMapping(pInfo);
 
     if (EvdevCache(pInfo) || EvdevProbe(pInfo)) {
