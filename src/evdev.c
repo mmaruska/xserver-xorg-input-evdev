@@ -827,6 +827,13 @@ EvdevProcessKeyEvent(InputInfoPtr pInfo, struct input_event *ev)
     /* Get the signed value, earlier kernels had this as unsigned */
     value = ev->value;
 
+    /* mmc: if ALT or CONTROL down -> set. up -> reset */
+
+
+    /* process special keys: */
+
+
+
     /* don't repeat mouse buttons */
     if (ev->code >= BTN_MOUSE && ev->code < KEY_OK)
         if (value == 2)
