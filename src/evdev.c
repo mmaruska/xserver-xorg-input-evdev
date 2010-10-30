@@ -281,7 +281,7 @@ EvdevQueueKbdEvent(InputInfoPtr pInfo, struct input_event *ev, int value)
 {
     int code = ev->code + MIN_KEYCODE;
     EventQueuePtr pQueue;
-
+    EvdevPtr pEvdev = pInfo->private;
     /* Filter all repeated events from device.
        We'll do softrepeat in the server, but only since 1.6 */
     if (value == 2)
@@ -936,8 +936,13 @@ static void EvdevPostQueuedEvents(InputInfoPtr pInfo)
     for (i = 0; i < pEvdev->num_queue; i++) {
         switch (pEvdev->queue[i].type) {
         case EV_QUEUE_KEY:
-            xf86PostKeyboardEvent(pInfo->dev, pEvdev->queue[i].detail.key,
-                                  pEvdev->queue[i].val);
+	    if (pEvdev->use_timestamps)
+                xf86PostKeyboardTimeEvent(pInfo->dev, pEvdev->queue[i].detail.key,
+                                              pEvdev->queue[i].val,
+                                              pEvdev->queue[i].time);
+            else
+                xf86PostKeyboardEvent(pInfo->dev, pEvdev->queue[i].detail.key,
+                                      pEvdev->queue[i].val);
             break;
         case EV_QUEUE_BTN:
             if (Evdev3BEmuFilterEvent(pInfo,
