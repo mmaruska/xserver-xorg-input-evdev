@@ -1,11 +1,11 @@
-xserver-xorg-input-evdev (1:2.5.99.901-2) UNRELEASED; urgency=low
+xserver-xorg-input-evdev (1:2.5.99.901-2) experimental; urgency=low
 
   * Switch Architecture for all binary packages from any to linux-any
     since this driver is Linux-only.
   * Cherry-pick bed25600 from upstream to fix crashes in
     GetProximityEvents (Closes: #605374).
 
- -- Cyril Brulebois <kibi@debian.org>  Fri, 03 Dec 2010 19:19:49 +0100
+ -- Cyril Brulebois <kibi@debian.org>  Tue, 04 Jan 2011 16:06:52 +0100
 
 xserver-xorg-input-evdev (1:2.5.99.901-1) experimental; urgency=low
 
