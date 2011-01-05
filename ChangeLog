@@ -1,3 +1,141 @@
+commit 540a4cce9071fce183c941ded35e7e8fb8f3507e
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Wed Jan 5 09:04:56 2011 +1000
+
+    evdev 2.5.99.903
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+
+commit bed25600f66db245b895a48d6edca30568ca7559
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Thu Dec 23 12:13:16 2010 +1000
+
+    Don't update first_val and num_val if we don't have data (#32480)
+    
+    For touchpads, rel_queued may be on (due to abs to rel conversion) but the
+    delta for x/y is 0/0 on the first touch. Hence, we don't have any valuators
+    to post. The current results in a num_vals of -15 and a subsequent segfault
+    when the data is posted to the server.
+    
+    Start with a last valuator of -1, so that we know if we have at least one to
+    post.
+    
+    X.Org Bug 32480 <http://bugs.freedesktop.org/show_bug.cgi?id=32480>
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Chase Douglas <chase.douglas@canonical.com>
+
+commit 9aea1c5fa09c25ad83bcf2fd4ee4bd853d889e5e
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Tue Dec 21 10:53:06 2010 +1000
+
+    Add use_proximity bit for BTN_TOOL handling.
+    
+    Touchpads send garbage data between BTN_TOOL_FINGER and BTN_TOUCH. This
+    leads to cursor movement towards invalid positions (bottom left corner,
+    usually).
+    
+    Add a new flag "use_proximity" as a delimiter for BTN_TOUCH handling. If
+    unset, the actual proximity bits are ignored, no proximity events are sent
+    and BTN_TOUCH is used for the tool handling.
+    
+    Example event stream for synaptics:
+    
+    Event: time 1292893041.002731, -------------- Report Sync ------------
+    Event: time 1292893041.015807, type 1 (Key), code 330 (Touch), value 0
+    Event: time 1292893041.015812, type 3 (Absolute), code 0 (X), value 4283
+    Event: time 1292893041.015813, type 3 (Absolute), code 1 (Y), value 4860
+    Event: time 1292893041.015815, type 3 (Absolute), code 24 (Pressure), value 23
+    Event: time 1292893041.015817, type 3 (Absolute), code 28 (Tool Width), value 5
+    Event: time 1292893041.027537, -------------- Report Sync ------------
+    Event: time 1292893041.038854, type 3 (Absolute), code 0 (X), value 1
+    Event: time 1292893041.038857, type 3 (Absolute), code 1 (Y), value 5855
+    Event: time 1292893041.038859, type 3 (Absolute), code 24 (Pressure), value 1
+    Event: time 1292893041.038861, type 3 (Absolute), code 28 (Tool Width), value 5
+    Event: time 1292893041.038864, -------------- Report Sync ------------
+    Event: time 1292893041.062432, type 3 (Absolute), code 24 (Pressure), value 0
+    Event: time 1292893041.062435, type 3 (Absolute), code 28 (Tool Width), value 0
+    Event: time 1292893041.062437, type 1 (Key), code 325 (ToolFinger), value 0
+    Event: time 1292893041.062438, -------------- Report Sync ------------
+    
+    Reported-by: Dave Airlie <airlied@redhat.com>
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Chris Bagwell <chris@cnpbagwell.com>
+
+commit 0c987a929dd4c98d4a80d8b7f75286902eb572f2
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Tue Dec 21 10:45:11 2010 +1000
+
+    Revert "Don't count BTN_TOUCH as tool. (#29428)"
+    
+    Synaptics devices send garbage between BTN_TOUCH and BTN_TOOL_FINGER. By
+    switching to use this as proximity data now, the pointer is reset to the
+    garbage data position (usually around 1/5855).
+    
+    This reverts commit 899218e18120918138f6d7420465763422d5b3b7.
+    
+    Reported-by: Dave Airlie <airlied@redhat.com>
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Chris Bagwell <chris@cnpbagwell.com>
+
+commit 242a01eb0f2f9b56fb6d6f0b41fc6a899cadb857
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Tue Dec 21 10:40:45 2010 +1000
+
+    Rename proximity to in_proximity.
+    
+    No functional change, just making it a bit more obvious to read.
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Dan Nicholson <dbn.lists@gmail.com>
+    Reviewed-by: Chris Bagwell <chris@cnpbagwell.com>
+
+commit 7415953b9afac3221d1bb834aadcc7c1917366fd
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Tue Dec 21 10:44:14 2010 +1000
+
+    Fix grammar typo in comment.
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+
+commit 1ced7ec7e23c57c0e1aaddeb3c113e67a5cb7341
+Author: Peter Korsgaard <jacmet@sunsite.dk>
+Date:   Fri Dec 10 16:16:59 2010 +0100
+
+    evdev: rename EvdevCacheCompare() to EvdevCache()
+    
+    Since 59056e656c64 (Remove the reopen timer logic) from last year,
+    EvdevCacheCompare() is only used for caching ioctl values and not for
+    comparing, so remove the unused compare logic and rename the function
+    to EvdevCache().
+    
+    Signed-off-by: Peter Korsgaard <jacmet@sunsite.dk>
+    Reviewed-by: Benjamin Tissoires <benjamin.tissoires@enac.fr>
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+
+commit 1c5ad6f8a0f098da89aa88102f424c667addf376
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Wed Dec 8 12:40:49 2010 +1000
+
+    evdev 2.5.99.902
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+
+commit 6fd1d0860e71c644fa72b4b40872e0ced671726c
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Mon Dec 6 11:41:11 2010 +1000
+
+    Return error codes from EvdevOpenDevice()
+    
+    The server's behaviour is to stop adding new devices when a BadAlloc occurs
+    on any device (on the assumption that new devices won't magically have more
+    memory). Change EvdevOpenDevice() to return an error code of BadValue when
+    it fails (and thus to the server) to prevent other devices being ignored
+    because of one misconfigured one.
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Daniel Stone <daniel@fooishbar.org>
+
 commit 31ba99e9edd28ff81437e0167c5322b9f619c52a
 Author: Peter Hutterer <peter.hutterer@who-t.net>
 Date:   Fri Nov 19 14:27:09 2010 +1000

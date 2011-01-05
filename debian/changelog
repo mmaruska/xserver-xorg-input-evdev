@@ -1,3 +1,9 @@
+xserver-xorg-input-evdev (1:2.5.99.903-1) UNRELEASED; urgency=low
+
+  * New upstream release candidate.
+
+ -- Cyril Brulebois <kibi@debian.org>  Wed, 05 Jan 2011 01:30:00 +0100
+
 xserver-xorg-input-evdev (1:2.5.99.901-2) experimental; urgency=low
 
   * Switch Architecture for all binary packages from any to linux-any
