@@ -107,12 +107,12 @@ static int proximity_bits[] = {
 };
 
 static int EvdevOn(DeviceIntPtr);
-static int EvdevCacheCompare(InputInfoPtr pInfo, BOOL compare);
+static int EvdevCache(InputInfoPtr pInfo);
 static void EvdevKbdCtrl(DeviceIntPtr device, KeybdCtrl *ctrl);
 static int EvdevSwitchMode(ClientPtr client, DeviceIntPtr device, int mode);
 static BOOL EvdevGrabDevice(InputInfoPtr pInfo, int grab, int ungrab);
 static void EvdevSetCalibration(InputInfoPtr pInfo, int num_calibration, int calibration[4]);
-static BOOL EvdevOpenDevice(InputInfoPtr pInfo);
+static int EvdevOpenDevice(InputInfoPtr pInfo);
 
 #ifdef HAVE_PROPERTIES
 static void EvdevInitAxesLabels(EvdevPtr pEvdev, int natoms, Atom *atoms);
@@ -385,7 +385,7 @@ EvdevProcessValuators(InputInfoPtr pInfo, int v[MAX_VALUATORS], int *num_v,
 
     /* convert to relative motion for touchpads */
     if (pEvdev->abs_queued && (pEvdev->flags & EVDEV_RELATIVE_MODE)) {
-        if (pEvdev->proximity) {
+        if (pEvdev->in_proximity) {
             if (pEvdev->old_vals[0] != -1)
                 pEvdev->delta[REL_X] = pEvdev->vals[0] - pEvdev->old_vals[0];
             if (pEvdev->old_vals[1] != -1)
@@ -439,11 +439,11 @@ EvdevProcessValuators(InputInfoPtr pInfo, int v[MAX_VALUATORS], int *num_v,
      * pressed.  On wacom tablets, this means that the pen is in
      * proximity of the tablet.  After the pen is removed, BTN_TOOL_PEN is
      * released, and a (0, 0) absolute event is generated.  Checking
-     * pEvdev->proximity here lets us ignore that event.  pEvdev is
-     * initialized to 1 so devices that doesn't use this scheme still
+     * pEvdev->in_proximity here lets us ignore that event.  pEvdev is
+     * initialized to 1 so devices that don't use this scheme still
      * just works.
      */
-    else if (pEvdev->abs_queued && pEvdev->proximity) {
+    else if (pEvdev->abs_queued && pEvdev->in_proximity) {
         memcpy(v, pEvdev->vals, sizeof(int) * pEvdev->num_vals);
 
         if (pEvdev->swap_axes) {
@@ -489,6 +489,9 @@ EvdevProcessProximityEvent(InputInfoPtr pInfo, struct input_event *ev)
 {
     EvdevPtr pEvdev = pInfo->private;
 
+    if (!pEvdev->use_proximity)
+        return;
+
     pEvdev->prox_queued = 1;
 
     EvdevQueueProximityEvent(pInfo, ev->value);
@@ -518,7 +521,7 @@ EvdevProcessProximityState(InputInfoPtr pInfo)
     /* no proximity change in the queue */
     if (!pEvdev->prox_queued)
     {
-        if (pEvdev->abs_queued && !pEvdev->proximity)
+        if (pEvdev->abs_queued && !pEvdev->in_proximity)
             pEvdev->abs_prox = pEvdev->abs_queued;
         return 0;
     }
@@ -532,8 +535,8 @@ EvdevProcessProximityState(InputInfoPtr pInfo)
         }
     }
 
-    if ((prox_state && !pEvdev->proximity) ||
-        (!prox_state && pEvdev->proximity))
+    if ((prox_state && !pEvdev->in_proximity) ||
+        (!prox_state && pEvdev->in_proximity))
     {
         /* We're about to go into/out of proximity but have no abs events
          * within the EV_SYN. Use the last coordinates we have. */
@@ -544,7 +547,7 @@ EvdevProcessProximityState(InputInfoPtr pInfo)
         }
     }
 
-    pEvdev->proximity = prox_state;
+    pEvdev->in_proximity = prox_state;
     return 1;
 }
 
@@ -682,6 +685,10 @@ EvdevProcessKeyEvent(InputInfoPtr pInfo, struct input_event *ev)
 
     switch (ev->code) {
         case BTN_TOUCH:
+            /* For devices that have but don't use proximity, use
+             * BTN_TOUCH as the proximity notifier */
+            if (!pEvdev->use_proximity)
+                pEvdev->in_proximity = value ? ev->code : 0;
             if (!(pEvdev->flags & (EVDEV_TOUCHSCREEN | EVDEV_TABLET)))
                 break;
             /* Treat BTN_TOUCH from devices that only have BTN_TOUCH as
@@ -723,11 +730,11 @@ EvdevPostAbsoluteMotionEvents(InputInfoPtr pInfo, int num_v, int first_v,
      * pressed.  On wacom tablets, this means that the pen is in
      * proximity of the tablet.  After the pen is removed, BTN_TOOL_PEN is
      * released, and a (0, 0) absolute event is generated.  Checking
-     * pEvdev->proximity here lets us ignore that event. pEvdev->proximity is
-     * initialized to 1 so devices that don't use this scheme still
-     * just work.
+     * pEvdev->in_proximity here lets us ignore that event.
+     * pEvdev->in_proximity is initialized to 1 so devices that don't use
+     * this scheme still just work.
      */
-    if (pEvdev->abs_queued && pEvdev->proximity) {
+    if (pEvdev->abs_queued && pEvdev->in_proximity) {
         xf86PostMotionEventP(pInfo->dev, TRUE, first_v, num_v, v + first_v);
     }
 }
@@ -770,7 +777,7 @@ static void EvdevPostQueuedEvents(InputInfoPtr pInfo, int num_v, int first_v,
             break;
         case EV_QUEUE_BTN:
 #if GET_ABI_MAJOR(ABI_XINPUT_VERSION) >= 11
-            if (pEvdev->abs_queued && pEvdev->proximity) {
+            if (pEvdev->abs_queued && pEvdev->in_proximity) {
                 xf86PostButtonEventP(pInfo->dev, 1, pEvdev->queue[i].key,
                                      pEvdev->queue[i].val, first_v, num_v,
                                      v + first_v);
@@ -1348,6 +1355,9 @@ EvdevAddAbsClass(DeviceIntPtr device)
 
     for (i = 0; i < ArrayLength(proximity_bits); i++)
     {
+        if (!pEvdev->use_proximity)
+            break;
+
         if (TestBit(proximity_bits[i], pEvdev->key_bitmask))
         {
             InitProximityClassDeviceStruct(device);
@@ -1678,12 +1688,14 @@ EvdevOn(DeviceIntPtr device)
 {
     InputInfoPtr pInfo;
     EvdevPtr pEvdev;
+    int rc = Success;
 
     pInfo = device->public.devicePrivate;
     pEvdev = pInfo->private;
     /* after PreInit fd is still open */
-    if (!EvdevOpenDevice(pInfo))
-        return !Success;
+    rc = EvdevOpenDevice(pInfo);
+    if (rc != Success)
+        return rc;
 
     EvdevGrabDevice(pInfo, 1, 0);
 
@@ -1745,14 +1757,11 @@ EvdevProc(DeviceIntPtr device, int what)
 
 /**
  * Get as much information as we can from the fd and cache it.
- * If compare is True, then the information retrieved will be compared to the
- * one already cached. If the information does not match, then this function
- * returns an error.
  *
  * @return Success if the information was cached, or !Success otherwise.
  */
 static int
-EvdevCacheCompare(InputInfoPtr pInfo, BOOL compare)
+EvdevCache(InputInfoPtr pInfo)
 {
     EvdevPtr pEvdev = pInfo->private;
     int i, len;
@@ -1769,13 +1778,7 @@ EvdevCacheCompare(InputInfoPtr pInfo, BOOL compare)
         goto error;
     }
 
-    if (!compare) {
-        strcpy(pEvdev->name, name);
-    } else if (strcmp(pEvdev->name, name)) {
-        xf86Msg(X_ERROR, "%s: device name changed: %s != %s\n",
-                pInfo->name, pEvdev->name, name);
-        goto error;
-    }
+    strcpy(pEvdev->name, name);
 
     len = ioctl(pInfo->fd, EVIOCGBIT(0, sizeof(bitmask)), bitmask);
     if (len < 0) {
@@ -1784,12 +1787,7 @@ EvdevCacheCompare(InputInfoPtr pInfo, BOOL compare)
         goto error;
     }
 
-    if (!compare) {
-        memcpy(pEvdev->bitmask, bitmask, len);
-    } else if (memcmp(pEvdev->bitmask, bitmask, len)) {
-        xf86Msg(X_ERROR, "%s: device bitmask has changed\n", pInfo->name);
-        goto error;
-    }
+    memcpy(pEvdev->bitmask, bitmask, len);
 
     len = ioctl(pInfo->fd, EVIOCGBIT(EV_REL, sizeof(rel_bitmask)), rel_bitmask);
     if (len < 0) {
@@ -1798,12 +1796,7 @@ EvdevCacheCompare(InputInfoPtr pInfo, BOOL compare)
         goto error;
     }
 
-    if (!compare) {
-        memcpy(pEvdev->rel_bitmask, rel_bitmask, len);
-    } else if (memcmp(pEvdev->rel_bitmask, rel_bitmask, len)) {
-        xf86Msg(X_ERROR, "%s: device rel_bitmask has changed\n", pInfo->name);
-        goto error;
-    }
+    memcpy(pEvdev->rel_bitmask, rel_bitmask, len);
 
     len = ioctl(pInfo->fd, EVIOCGBIT(EV_ABS, sizeof(abs_bitmask)), abs_bitmask);
     if (len < 0) {
@@ -1812,12 +1805,7 @@ EvdevCacheCompare(InputInfoPtr pInfo, BOOL compare)
         goto error;
     }
 
-    if (!compare) {
-        memcpy(pEvdev->abs_bitmask, abs_bitmask, len);
-    } else if (memcmp(pEvdev->abs_bitmask, abs_bitmask, len)) {
-        xf86Msg(X_ERROR, "%s: device abs_bitmask has changed\n", pInfo->name);
-        goto error;
-    }
+    memcpy(pEvdev->abs_bitmask, abs_bitmask, len);
 
     len = ioctl(pInfo->fd, EVIOCGBIT(EV_LED, sizeof(led_bitmask)), led_bitmask);
     if (len < 0) {
@@ -1826,12 +1814,7 @@ EvdevCacheCompare(InputInfoPtr pInfo, BOOL compare)
         goto error;
     }
 
-    if (!compare) {
-        memcpy(pEvdev->led_bitmask, led_bitmask, len);
-    } else if (memcmp(pEvdev->led_bitmask, led_bitmask, len)) {
-        xf86Msg(X_ERROR, "%s: device led_bitmask has changed\n", pInfo->name);
-        goto error;
-    }
+    memcpy(pEvdev->led_bitmask, led_bitmask, len);
 
     /*
      * Do not try to validate absinfo data since it is not expected
@@ -1853,27 +1836,6 @@ EvdevCacheCompare(InputInfoPtr pInfo, BOOL compare)
         xf86Msg(X_ERROR, "%s: ioctl EVIOCGBIT failed: %s\n",
                 pInfo->name, strerror(errno));
         goto error;
-    }
-
-    if (compare) {
-        /*
-         * Keys are special as user can adjust keymap at any time (on
-         * devices that support EVIOCSKEYCODE. However we do not expect
-         * buttons reserved for mice/tablets/digitizers and so on to
-         * appear/disappear so we will check only those in
-         * [BTN_MISC, KEY_OK) range.
-         */
-        size_t start_word = BTN_MISC / LONG_BITS;
-        size_t start_byte = start_word * sizeof(unsigned long);
-        size_t end_word = KEY_OK / LONG_BITS;
-        size_t end_byte = end_word * sizeof(unsigned long);
-
-        if (len >= start_byte &&
-            memcmp(&pEvdev->key_bitmask[start_word], &key_bitmask[start_word],
-                   min(len, end_byte) - start_byte + 1)) {
-            xf86Msg(X_ERROR, "%s: device key_bitmask has changed\n", pInfo->name);
-            goto error;
-        }
     }
 
     /* Copy the data so we have reasonably up-to-date info */
@@ -2089,6 +2051,7 @@ EvdevProbe(InputInfoPtr pInfo)
 	if (pEvdev->flags & EVDEV_TOUCHPAD) {
 	    xf86Msg(X_INFO, "%s: Configuring as touchpad\n", pInfo->name);
 	    pInfo->type_name = XI_TOUCHPAD;
+	    pEvdev->use_proximity = 0;
 	} else if (pEvdev->flags & EVDEV_TABLET) {
 	    xf86Msg(X_INFO, "%s: Configuring as tablet\n", pInfo->name);
 	    pInfo->type_name = XI_TABLET;
@@ -2144,7 +2107,7 @@ EvdevSetCalibration(InputInfoPtr pInfo, int num_calibration, int calibration[4])
     }
 }
 
-static BOOL
+static int
 EvdevOpenDevice(InputInfoPtr pInfo)
 {
     EvdevPtr pEvdev = pInfo->private;
@@ -2155,7 +2118,7 @@ EvdevOpenDevice(InputInfoPtr pInfo)
         device = xf86CheckStrOption(pInfo->options, "Device", NULL);
         if (!device) {
             xf86Msg(X_ERROR, "%s: No device specified.\n", pInfo->name);
-            return FALSE;
+            return BadValue;
         }
 
         pEvdev->device = device;
@@ -2170,7 +2133,7 @@ EvdevOpenDevice(InputInfoPtr pInfo)
 
         if (pInfo->fd < 0) {
             xf86Msg(X_ERROR, "Unable to open evdev device \"%s\".\n", device);
-            return FALSE;
+            return BadValue;
         }
     }
 
@@ -2181,10 +2144,10 @@ EvdevOpenDevice(InputInfoPtr pInfo)
         xf86Msg(X_WARNING, "%s: device file is duplicate. Ignoring.\n",
                 pInfo->name);
         close(pInfo->fd);
-        return FALSE;
+        return BadMatch;
     }
 
-    return TRUE;
+    return Success;
 }
 
 #if GET_ABI_MAJOR(ABI_XINPUT_VERSION) < 12
@@ -2246,14 +2209,16 @@ EvdevPreInit(InputDriverPtr drv, InputInfoPtr pInfo, int flags)
     pInfo->read_input = EvdevReadInput;
     pInfo->switch_mode = EvdevSwitchMode;
 
-    if (!EvdevOpenDevice(pInfo))
+    rc = EvdevOpenDevice(pInfo);
+    if (rc != Success)
         goto error;
 
     /*
-     * We initialize pEvdev->proximity to 1 so that device that doesn't use
+     * We initialize pEvdev->in_proximity to 1 so that device that doesn't use
      * proximity will still report events.
      */
-    pEvdev->proximity = 1;
+    pEvdev->in_proximity = 1;
+    pEvdev->use_proximity = 1;
 
     /* Grabbing the event device stops in-kernel event forwarding. In other
        words, it disables rfkill and the "Macintosh mouse button emulation".
@@ -2273,8 +2238,7 @@ EvdevPreInit(InputDriverPtr drv, InputInfoPtr pInfo, int flags)
 
     EvdevInitButtonMapping(pInfo);
 
-    if (EvdevCacheCompare(pInfo, FALSE) ||
-        EvdevProbe(pInfo)) {
+    if (EvdevCache(pInfo) || EvdevProbe(pInfo)) {
         rc = BadMatch;
         goto error;
     }
