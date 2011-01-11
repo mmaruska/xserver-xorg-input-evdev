@@ -1,8 +1,8 @@
-xserver-xorg-input-evdev (1:2.6.0-1) UNRELEASED; urgency=low
+xserver-xorg-input-evdev (1:2.6.0-1) experimental; urgency=low
 
   * New upstream release.
 
- -- Cyril Brulebois <kibi@debian.org>  Tue, 11 Jan 2011 15:39:46 +0100
+ -- Cyril Brulebois <kibi@debian.org>  Tue, 11 Jan 2011 15:40:01 +0100
 
 xserver-xorg-input-evdev (1:2.5.99.903-1) experimental; urgency=low
 
