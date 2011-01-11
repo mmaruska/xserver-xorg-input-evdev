@@ -1,3 +1,20 @@
+commit 30c3645e20e945b0f8b7dc624748948464be606e
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Tue Jan 11 12:46:40 2011 +1000
+
+    evdev 2.6.0
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+
+commit 3b52fe2ea4a934a8d87aacd185593beb01f8f273
+Author: Chase Douglas <chase.douglas@canonical.com>
+Date:   Wed Jan 5 10:09:55 2011 -0500
+
+    Print out error messages when failing to init devices
+    
+    Signed-off-by: Chase Douglas <chase.douglas@canonical.com>
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+
 commit 540a4cce9071fce183c941ded35e7e8fb8f3507e
 Author: Peter Hutterer <peter.hutterer@who-t.net>
 Date:   Wed Jan 5 09:04:56 2011 +1000
