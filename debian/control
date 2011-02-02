@@ -44,7 +44,7 @@ Depends: ${shlibs:Depends}, ${misc:Depends}, ${xserver:Depends},
  udev-udeb [linux-any],
 Provides: ${xinpdriver:Provides}
 Description: X.Org X server -- evdev input driver
- This is a udeb, or a microdeb, for the debian-installer.
+ This is a udeb, or a microdeb, for the debian-installer.
 
 Package: xserver-xorg-input-evdev-dev
 Section: libdevel
