@@ -18,6 +18,7 @@ xserver-xorg-input-evdev (1:2.6.0-2) UNRELEASED; urgency=low
   * Remove build-deps:
     - dpkg-dev is recent enough on stable and higher.
     - automake and libtool are pulled through dh-autoreconf.
+  * Bump Standards-Version to 3.9.1 (no changes needed).
 
  -- Cyril Brulebois <kibi@debian.org>  Wed, 02 Feb 2011 05:44:06 +0100
 
