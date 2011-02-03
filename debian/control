@@ -38,7 +38,7 @@ XC-Package-Type: udeb
 Section: debian-installer
 Architecture: linux-any
 Depends: ${shlibs:Depends}, ${misc:Depends}, ${xinpdriver:Depends},
- udev-udeb [linux-any],
+ udev-udeb,
 Provides: ${xinpdriver:Provides}
 Description: X.Org X server -- evdev input driver
  This is a udeb, or a microdeb, for the debian-installer.
