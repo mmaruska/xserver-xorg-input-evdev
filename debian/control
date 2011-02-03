@@ -26,7 +26,6 @@ Package: xserver-xorg-input-evdev
 Architecture: linux-any
 Depends: ${shlibs:Depends}, ${misc:Depends}, ${xinpdriver:Depends},
 Provides: ${xinpdriver:Provides}
-Replaces: xserver-xorg (<< 6.8.2-35)
 Description: X.Org X server -- evdev input driver
  This package provides the driver for input devices using evdev, the Linux
  kernel's event delivery mechanism.  This driver allows for multiple keyboards
