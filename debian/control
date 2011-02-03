@@ -41,7 +41,7 @@ Package: xserver-xorg-input-evdev-udeb
 XC-Package-Type: udeb
 Section: debian-installer
 Architecture: linux-any
-Depends: ${shlibs:Depends}, ${misc:Depends}, ${xserver:Depends},
+Depends: ${shlibs:Depends}, ${misc:Depends}, ${xinpdriver:Depends},
  udev-udeb [linux-any],
 Provides: ${xinpdriver:Provides}
 Description: X.Org X server -- evdev input driver
