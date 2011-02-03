@@ -21,8 +21,12 @@ Vcs-Browser: http://git.debian.org/?p=pkg-xorg/driver/xserver-xorg-input-evdev.g
 
 Package: xserver-xorg-input-evdev
 Architecture: linux-any
-Depends: ${shlibs:Depends}, ${misc:Depends}, ${xinpdriver:Depends},
-Provides: ${xinpdriver:Provides}
+Depends:
+ ${shlibs:Depends},
+ ${misc:Depends},
+ ${xinpdriver:Depends},
+Provides:
+ ${xinpdriver:Provides}
 Description: X.Org X server -- evdev input driver
  This package provides the driver for input devices using evdev, the Linux
  kernel's event delivery mechanism.  This driver allows for multiple keyboards
@@ -37,16 +41,22 @@ Package: xserver-xorg-input-evdev-udeb
 XC-Package-Type: udeb
 Section: debian-installer
 Architecture: linux-any
-Depends: ${shlibs:Depends}, ${misc:Depends}, ${xinpdriver:Depends},
+Depends:
+ ${shlibs:Depends},
+ ${misc:Depends},
+ ${xinpdriver:Depends},
  udev-udeb,
-Provides: ${xinpdriver:Provides}
+Provides:
+ ${xinpdriver:Provides}
 Description: X.Org X server -- evdev input driver
  This is a udeb, or a microdeb, for the debian-installer.
 
 Package: xserver-xorg-input-evdev-dev
 Section: libdevel
 Architecture: all
-Depends: ${shlibs:Depends}, ${misc:Depends}
+Depends:
+ ${shlibs:Depends},
+ ${misc:Depends}
 Description: X.Org X server -- evdev input driver (development headers)
  This package provides the development headers for the evdev input driver
  found in xserver-xorg-input-evdev. Non-developers likely have little use
