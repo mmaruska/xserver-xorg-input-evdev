@@ -14,6 +14,7 @@ xserver-xorg-input-evdev (1:2.6.0-2) UNRELEASED; urgency=low
   * Remove xsfbs accordingly.
   * Replace ${xserver:Depends} with ${xinpdriver:Depends} in the udeb.
   * Remove long obsolete Replaces.
+  * Update Uploaders list. Thanks, David & Brice!
 
  -- Cyril Brulebois <kibi@debian.org>  Wed, 02 Feb 2011 05:44:06 +0100
 
