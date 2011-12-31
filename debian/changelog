@@ -1,4 +1,4 @@
-xserver-xorg-input-evdev (1:2.6.99.901-1) UNRELEASED; urgency=low
+xserver-xorg-input-evdev (1:2.6.99.901-1) experimental; urgency=low
 
   [ Timo Aaltonen ]
   * Remove obsolete .manpages.
@@ -11,7 +11,7 @@ xserver-xorg-input-evdev (1:2.6.99.901-1) UNRELEASED; urgency=low
   * Add patch to fix udev/libudev detection:
     - 0001-configure.ac-Fix-udev-libudev-dependency.patch
 
- -- Cyril Brulebois <kibi@debian.org>  Sat, 31 Dec 2011 18:51:03 +0100
+ -- Cyril Brulebois <kibi@debian.org>  Sat, 31 Dec 2011 19:55:39 +0100
 
 xserver-xorg-input-evdev (1:2.6.0-2) unstable; urgency=low
 
