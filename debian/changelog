@@ -7,6 +7,10 @@ xserver-xorg-input-evdev (1:2.7.0-1) UNRELEASED; urgency=low
   * New upstream release.
   * Actually merge upstream master up to 99340147b9 (one extra commit) to
     avoid inverted horizontal scroll.
+  * Don't merge from debian-experimental to avoid picking up XI2.2 fun:
+    too many bugs still need fixes so let's keep that for another day.
+    That would require a newer input proto package, along with a newer
+    server, anyway.
 
  -- Cyril Brulebois <kibi@debian.org>  Tue, 20 Mar 2012 00:32:26 +0000
 
