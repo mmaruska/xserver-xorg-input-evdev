@@ -1,8 +1,14 @@
-xserver-xorg-input-evdev (1:2.6.0-3) UNRELEASED; urgency=low
+xserver-xorg-input-evdev (1:2.7.0-1) UNRELEASED; urgency=low
 
+  [ Timo Aaltonen ]
   * Remove obsolete .manpages.
 
- -- Timo Aaltonen <tjaalton@ubuntu.com>  Tue, 15 Mar 2011 13:43:58 +0200
+  [ Cyril Brulebois ]
+  * New upstream release.
+  * Actually merge upstream master up to 99340147b9 (one extra commit) to
+    avoid inverted horizontal scroll.
+
+ -- Cyril Brulebois <kibi@debian.org>  Tue, 20 Mar 2012 00:32:26 +0000
 
 xserver-xorg-input-evdev (1:2.6.0-2) unstable; urgency=low
 
