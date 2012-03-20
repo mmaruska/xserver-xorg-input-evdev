@@ -11,6 +11,7 @@ xserver-xorg-input-evdev (1:2.7.0-1) UNRELEASED; urgency=low
     too many bugs still need fixes so let's keep that for another day.
     That would require a newer input proto package, along with a newer
     server, anyway.
+  * Bump xserver-xorg-dev build-dep to 2:1.10, now required.
 
  -- Cyril Brulebois <kibi@debian.org>  Tue, 20 Mar 2012 00:32:26 +0000
 
