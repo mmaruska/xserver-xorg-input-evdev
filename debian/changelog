@@ -1,4 +1,4 @@
-xserver-xorg-input-evdev (1:2.7.0-1) UNRELEASED; urgency=low
+xserver-xorg-input-evdev (1:2.7.0-1) unstable; urgency=low
 
   [ Timo Aaltonen ]
   * Remove obsolete .manpages.
@@ -14,7 +14,7 @@ xserver-xorg-input-evdev (1:2.7.0-1) UNRELEASED; urgency=low
   * Bump xserver-xorg-dev build-dep to 2:1.10, now required.
   * Add libudev-dev build-dep.
 
- -- Cyril Brulebois <kibi@debian.org>  Tue, 20 Mar 2012 00:32:26 +0000
+ -- Cyril Brulebois <kibi@debian.org>  Tue, 20 Mar 2012 00:40:39 +0000
 
 xserver-xorg-input-evdev (1:2.6.0-2) unstable; urgency=low
 
