@@ -23,7 +23,7 @@
 # Initialize Autoconf
 AC_PREREQ([2.60])
 AC_INIT([xf86-input-evdev],
-        [2.6.99.901],
+        [2.7.0],
         [https://bugs.freedesktop.org/enter_bug.cgi?product=xorg],
         [xf86-input-evdev])
 AC_CONFIG_SRCDIR([Makefile.am])
@@ -46,7 +46,7 @@ XORG_DEFAULT_OPTIONS
 
 # Obtain compiler/linker options from server and required extensions
 PKG_CHECK_MODULES(XORG, [xorg-server >= 1.10] xproto inputproto)
-PKG_CHECK_MODULES(UDEV, udev)
+PKG_CHECK_MODULES(UDEV, libudev)
 
 PKG_CHECK_MODULES(XI22, [inputproto >= 2.1.99.3] [xorg-server >= 1.11.99.901], HAVE_XI22="yes", HAVE_XI22="no")
 
