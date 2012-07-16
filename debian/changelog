@@ -1,3 +1,10 @@
+xserver-xorg-input-evdev (1:2.7.0-2) UNRELEASED; urgency=low
+
+  [ Maarten Lankhorst ]
+  * Bump build-dep to xorg 2:1.12.99.901
+
+ -- Maarten Lankhorst <maarten.lankhorst@canonical.com>  Mon, 16 Jul 2012 13:24:29 +0200
+
 xserver-xorg-input-evdev (1:2.7.0-1) unstable; urgency=low
 
   [ Timo Aaltonen ]
