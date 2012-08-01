@@ -3,11 +3,10 @@ xserver-xorg-input-evdev (1:2.7.0-2) UNRELEASED; urgency=low
   [ Maarten Lankhorst ]
   * Bump build-dep to xorg 2:1.12.99.901
   * Remove upstreamed 0001-configure.ac-Fix-udev-libudev-dependency.patch
-  * Add upstream bugfixes from ubuntu:
-    - 0005-fix-horiz-scrolling.patch
+  * Add upstream bugfixe from ubuntu:
     - 0006-axis-label-overrun.patch
-  * I messed up the tree, manually unapply debian/patches/0005* if you
-    build directly from git, this will be fixed by a new point release
+  * Upstream tree includes bugfix commit 99340147 from master, which will show on the
+    diff.gz.
   * Add -dbg package for symbols
 
  -- Maarten Lankhorst <maarten.lankhorst@canonical.com>  Mon, 16 Jul 2012 13:24:29 +0200
