@@ -1,4 +1,4 @@
-xserver-xorg-input-evdev (1:2.7.1-1) UNRELEASED; urgency=low
+xserver-xorg-input-evdev (1:2.7.1-1) experimental; urgency=low
 
   [ Maarten Lankhorst ]
   * Merge the 1:2.7.0-1 sid upload
@@ -6,10 +6,10 @@ xserver-xorg-input-evdev (1:2.7.1-1) UNRELEASED; urgency=low
   * Add -dbg package for symbols
 
   [ Julien Cristau ]
-  * New upstream bugfix release.
+  * New upstream bugfix release, with multitouch enabled (closes: #683723).
   * Pull from upstream evdev-2.7-branch, commit 7469081.
 
- -- Julien Cristau <jcristau@debian.org>  Fri, 03 Aug 2012 12:24:21 +0200
+ -- Julien Cristau <jcristau@debian.org>  Fri, 03 Aug 2012 12:32:30 +0200
 
 xserver-xorg-input-evdev (1:2.7.0-1) unstable; urgency=low
 
