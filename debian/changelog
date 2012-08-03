@@ -1,12 +1,10 @@
 xserver-xorg-input-evdev (1:2.7.0-2) UNRELEASED; urgency=low
 
   [ Maarten Lankhorst ]
-  * Bump build-dep to xorg 2:1.12.99.901
-  * Remove upstreamed 0001-configure.ac-Fix-udev-libudev-dependency.patch
+  * Merge the 1:2.7.0-1 sid upload
+    + Remove upstreamed 0001-configure.ac-Fix-udev-libudev-dependency.patch
   * Add upstream bugfix from ubuntu:
     - 0006-axis-label-overrun.patch
-  * Upstream tree includes bugfix commit 99340147 from master, which will show on the
-    diff.gz.
   * Add -dbg package for symbols
 
  -- Maarten Lankhorst <maarten.lankhorst@canonical.com>  Mon, 16 Jul 2012 13:24:29 +0200
