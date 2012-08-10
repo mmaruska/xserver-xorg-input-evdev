@@ -1,3 +1,11 @@
+commit f1ee12b9a363028c0d0a6668fca9eeb011f2354d
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Fri Aug 3 16:00:31 2012 +1000
+
+    evdev 2.7.2
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+
 commit 74690817fcd3e91ea384b8f311d8ce5626d8c409
 Author: Peter Hutterer <peter.hutterer@who-t.net>
 Date:   Wed Jul 4 09:14:41 2012 +1000
