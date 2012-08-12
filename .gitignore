@@ -76,3 +76,9 @@ core
 #		Edit the following section as needed
 # For example, !report.pc overrides *.pc. See 'man gitignore'
 # 
+
+debian/xserver-xorg-input-evdev-dev
+debian/tmp
+debian/xserver-xorg-input-evdev
+debian/xserver-xorg-input-evdev-udeb
+debian/autoreconf.*
