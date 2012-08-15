@@ -1,4 +1,4 @@
-xserver-xorg-input-evdev (1:2.7.2-1) UNRELEASED; urgency=low
+xserver-xorg-input-evdev (1:2.7.3-1) UNRELEASED; urgency=low
 
   * New upstream release.
 
