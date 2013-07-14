@@ -96,7 +96,7 @@
 
 static const char *evdevDefaults[] = {
     "XkbRules",     "evdev",
-    "XkbModel",     "evdev",
+    "XkbModel",     "pc104", /* the right model for 'us' */
     "XkbLayout",    "us",
     NULL
 };
@@ -1267,7 +1267,7 @@ EvdevAddAbsValuatorClass(DeviceIntPtr device, int want_scroll_axes)
             for (j = 0; j < ArrayLength(mt_axis_mappings); j++)
             {
                 if (mt_axis_mappings[j].mt_code == axis &&
-                    BitIsOn(pEvdev->abs_bitmask, mt_axis_mappings[j].code))
+                    EvdevBitIsSet(pEvdev->abs_bitmask, mt_axis_mappings[j].code))
                 {
                     mt_axis_mappings[j].needs_mapping = TRUE;
                     skip = TRUE;
@@ -1283,6 +1283,15 @@ EvdevAddAbsValuatorClass(DeviceIntPtr device, int want_scroll_axes)
             num_axes--;
         }
     }
+
+    /* device only has mt-axes. the kernel should give us ABS_X etc for
+       backwards compat but some devices don't have it. */
+    if (num_axes == 0 && num_mt_axes > 0) {
+        xf86IDrvMsg(pInfo, X_ERROR,
+                    "found only multitouch-axes. That shouldn't happen.\n");
+        goto out;
+    }
+
 #endif
 
 #ifdef HAVE_SMOOTH_SCROLLING
@@ -1974,12 +1983,10 @@ EvdevCache(InputInfoPtr pInfo)
     int i, len;
     struct input_id id;
 
-    char name[1024]                  = {0};
     unsigned long bitmask[NLONGS(EV_CNT)]      = {0};
     unsigned long key_bitmask[NLONGS(KEY_CNT)] = {0};
     unsigned long rel_bitmask[NLONGS(REL_CNT)] = {0};
     unsigned long abs_bitmask[NLONGS(ABS_CNT)] = {0};
-    unsigned long led_bitmask[NLONGS(LED_CNT)] = {0};
 
 
     if (ioctl(pInfo->fd, EVIOCGID, &id) < 0)
@@ -1990,13 +1997,6 @@ EvdevCache(InputInfoPtr pInfo)
 
     pEvdev->id_vendor = id.vendor;
     pEvdev->id_product = id.product;
-
-    if (ioctl(pInfo->fd, EVIOCGNAME(sizeof(name) - 1), name) < 0) {
-        xf86IDrvMsg(pInfo, X_ERROR, "ioctl EVIOCGNAME failed: %s\n", strerror(errno));
-        goto error;
-    }
-
-    strcpy(pEvdev->name, name);
 
     len = ioctl(pInfo->fd, EVIOCGBIT(0, sizeof(bitmask)), bitmask);
     if (len < 0) {
@@ -2024,15 +2024,6 @@ EvdevCache(InputInfoPtr pInfo)
     }
 
     memcpy(pEvdev->abs_bitmask, abs_bitmask, len);
-
-    len = ioctl(pInfo->fd, EVIOCGBIT(EV_LED, sizeof(led_bitmask)), led_bitmask);
-    if (len < 0) {
-        xf86IDrvMsg(pInfo, X_ERROR, "ioctl EVIOCGBIT for EV_LED failed: %s\n",
-                    strerror(errno));
-        goto error;
-    }
-
-    memcpy(pEvdev->led_bitmask, led_bitmask, len);
 
     /*
      * Do not try to validate absinfo data since it is not expected
@@ -2548,6 +2539,9 @@ EvdevUnInit(InputDriverPtr drv, InputInfoPtr pInfo, int flags)
         /* Release string allocated in EvdevOpenDevice. */
         free(pEvdev->device);
         pEvdev->device = NULL;
+
+        free(pEvdev->type_name);
+        pEvdev->type_name = NULL;
     }
     xf86DeleteInput(pInfo, flags);
 }
@@ -2578,6 +2572,8 @@ EvdevAlloc(void)
 
     pEvdev->rel_axis_map[0] = 0;
     pEvdev->rel_axis_map[1] = 1;
+
+    pEvdev->type_name = NULL;
 
     return pEvdev;
 }
@@ -2622,6 +2618,14 @@ EvdevPreInit(InputDriverPtr drv, InputInfoPtr pInfo, int flags)
         rc = BadMatch;
         goto error;
     }
+
+    /* Overwrite type_name with custom-defined one (#62831).
+       Note: pInfo->type_name isn't freed so we need to manually do this
+     */
+    pEvdev->type_name = xf86SetStrOption(pInfo->options,
+                                         "TypeName",
+                                         pInfo->type_name);
+    pInfo->type_name = pEvdev->type_name;
 
     EvdevAddDevice(pInfo);
 
