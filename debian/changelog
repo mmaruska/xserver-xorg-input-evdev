@@ -1,8 +1,12 @@
-xserver-xorg-input-evdev (1:2.8.0-1) UNRELEASED; urgency=low
+xserver-xorg-input-evdev (1:2.8.1-1) UNRELEASED; urgency=low
 
+  [ Maarten Lankhorst ]
   * New upstream release.
 
- -- Maarten Lankhorst <maarten.lankhorst@canonical.com>  Fri, 10 Aug 2012 19:08:53 +0200
+  [ Michele Cane ]
+  * New upstream release.
+
+ -- Michele Cane <michele.cane@gmail.com>  Sun, 14 Jul 2013 20:29:16 +0200
 
 xserver-xorg-input-evdev (1:2.7.1-1) experimental; urgency=low
 

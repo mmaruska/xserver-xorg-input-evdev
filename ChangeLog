@@ -1,3 +1,97 @@
+commit 8a9b1ec6b58a36910a03f3e8b1f9bc8d91f87204
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Thu Jul 11 11:09:24 2013 +1000
+
+    evdev 2.8.1
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+
+commit 356565111a6bb98f15fbaaf4f527aed8c87b477b
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Thu Jun 27 05:47:38 2013 +1000
+
+    Don't allow a wheel emulation inertia of 0 (#66125)
+    
+    Inertia of 0 results in an infinite loop of events being sent to the server.
+    
+    X.Org Bug 66125 <http://bugs.freedesktop.org/show_bug.cgi?id=66125>
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+
+commit fff3a60fbf5c81b337ae4eaf160feacdfc8c2465
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Wed May 29 13:26:57 2013 +1000
+
+    Use EvdevBitIsSet, not the server's BitIsOn
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+
+commit 8f209ac60d10ba61aa6ea2bec02dbfa54ebe8f17
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Wed May 29 07:18:19 2013 +1000
+
+    Drop cached name and led_bitmask - nothing reads this
+    
+    Both fields are write-only as of xf86-input-evdev-2.5.99.902-1-g1ced7ec
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+
+commit a0d41af8969b91ec51ebdfb966ccc47e5c40329a
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Mon May 27 10:19:15 2013 +1000
+
+    Switch default model to pc104.
+    
+    As of xkeyboard-config 1.9, the evdev model is hidden (c887d2876)
+    The server switched to pc105 with version 1.8 (1df4bd601).
+    
+    The evdev model resolves to pc104 anyway, so this commit has no real effect
+    other than to switch from a catch-all rule to explicit.
+    Use pc104 so this is easy to find for those investigating the code and
+    wondering why. pc104 is the 'correct' geometry for the us layout, which is
+    the default after all. Switching to pc105 would show keys missing if no
+    model is set (e.g. on uk/de layouts) but it would be the wrong layout for
+    the default.
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Acked-by: Daniel Stone <daniel@fooishbar.org>
+
+commit dea1d1a3906b98b491e9760b3304f881c6afec5e
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Mon Apr 29 11:48:12 2013 +1000
+
+    Fail to set up axes for devices that only have MT axes but no ABS_X/Y equivalents (#64029)
+    
+    The kernel should give us ABS_X/Y for backwards compat but some devices
+    don't. For now, ignore these devices as evdev is not suited to handle this
+    yet and will crash if a device is set up without axes (i.e.
+    pEvdev->vals == NULL) and later receives an event from an MT axis.
+    
+    X.Org Bug 64029 <http://bugs.freedesktop.org/show_bug.cgi?id=64029>
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Benjamin Tissoires <benjamin.tissoires@gmail.com>
+
+commit b59a1a25dad4437e013ce8d3d65d4591c6f4ee4a
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Tue Apr 2 14:12:26 2013 +1000
+
+    Add option TypeName (#62831)
+    
+    evdev tries to assign the right XI 1.x type-name based on various device
+    capabilities. In some cases, that fails. e.g. the Mionix Naos 5000 mouse
+    looks like a keyboard. And we assign a keyboard type in that case since
+    there are plenty of keyboards that also advertise some axes or others.
+    
+    Add a new option TypeName to allow for system-wide configuration of such
+    devices in a quirks file.
+    
+    This can also be used to address #55867
+    
+    X.Org Bug 62831 <http://bugs.freedesktop.org/show_bug.cgi?id=62831>
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+
 commit 5138cd2ff47a1a28db82688b932cb1ecd618778f
 Author: Peter Hutterer <peter.hutterer@who-t.net>
 Date:   Tue Mar 26 16:01:39 2013 +1000
