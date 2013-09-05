@@ -7,6 +7,9 @@ xserver-xorg-input-evdev (1:2.8.1-1) UNRELEASED; urgency=low
   * New upstream release.
   * Bump Standards-Version to 3.9.4, no changes needed.
 
+  [ Julien Cristau ]
+  * Disable silent build rules.
+
  -- Michele Cane <michele.cane@gmail.com>  Sun, 14 Jul 2013 20:29:16 +0200
 
 xserver-xorg-input-evdev (1:2.7.1-1) experimental; urgency=low
