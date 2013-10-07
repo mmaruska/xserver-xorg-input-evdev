@@ -1157,7 +1157,7 @@ EvdevKbdCtrl(DeviceIntPtr device, KeybdCtrl *ctrl)
     };
 
     InputInfoPtr pInfo;
-    struct input_event ev[ArrayLength(bits)];
+    struct input_event ev[ArrayLength(bits) + 1];
     int i;
 
     memset(ev, 0, sizeof(ev));
@@ -1168,6 +1168,10 @@ EvdevKbdCtrl(DeviceIntPtr device, KeybdCtrl *ctrl)
         ev[i].code = bits[i].code;
         ev[i].value = (ctrl->leds & bits[i].xbit) > 0;
     }
+
+    ev[i].type = EV_SYN;
+    ev[i].code = SYN_REPORT;
+    ev[i].value = 0;
 
     write(pInfo->fd, ev, sizeof ev);
 }
@@ -1541,7 +1545,7 @@ EvdevAddAbsValuatorClass(DeviceIntPtr device, int want_scroll_axes)
                                        NO_AXIS_LIMITS, NO_AXIS_LIMITS,
                                        0, 0, 0, Relative);
             SetScrollValuator(device, pEvdev->rel_axis_map[idx],
-                              SCROLL_TYPE_HORIZONTAL, 1.0,
+                              SCROLL_TYPE_VERTICAL, -1.0,
                               SCROLL_FLAG_NONE);
         }
     }
