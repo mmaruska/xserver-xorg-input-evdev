@@ -1,3 +1,40 @@
+commit 51575b60b14d414490d31ff23f07c30431525667
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Mon Oct 7 09:23:09 2013 +1100
+
+    evdev 2.8.2
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+
+commit f285567d372514d31096cc25a467d5d2e182885a
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Tue Aug 13 14:44:26 2013 +1000
+
+    Write a SYN_REPORT after the last LED
+    
+    When writing LED values to the device, append a SYN_REPORT to the list to
+    ensure other clients are updated immediately. Otherwise, the LED events
+    will be queued and not sent to other clients until the next input event
+    arrives.
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Daniel Stone <daniel@fooishbar.org>
+    (cherry picked from commit 27926b3763e525470ec8e4ac9a97aa0e02f1dd95)
+
+commit af1d0858775dd130c59de921210a114580fef719
+Author: Peter De Wachter <pdewacht@gmail.com>
+Date:   Wed Mar 20 00:35:45 2013 +0100
+
+    Map REL_DIAL to vertical scrolling
+    
+    This makes the absolute axis codepath behave the same as the relative axis
+    path.
+    
+    Signed-off-by: Peter De Wachter <pdewacht@gmail.com>
+    Reviewed-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    (cherry picked from commit 54a3120e339e55fc4721543abb15692c3e9ede09)
+
 commit 8a9b1ec6b58a36910a03f3e8b1f9bc8d91f87204
 Author: Peter Hutterer <peter.hutterer@who-t.net>
 Date:   Thu Jul 11 11:09:24 2013 +1000
