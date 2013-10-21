@@ -1,8 +1,9 @@
-xserver-xorg-input-evdev (1:2.8.2-1) UNRELEASED; urgency=low
+xserver-xorg-input-evdev (1:2.8.2-1) unstable; urgency=low
 
+  [ Michele Cane ]
   * New upstream release.
 
- -- Michele Cane <michele.cane@gmail.com>  Mon, 07 Oct 2013 11:33:27 +0200
+ -- Julien Cristau <jcristau@debian.org>  Mon, 21 Oct 2013 21:07:27 +0200
 
 xserver-xorg-input-evdev (1:2.8.1-1) unstable; urgency=low
 
