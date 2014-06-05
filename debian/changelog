@@ -2,6 +2,7 @@ xserver-xorg-input-evdev (1:2.9.0-1) UNRELEASED; urgency=medium
 
   * New upstream release
     - smooth scrolling improvements (closes: #702739)
+  * Add build-dep on libevdev-dev.
 
  -- Julien Cristau <jcristau@debian.org>  Thu, 05 Jun 2014 22:17:26 +0200
 
