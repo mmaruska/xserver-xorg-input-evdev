@@ -275,14 +275,14 @@ unsigned int EvdevUtilButtonEventToButtonNumber(EvdevPtr pEvdev, int code);
 /* Middle Button emulation */
 int  EvdevMBEmuTimer(InputInfoPtr);
 BOOL EvdevMBEmuFilterEvent(InputInfoPtr, int, BOOL);
-void EvdevMBEmuWakeupHandler(pointer, int, pointer);
-void EvdevMBEmuBlockHandler(pointer, struct timeval**, pointer);
+void EvdevMBEmuWakeupHandler(void *, int, void *);
+void EvdevMBEmuBlockHandler(void *, struct timeval**, void *);
 void EvdevMBEmuPreInit(InputInfoPtr);
 void EvdevMBEmuOn(InputInfoPtr);
 void EvdevMBEmuFinalize(InputInfoPtr);
 
 /* Third button emulation */
-CARD32 Evdev3BEmuTimer(OsTimerPtr timer, CARD32 time, pointer arg);
+CARD32 Evdev3BEmuTimer(OsTimerPtr timer, CARD32 time, void *arg);
 BOOL Evdev3BEmuFilterEvent(InputInfoPtr, int, BOOL);
 void Evdev3BEmuPreInit(InputInfoPtr pInfo);
 void Evdev3BEmuOn(InputInfoPtr);

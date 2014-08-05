@@ -2682,13 +2682,13 @@ _X_EXPORT InputDriverRec EVDEV = {
 };
 
 static void
-EvdevUnplug(pointer	p)
+EvdevUnplug(void *	p)
 {
 }
 
-static pointer
-EvdevPlug(pointer	module,
-          pointer	options,
+static void *
+EvdevPlug(void *	module,
+          void *	options,
           int		*errmaj,
           int		*errmin)
 {
