@@ -1,9 +1,14 @@
 xserver-xorg-input-evdev (1:2.9.0-2) UNRELEASED; urgency=medium
 
+  [ Cyril Brulebois ]
   * Bump libevdev-dev build-dep to make sure the udeb gets a dependency
     on libevdev2-udeb instead of libevdev2 (see: #750698).
 
- -- Cyril Brulebois <kibi@debian.org>  Sun, 06 Jul 2014 22:06:28 +0200
+  [ Laurent Bigonville ]
+  * debian/control:
+    - Use canonical URL for VCS-* fields
+
+ -- Laurent Bigonville <bigon@debian.org>  Thu, 28 Aug 2014 13:00:07 +0200
 
 xserver-xorg-input-evdev (1:2.9.0-1) experimental; urgency=medium
 
