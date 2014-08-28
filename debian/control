@@ -18,7 +18,7 @@ Build-Depends:
  libudev-dev,
  libmtdev-dev,
  libevdev-dev (>= 1.2.2+dfsg-1~),
-Standards-Version: 3.9.4
+Standards-Version: 3.9.5
 Vcs-Git: git://anonscm.debian.org/pkg-xorg/driver/xserver-xorg-input-evdev.git
 Vcs-Browser: http://anonscm.debian.org/gitweb/?p=pkg-xorg/driver/xserver-xorg-input-evdev.git
 

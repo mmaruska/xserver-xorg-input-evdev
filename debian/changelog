@@ -7,8 +7,9 @@ xserver-xorg-input-evdev (1:2.9.0-2) UNRELEASED; urgency=medium
   [ Laurent Bigonville ]
   * debian/control:
     - Use canonical URL for VCS-* fields
+    - Bump Standards-Version to 3.9.5 (no further changes)
 
- -- Laurent Bigonville <bigon@debian.org>  Thu, 28 Aug 2014 13:00:07 +0200
+ -- Laurent Bigonville <bigon@debian.org>  Thu, 28 Aug 2014 13:00:50 +0200
 
 xserver-xorg-input-evdev (1:2.9.0-1) experimental; urgency=medium
 
