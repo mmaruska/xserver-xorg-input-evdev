@@ -77,7 +77,7 @@ Depends:
  xserver-xorg-input-evdev (= ${binary:Version}),
 Section: debug
 Priority: extra
-Description: X.Org X server -- evdev input driver (development headers)
+Description: X.Org X server -- evdev input driver (debug symbols)
  This package provides the development headers for the evdev input driver
  found in xserver-xorg-input-evdev. Non-developers likely have little use
  for this package.
