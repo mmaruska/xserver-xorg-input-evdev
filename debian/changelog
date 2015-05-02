@@ -1,3 +1,9 @@
+xserver-xorg-input-evdev (1:2.9.0-3) UNRELEASED; urgency=medium
+
+  * Let uscan verify tarball signatures.
+
+ -- Julien Cristau <jcristau@debian.org>  Sat, 02 May 2015 19:54:45 +0200
+
 xserver-xorg-input-evdev (1:2.9.0-2) unstable; urgency=medium
 
   * Team upload.
