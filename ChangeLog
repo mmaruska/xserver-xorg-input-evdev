@@ -1,12 +1,251 @@
-commit 24368d8379cc47693dd1623168a6125faff57311
+commit f12eca9f8392934031cb250e7a2a5ed1d5ca11cf
 Author: Peter Hutterer <peter.hutterer@who-t.net>
-Date:   Fri Mar 27 11:37:03 2015 +1000
+Date:   Fri Apr 29 09:13:35 2016 +1000
 
-    evdev 2.9.2
+    evdev 2.10.2
     
     Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
 
-commit 4996694cc9b80ffef28289ea491965b16615f2d1
+commit 33dc3d7128456d51b1fe6228096e6b714a3e900b
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Wed Apr 27 09:01:16 2016 +1000
+
+    Prevent buffer overrun accessing btn_labels
+    
+    We go up to BTN_JOYSTICK, hence group can have a value of up to including 15.
+    The actual btn_labels only has 6 elements though.
+    
+    Found by coverity.
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+
+commit 7b0a65d989117d1b071101221ff1b97c1b4d1946
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Fri Jan 15 14:01:02 2016 +1000
+
+    Don't reset the other axis on wheel emulation scroll buildup
+    
+    The idea was that of a direction lock: as we move vertically we should not
+    build up any horizontal scroll motion even if we move slightly diagonally.
+    
+    The effect was though that the axis would be reset completely as soon as an
+    event from the other axis occured. With the default threshold of 10, if one in
+    ten events was a REL_X, we'd never get a wheel event.
+    
+    Drop this code, it's not needed. By default wheel emulation doesn't do
+    horizontal scrolling, if a config snippet sets XAxisMapping the user wants
+    horizontal scrolling. And since we just add the value anyway, as long as the
+    user does a roughly vertical motion we won't get over the threshold anyway.
+    
+    https://bugs.freedesktop.org/show_bug.cgi?id=93617
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+
+commit d24431a1863c49aa9edcabf535ffa64bfa87053c
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Thu Jan 14 10:41:46 2016 +1000
+
+    Restore wheel emulation for absolute devices
+    
+    Wheel emulation relies on oldVals, which stopped updating in 3dcf6f123c5.
+    
+    Since wheel emulation may filter the abs event, store the event before we do
+    anything with it. If we really want the abs_event, abs_queued will be set to
+    1, otherwise the value will be ignored.
+    
+    And now that we know abs_value is always valied, we can copy its value into
+    old_vals, so that wheel emulation can calculate the delta correctly.
+    
+    https://bugs.freedesktop.org/show_bug.cgi?id=93617
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+
+commit ce7d8fdebc0123227be91ba5d89126a36f089ff5
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Thu Jan 14 11:18:56 2016 +1000
+
+    man: add a warning that wheel emu inertia must be set and it isn't inertia
+    
+    First, it's not actually inertia, it's simply the scroll distance, yay for the
+    misnomer.
+    
+    And it needs to be set for any device that is more fine-grained than a
+    mouse, especially absolute devices. For example the VirtualBox device has an
+    abs max of 32767, so a simple motion may have a delta of to 2000 units and
+    that results in 200 scroll events. That's a bit excessive.
+    
+    Related to: https://bugs.freedesktop.org/show_bug.cgi?id=93617
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+
+commit 6a3beab6137b262fc847093ed5fa51ff70df6a21
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Fri Jan 8 15:11:59 2016 +1000
+
+    evdev 2.10.1
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+
+commit d7e61a7074b802b49f57549530b289bbaa0a4855
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Tue Nov 10 14:35:51 2015 +1000
+
+    Only map x and y to axes 0 and 1
+    
+    The Logitech G600 has one device with all axes north of ABS_MISC. The current
+    code assigns ABS_MISC as first axis to map to axis 0, i.e. x. On button press,
+    one node sends the BTN_LEFT but the other node sends an ABS_MISC with a 1 0
+    value. ABS_MISC is mapped to axis 0, this moves the pointer to (0, y) on
+    every button click.
+    
+    Avoid this by simply mapping any axis other than x/y to at least axis 3, and
+    make sure we only override the MT 0/1 axes when we actually have MT axes.
+    
+    https://bugs.freedesktop.org/show_bug.cgi?id=92856
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Keith Packard <keithp@keithp.com>
+
+commit 01e7ac48546d4534fa420ea1873214e738ea125d
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Wed Oct 28 14:28:20 2015 +1000
+
+    evdev 2.10.0
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+
+commit 034be31159f22ce28d84994d541a45ee44963fd8
+Author: Thomas Hindoe Paaboel Andersen <phomes@gmail.com>
+Date:   Tue Jan 20 00:44:40 2015 +0100
+
+    Add "Resolution" option for mice to the evdev driver
+    
+    It can be used to scale the resolution of a mouse to that of a 1000 DPI
+    mouse. This can be useful to make high resolution mice less sensitive
+    without turning off acceleration. The target of 1000 DPI is used as the
+    same default is used in libinput. If the option is not set no scaling
+    will be done.
+    
+    https://bugs.freedesktop.org/show_bug.cgi?id=88134
+    Signed-off-by: Thomas Hindoe Paaboel Andersen <phomes@gmail.com>
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+
+commit 66c997886424a20e92ce30fcfda46cbb5c7352ab
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Tue May 5 15:34:07 2015 +1000
+
+    Add the default evdev config
+    
+    This used to be part of the server but now that we have two drivers doing the
+    same thing (libinput, evdev) shift the configuration defaults to the driver.
+    This way you get what you install.
+    
+    https://bugs.freedesktop.org/show_bug.cgi?id=89023
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Hans de Goede <hdegoede@redhat.com>
+
+commit 0d3494eadfde7e8d30e1bae97cfa6b36e5128a11
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Fri Mar 27 11:41:50 2015 +1000
+
+    Bump to 2.9.99
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+
+commit 56a5e6716204916691a67082e3e6a1698df2061b
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Mon Mar 16 07:55:34 2015 +1000
+
+    Unconditionally require mtdev
+    
+    Missing from 2c9f4f0380d
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+
+commit 74433f788acf41a43da54269eb1b73c407f3ceba
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Fri Mar 13 11:05:03 2015 +1000
+
+    Always check for a return value on creating a property
+    
+    Mostly to make static analyzers happy
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+
+commit fdc33809de2751c164183df2310a71732be579f3
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Fri Mar 13 10:58:01 2015 +1000
+
+    Invert a condition to reduce nesting
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+
+commit 38e107a39fb4a0b630ee5adb5870c91dbc27abde
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Wed Mar 11 14:58:04 2015 +1000
+
+    Disable axis faking and MT event processing on fake MT devices
+    
+    This effectively disables all axes >= ABS_MT_SLOT on those devices. But at
+    least the device comes up without an error and it didn't work correctly
+    beforehand anyway.
+    
+    https://bugs.freedesktop.org/show_bug.cgi?id=89473
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Hans de Goede <hdegoede@redhat.com>
+
+commit b6176cff5a3fbccc3708721958e9fb346518f57e
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Wed Mar 11 13:44:28 2015 +1000
+
+    Invert two conditions to reduce nesting
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Hans de Goede <hdegoede@redhat.com>
+
+commit 37afebfb67609f04f9c1cdea983e7006ee2d59e5
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Wed Mar 11 13:47:32 2015 +1000
+
+    Factor out MT axis counting into a separate function
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Hans de Goede <hdegoede@redhat.com>
+
+commit 5b5ae1786cb4b2ea35720bacf18f252223b2b2ec
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Wed Mar 11 13:29:19 2015 +1000
+
+    Split android axis simulation into a helper function
+    
+    No functional changes
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Hans de Goede <hdegoede@redhat.com>
+
+commit 2c9f4f0380dd5bb5966a6eee34c8e0ec0c98ed17
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Wed Mar 11 13:22:19 2015 +1000
+
+    Require multitouch/smooth scrolling dependencies
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Hans de Goede <hdegoede@redhat.com>
+
+commit 39ef4444a231d3b0296ba421b78f0417f18955f9
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Fri Feb 13 08:12:38 2015 +1000
+
+    Drop evdev-specific XKB defaults
+    
+    Just use the server defaults instead. This has very little effect, on most
+    systems there was some sort of default configuration applied anyway.
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+
+commit abc4a8b60387c3c9ae8b0199bf61acede4f6dba2
 Author: Tobias Himmer <provisorisch@online.de>
 Date:   Fri Jan 23 02:13:17 2015 +0100
 
@@ -16,9 +255,8 @@ Date:   Fri Jan 23 02:13:17 2015 +0100
     
     Signed-off-by: Tobias Himmer <provisorisch@online.de>
     Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
-    (cherry picked from commit abc4a8b60387c3c9ae8b0199bf61acede4f6dba2)
 
-commit 05f7057ad5716ccf643b80f2f5fbfff34783a950
+commit b370ccdff8f721de75d3d91486cc4807668d040c
 Author: Colin B. Macdonald <macdonald@maths.ox.ac.uk>
 Date:   Thu Jun 26 12:17:59 2014 +0100
 
@@ -30,7 +268,81 @@ Date:   Thu Jun 26 12:17:59 2014 +0100
     X.Org Bug 80470 <http://bugs.freedesktop.org/show_bug.cgi?id=80470>
     
     Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
-    (cherry picked from commit b370ccdff8f721de75d3d91486cc4807668d040c)
+
+commit 511498478b49aa39629615c110c9d0129fa6bbef
+Author: Éric Brunet <Eric.Brunet@lps.ens.fr>
+Date:   Tue Sep 30 23:04:55 2014 +0200
+
+    Move EVDEV_RELATIVE_MODE logic earlier
+    
+    When in EVDEV_RELATIVE_MODE, after converting the absolute valuators, the
+    code unsets pEvdev->abs_queued. This is wrong if there are some absolute
+    valuators which are not positions, such as a pressure valuators, because
+    events on these valuators would be lost.
+    
+    This patch fixes the problem by doing the absolute->relative translation
+    early. This way, abs_queued is not set and then unset when receiving
+    absolute valuators representing positions. Other absolute events now set abs_queued
+    and will be processed.
+    
+    Signed-off-by: Éric Brunet <Eric.Brunet@lps.ens.fr>
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+
+commit 3dcf6f123c54fd3104bcb79677cd347972abea4c
+Author: Éric Brunet <Eric.Brunet@lps.ens.fr>
+Date:   Tue Sep 30 22:32:51 2014 +0200
+
+    Don't update old_vals when not in EVDEV_RELATIVE_MODE
+    
+    When not in EVDEV_RELATIVE_MODE, absolute position is stored in old_vals. This serves
+    no purpose except that old_vals is ready when the device is switched to
+    EVDEV_RELATIVE_MODE. It is however better to make the copy between old_vals
+    and abs_vals at the time of the switch rather than all the time.
+    
+    Signed-off-by: Éric Brunet <Eric.Brunet@lps.ens.fr>
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+
+commit f59585b36709c8a529da6e08662ed6c62b73ebd5
+Author: Éric Brunet <Eric.Brunet@lps.ens.fr>
+Date:   Tue Sep 30 22:15:45 2014 +0200
+
+    Change the logic concerning EVDEV_RELATIVE_MODE and in_proximity
+    
+    When not in_proximity, we don't really trust data, even though a valuator
+    sent just before a in_proximity event might actually be important. The
+    present code for EVDEV_RELATIVE_MODE throws away all data if not
+    in_proximity, which is a little bit too much. This patch allows for
+    relative values to be calculated and old_vals to be updated even if not
+    in_proximity, but will prevent evdev to sending (presumably) wrong
+    information to the X server. But at least, old_vals will be correctly
+    filled when the device comes into proximity again.
+    
+    Signed-off-by: Éric Brunet <Eric.Brunet@lps.ens.fr>
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+
+commit 593bbc6390aa6f9feec0e2b081e1bfe6ab03595a
+Author: Éric Brunet <Eric.Brunet@lps.ens.fr>
+Date:   Tue Sep 30 20:49:46 2014 +0200
+
+    drop the pEvdev->delta array
+    
+    Now that relative events have their own valuator mask, use it instead of
+    delta
+    
+    Signed-off-by: Éric Brunet <Eric.Brunet@lps.ens.fr>
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+
+commit e0e2587a95afaeb25ad73bb8b27488e79d1fe02e
+Author: Éric Brunet <Eric.Brunet@lps.ens.fr>
+Date:   Tue Sep 30 14:27:20 2014 +0200
+
+    Split pEvdev->vals into pEvdev->abs_vals and pEvdev->rel_vals
+    
+    This should hopefully fix bug 84445.
+    
+    Signed-off-by: Éric Brunet <Eric.Brunet@lps.ens.fr>
+    Reviewed-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
 
 commit cb3b023783fe73d9bbb7c9c6ba6c73048b8303ef
 Author: Peter Hutterer <peter.hutterer@who-t.net>
