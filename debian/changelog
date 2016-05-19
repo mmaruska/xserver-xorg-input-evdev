@@ -1,10 +1,10 @@
-xserver-xorg-input-evdev (1:2.10.2-1) UNRELEASED; urgency=medium
+xserver-xorg-input-evdev (1:2.10.2-1) unstable; urgency=medium
 
   * New upstream release.
   * Remove Drew from Uploaders.
   * Update Vcs-* control fields.
 
- -- Julien Cristau <jcristau@debian.org>  Thu, 19 May 2016 23:15:39 +0200
+ -- Julien Cristau <jcristau@debian.org>  Thu, 19 May 2016 23:18:34 +0200
 
 xserver-xorg-input-evdev (1:2.10.1-1) unstable; urgency=medium
 
