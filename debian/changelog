@@ -1,9 +1,10 @@
-xserver-xorg-input-evdev (1:2.10.3-1) UNRELEASED; urgency=medium
+xserver-xorg-input-evdev (1:2.10.3-1) unstable; urgency=medium
 
+  * Team upload.
   * New upstream release.
   * Use https URL in watch file.
 
- -- Julien Cristau <jcristau@debian.org>  Sat, 24 Sep 2016 15:43:20 +0200
+ -- Julien Cristau <jcristau@debian.org>  Sat, 24 Sep 2016 15:45:04 +0200
 
 xserver-xorg-input-evdev (1:2.10.2-1) unstable; urgency=medium
 
