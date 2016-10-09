@@ -184,10 +184,13 @@ int
 EvdevMBEmuTimer(InputInfoPtr pInfo)
 {
     EvdevPtr pEvdev = pInfo->private;
-    int	sigstate;
     int id;
 
-    sigstate = xf86BlockSIGIO ();
+#if HAVE_THREADED_INPUT
+    input_lock();
+#else
+    int sigstate = xf86BlockSIGIO();
+#endif
 
     pEvdev->emulateMB.pending = FALSE;
     if ((id = stateTab[pEvdev->emulateMB.state][4][0]) != 0) {
@@ -200,7 +203,11 @@ EvdevMBEmuTimer(InputInfoPtr pInfo)
                     pEvdev->emulateMB.state);
     }
 
-    xf86UnblockSIGIO (sigstate);
+#if HAVE_THREADED_INPUT
+    input_unlock();
+#else
+    xf86UnblockSIGIO(sigstate);
+#endif
     return 0;
 }
 
@@ -261,9 +268,7 @@ EvdevMBEmuFilterEvent(InputInfoPtr pInfo, int button, BOOL press)
 }
 
 
-void EvdevMBEmuWakeupHandler(pointer data,
-                             int i,
-                             pointer LastSelectMask)
+void EvdevMBEmuWakeupHandler(WAKEUP_HANDLER_ARGS)
 {
     InputInfoPtr pInfo = (InputInfoPtr)data;
     EvdevPtr     pEvdev = (EvdevPtr)pInfo->private;
@@ -277,9 +282,7 @@ void EvdevMBEmuWakeupHandler(pointer data,
     }
 }
 
-void EvdevMBEmuBlockHandler(pointer data,
-                            struct timeval **waitTime,
-                            pointer LastSelectMask)
+void EvdevMBEmuBlockHandler(BLOCK_HANDLER_ARGS)
 {
     InputInfoPtr    pInfo = (InputInfoPtr) data;
     EvdevPtr        pEvdev= (EvdevPtr) pInfo->private;
