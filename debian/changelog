@@ -1,3 +1,9 @@
+xserver-xorg-input-evdev (1:2.10.4-1) UNRELEASED; urgency=medium
+
+  * New upstream release.
+
+ -- Emilio Pozuelo Monfort <pochu@debian.org>  Sun, 09 Oct 2016 21:50:02 +0200
+
 xserver-xorg-input-evdev (1:2.10.3-1) unstable; urgency=medium
 
   * Team upload.
