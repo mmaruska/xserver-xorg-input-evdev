@@ -37,7 +37,7 @@ Description: X.Org X server -- evdev input driver
  and mice to be treated as separate input devices.
  .
  More information about X.Org can be found at:
- <URL:http://www.X.org>
+ <URL:https://www.X.org>
  .
  This package is built from the X.org xf86-input-evdev driver module.
 
@@ -67,7 +67,7 @@ Description: X.Org X server -- evdev input driver (development headers)
  for this package.
  .
  More information about X.Org can be found at:
- <URL:http://www.X.org>
+ <URL:https://www.X.org>
  .
  This package is built from the X.org xf86-input-evdev driver module.
 
@@ -84,7 +84,7 @@ Description: X.Org X server -- evdev input driver (debug symbols)
  for this package.
  .
  More information about X.Org can be found at:
- <URL:http://www.X.org>
+ <URL:https://www.X.org>
  .
  This package is built from the X.org xf86-input-evdev driver module.
  .

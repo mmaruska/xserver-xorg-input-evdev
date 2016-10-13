@@ -1,6 +1,10 @@
 xserver-xorg-input-evdev (1:2.10.4-1) UNRELEASED; urgency=medium
 
+  [ Emilio Pozuelo Monfort ]
   * New upstream release.
+
+  [ Andreas Boll ]
+  * Update a bunch of URLs in packaging to https.
 
  -- Emilio Pozuelo Monfort <pochu@debian.org>  Sun, 09 Oct 2016 21:50:02 +0200
 
