@@ -6,6 +6,7 @@ xserver-xorg-input-evdev (1:2.10.4-1) UNRELEASED; urgency=medium
   [ Andreas Boll ]
   * Update a bunch of URLs in packaging to https.
   * Bump debhelper compat level to 9.
+  * Remove obsolete XC- prefix.
 
  -- Emilio Pozuelo Monfort <pochu@debian.org>  Sun, 09 Oct 2016 21:50:02 +0200
 
