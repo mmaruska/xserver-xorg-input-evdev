@@ -110,6 +110,8 @@ static void EvdevSetCalibration(InputInfoPtr pInfo, int num_calibration, int cal
 static int EvdevOpenDevice(InputInfoPtr pInfo);
 static void EvdevCloseDevice(InputInfoPtr pInfo);
 
+static int EvdevRequestTimestamps(InputInfoPtr pInfo);
+
 static void EvdevInitAxesLabels(EvdevPtr pEvdev, int mode, int natoms, Atom *atoms);
 static void EvdevInitOneAxisLabel(EvdevPtr pEvdev, int mapped_axis,
                                   const char **labels, int label_idx, Atom *atoms);
@@ -279,7 +281,7 @@ EvdevQueueKbdEvent(InputInfoPtr pInfo, struct input_event *ev, int value)
 {
     int code = ev->code + MIN_KEYCODE;
     EventQueuePtr pQueue;
-
+    EvdevPtr pEvdev = pInfo->private;
     /* Filter all repeated events from device.
        We'll do softrepeat in the server, but only since 1.6 */
     if (value == 2)
@@ -290,6 +292,8 @@ EvdevQueueKbdEvent(InputInfoPtr pInfo, struct input_event *ev, int value)
         pQueue->type = EV_QUEUE_KEY;
         pQueue->detail.key = code;
         pQueue->val = value;
+        if (pEvdev->use_timestamps)
+            pQueue->time = (ev->time.tv_sec * 1000 + ev->time.tv_usec / 1000);
     }
 }
 
@@ -549,6 +553,16 @@ EvdevProcessProximityState(InputInfoPtr pInfo)
             prox_state = pEvdev->queue[i].val;
             break;
         }
+    }
+
+    /* Wacom's last frame resets all values to 0, including x/y.
+       Skip over this. */
+    if (prox_state == 0) {
+        int v;
+        if (valuator_mask_fetch(pEvdev->abs_vals, 0, &v) && v == 0)
+            valuator_mask_unset(pEvdev->abs_vals, 0);
+        if (valuator_mask_fetch(pEvdev->abs_vals, 1, &v) && v == 0)
+            valuator_mask_unset(pEvdev->abs_vals, 1);
     }
 
     if ((prox_state && !pEvdev->in_proximity) ||
@@ -813,6 +827,13 @@ EvdevProcessKeyEvent(InputInfoPtr pInfo, struct input_event *ev)
     /* Get the signed value, earlier kernels had this as unsigned */
     value = ev->value;
 
+    /* mmc: if ALT or CONTROL down -> set. up -> reset */
+
+
+    /* process special keys: */
+
+
+
     /* don't repeat mouse buttons */
     if (ev->code >= BTN_MOUSE && ev->code < KEY_OK)
         if (value == 2)
@@ -905,7 +926,7 @@ EvdevPostProximityEvents(InputInfoPtr pInfo, int which)
                 break;
             case EV_QUEUE_PROXIMITY:
                 if (pEvdev->queue[i].val == which)
-                    xf86PostProximityEvent(pInfo->dev, which, 0, 0);
+                    xf86PostProximityEventM(pInfo->dev, which, pEvdev->old_vals);
                 break;
         }
     }
@@ -922,8 +943,13 @@ static void EvdevPostQueuedEvents(InputInfoPtr pInfo)
     for (i = 0; i < pEvdev->num_queue; i++) {
         switch (pEvdev->queue[i].type) {
         case EV_QUEUE_KEY:
-            xf86PostKeyboardEvent(pInfo->dev, pEvdev->queue[i].detail.key,
-                                  pEvdev->queue[i].val);
+	    if (pEvdev->use_timestamps)
+                xf86PostKeyboardTimeEvent(pInfo->dev, pEvdev->queue[i].detail.key,
+                                              pEvdev->queue[i].val,
+                                              pEvdev->queue[i].time);
+            else
+                xf86PostKeyboardEvent(pInfo->dev, pEvdev->queue[i].detail.key,
+                                      pEvdev->queue[i].val);
             break;
         case EV_QUEUE_BTN:
             if (Evdev3BEmuFilterEvent(pInfo,
@@ -1971,6 +1997,7 @@ EvdevOn(DeviceIntPtr device)
         return rc;
 
     EvdevGrabDevice(pInfo, 1, 0);
+    EvdevRequestTimestamps(pInfo);
 
     xf86FlushInput(pInfo->fd);
     xf86AddEnabledDevice(pInfo);
@@ -2115,6 +2142,25 @@ EvdevForceXY(InputInfoPtr pInfo, int mode)
         libevdev_enable_event_code(pEvdev->dev, EV_ABS, ABS_Y, &abs);
     }
 }
+
+static int
+EvdevRequestTimestamps(InputInfoPtr pInfo)
+{
+    EvdevPtr pEvdev = pInfo->private;
+
+#ifdef EVIOCTIME
+    int time_parameter = EV_USE_MONOTONIC_TIME;
+    if (ioctl(pInfo->fd, EVIOCTIME, &time_parameter) == 0)
+    {
+	pEvdev->use_timestamps = TRUE;
+	return Success;
+    }
+#endif
+    xf86Msg(X_NONE, "%s: monotonic timestamping unavailable\n", pInfo->name);
+    pEvdev->use_timestamps = FALSE;
+    return !Success;
+}
+
 
 static int
 EvdevProbe(InputInfoPtr pInfo)
@@ -2353,8 +2399,10 @@ EvdevProbe(InputInfoPtr pInfo)
             pInfo->type_name = XI_TOUCHSCREEN;
 	} else {
             if (!libevdev_has_event_code(pEvdev->dev, EV_REL, REL_X) ||
-                !libevdev_has_event_code(pEvdev->dev, EV_REL, REL_Y))
+                !libevdev_has_event_code(pEvdev->dev, EV_REL, REL_Y)) {
+                pEvdev->flags |= EVDEV_RELATIVE_EVENTS;
                 EvdevForceXY(pInfo, Relative);
+            }
 	    xf86IDrvMsg(pInfo, X_INFO, "Configuring as mouse\n");
 	    pInfo->type_name = XI_MOUSE;
 	}
@@ -2485,7 +2533,7 @@ EvdevOpenDevice(InputInfoPtr pInfo)
     }
 
     if (pInfo->fd < 0) {
-        xf86IDrvMsg(pInfo, X_ERROR, "Unable to open evdev device \"%s\".\n", device);
+        xf86IDrvMsg(pInfo, X_ERROR, "Unable to open evdev device \"%s\" (%s).\n", device, strerror(errno));
         return BadValue;
     }
 
@@ -2633,6 +2681,7 @@ EvdevPreInit(InputDriverPtr drv, InputInfoPtr pInfo, int flags)
         goto error;
     }
 
+    EvdevRequestTimestamps(pInfo);
     EvdevInitButtonMapping(pInfo);
 
     if (EvdevCache(pInfo) || EvdevProbe(pInfo)) {
