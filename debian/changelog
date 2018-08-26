@@ -1,3 +1,37 @@
+xserver-xorg-input-evdev (1:2.10.6-1-maruska) unstable; urgency=medium
+
+  [ Peter Hutterer ]
+  * autogen.sh: use exec instead of waiting for configure to finish
+
+  [ Emil Velikov ]
+  * autogen.sh: use quoted string variables
+
+  [ Mihail Konev ]
+  * autogen: add default patch prefix
+
+  [ Andrey Zabolotnyi ]
+  * Fix handling of devices with only buttons (e.g. tablet pads).
+
+  [ Christian Gmeiner ]
+  * Print cause of a failed open(..) call
+
+  [ Peter Hutterer ]
+  * Ignore x/y axis changes on proximity out
+
+  [ Andrey Zabolotnyi ]
+  * Fix generation of proximity-in/out events.
+
+  [ Peter Hutterer ]
+  * evdev 2.10.6
+
+  [ Michal Maruska ]
+  * Request & use timestamps in Monotonic time.
+  * Deliver the (event) timestamp to the DDX
+  * useless comment
+  * .gitignore for debian build in-tree
+
+ -- Michal Maruska <mmaruska@gmail.com>  Sun, 26 Aug 2018 13:24:42 +0200
+
 xserver-xorg-input-evdev (1:2.10.5-1) unstable; urgency=medium
 
   * Team upload.
